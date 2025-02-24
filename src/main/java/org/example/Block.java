@@ -2,8 +2,11 @@ package org.example;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Block {
@@ -14,11 +17,13 @@ public class Block {
     private long index;
     private long nonce;
 
-    public Block(String previousHash, List<Transaction> transactions) {
+    public Block(long index, String previousHash, List<Transaction> transactions) {
         this.TRANSACTIONS = new ArrayList<>(transactions);;
         this.PREVIOUS_HASH = previousHash;
         this.timeStamp = System.currentTimeMillis();
         this.nonce = 0;
+        this.index = index;
+        this.blockHash = this.calculateHash();
     }
 
     public String calculateHash(){
@@ -48,5 +53,18 @@ public class Block {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean validateBlock(){
+        return this.blockHash.equals(this.calculateHash()) && this.blockHash.startsWith("0000");
+    }
+
+    public boolean mineBlock(){
+        while(!this.blockHash.startsWith("0000")){
+            this.nonce++;
+            this.blockHash = this.calculateHash();
+            //System.out.println("Mining: " + this.blockHash + " with nonce: " + this.nonce);
+        }
+        return true;
     }
 }
