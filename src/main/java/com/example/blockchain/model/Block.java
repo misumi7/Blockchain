@@ -1,11 +1,11 @@
-package org.example;
+package com.example.blockchain.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +16,7 @@ public class Block {
     private String blockHash;
     private long index;
     private long nonce;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Block(long index, String previousHash, List<Transaction> transactions) {
         this.TRANSACTIONS = new ArrayList<>(transactions);;
@@ -66,5 +67,61 @@ public class Block {
             //System.out.println("Mining: " + this.blockHash + " with nonce: " + this.nonce);
         }
         return true;
+    }
+
+    public String toJson(){
+        try{
+            return objectMapper.writeValueAsString(this);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Block fromJson(String json){
+        try{
+            return objectMapper.readValue(json, Block.class);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Transaction> getTRANSACTIONS() {
+        return TRANSACTIONS;
+    }
+
+    public String getPREVIOUS_HASH() {
+        return PREVIOUS_HASH;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public String getBlockHash() {
+        return blockHash;
+    }
+
+    public void setBlockHash(String blockHash) {
+        this.blockHash = blockHash;
+    }
+
+    public long getIndex() {
+        return index;
+    }
+
+    public void setIndex(long index) {
+        this.index = index;
+    }
+
+    public long getNonce() {
+        return nonce;
+    }
+
+    public void setNonce(long nonce) {
+        this.nonce = nonce;
     }
 }

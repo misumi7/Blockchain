@@ -1,9 +1,9 @@
-package org.example;
+package com.example.blockchain.model;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.*;
-import java.security.spec.ECGenParameterSpec;
+
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.ECNamedCurveTable;
 

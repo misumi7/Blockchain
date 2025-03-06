@@ -1,4 +1,4 @@
-package org.example;
+package com.example.blockchain.model;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
