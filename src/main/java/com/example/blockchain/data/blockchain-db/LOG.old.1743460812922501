@@ -1,0 +1,300 @@
+2025/04/01-01:36:33.955259 eda8 RocksDB version: 9.10.0
+2025/04/01-01:36:33.955329 eda8 Git sha ae8fb3e5000e46d8d4c9dbf3a36019c0aaceebff
+2025/04/01-01:36:33.955347 eda8 Compile date 2025-01-22 17:43:14
+2025/04/01-01:36:33.955362 eda8 DB SUMMARY
+2025/04/01-01:36:33.955373 eda8 Host name (Env):  MISUMI7
+2025/04/01-01:36:33.955436 eda8 DB Session ID:  VBRH7J7P62UT3OM32443
+2025/04/01-01:36:33.956872 eda8 CURRENT file:  CURRENT
+2025/04/01-01:36:33.956924 eda8 IDENTITY file:  IDENTITY
+2025/04/01-01:36:33.957032 eda8 MANIFEST file:  MANIFEST-000222 size: 795 Bytes
+2025/04/01-01:36:33.957057 eda8 SST files in A:\resources\rocks-db\blockchain-db dir, Total Num: 3, files: 000112.sst 000117.sst 000132.sst 
+2025/04/01-01:36:33.957069 eda8 Write Ahead Log file in A:\resources\rocks-db\blockchain-db: 000221.log size: 0 ; 
+2025/04/01-01:36:33.957191 eda8                         Options.error_if_exists: 0
+2025/04/01-01:36:33.957202 eda8                       Options.create_if_missing: 1
+2025/04/01-01:36:33.957207 eda8                         Options.paranoid_checks: 1
+2025/04/01-01:36:33.957213 eda8             Options.flush_verify_memtable_count: 1
+2025/04/01-01:36:33.957217 eda8          Options.compaction_verify_record_count: 1
+2025/04/01-01:36:33.957222 eda8                               Options.track_and_verify_wals_in_manifest: 0
+2025/04/01-01:36:33.957227 eda8        Options.verify_sst_unique_id_in_manifest: 1
+2025/04/01-01:36:33.957233 eda8                                     Options.env: 0000021358C52AD0
+2025/04/01-01:36:33.957239 eda8                                      Options.fs: WinFS
+2025/04/01-01:36:33.957244 eda8                                Options.info_log: 000002135872B740
+2025/04/01-01:36:33.957251 eda8                Options.max_file_opening_threads: 16
+2025/04/01-01:36:33.957255 eda8                              Options.statistics: 0000000000000000
+2025/04/01-01:36:33.957258 eda8                               Options.use_fsync: 0
+2025/04/01-01:36:33.957262 eda8                       Options.max_log_file_size: 0
+2025/04/01-01:36:33.957264 eda8                  Options.max_manifest_file_size: 1073741824
+2025/04/01-01:36:33.957267 eda8                   Options.log_file_time_to_roll: 0
+2025/04/01-01:36:33.957270 eda8                       Options.keep_log_file_num: 1000
+2025/04/01-01:36:33.957273 eda8                    Options.recycle_log_file_num: 0
+2025/04/01-01:36:33.957276 eda8                         Options.allow_fallocate: 1
+2025/04/01-01:36:33.957279 eda8                        Options.allow_mmap_reads: 0
+2025/04/01-01:36:33.957282 eda8                       Options.allow_mmap_writes: 0
+2025/04/01-01:36:33.957285 eda8                        Options.use_direct_reads: 0
+2025/04/01-01:36:33.957288 eda8                        Options.use_direct_io_for_flush_and_compaction: 0
+2025/04/01-01:36:33.957291 eda8          Options.create_missing_column_families: 0
+2025/04/01-01:36:33.957293 eda8                              Options.db_log_dir: 
+2025/04/01-01:36:33.957296 eda8                                 Options.wal_dir: 
+2025/04/01-01:36:33.957299 eda8                Options.table_cache_numshardbits: 6
+2025/04/01-01:36:33.957302 eda8                         Options.WAL_ttl_seconds: 0
+2025/04/01-01:36:33.957304 eda8                       Options.WAL_size_limit_MB: 0
+2025/04/01-01:36:33.957310 eda8                        Options.max_write_batch_group_size_bytes: 1048576
+2025/04/01-01:36:33.957316 eda8             Options.manifest_preallocation_size: 4194304
+2025/04/01-01:36:33.957322 eda8                     Options.is_fd_close_on_exec: 1
+2025/04/01-01:36:33.957327 eda8                   Options.advise_random_on_open: 1
+2025/04/01-01:36:33.957333 eda8                    Options.db_write_buffer_size: 0
+2025/04/01-01:36:33.957338 eda8                    Options.write_buffer_manager: 0000021358C53340
+2025/04/01-01:36:33.957344 eda8           Options.random_access_max_buffer_size: 1048576
+2025/04/01-01:36:33.957350 eda8                      Options.use_adaptive_mutex: 0
+2025/04/01-01:36:33.957355 eda8                            Options.rate_limiter: 0000000000000000
+2025/04/01-01:36:33.957396 eda8     Options.sst_file_manager.rate_bytes_per_sec: 0
+2025/04/01-01:36:33.957405 eda8                       Options.wal_recovery_mode: 2
+2025/04/01-01:36:33.957410 eda8                  Options.enable_thread_tracking: 0
+2025/04/01-01:36:33.957415 eda8                  Options.enable_pipelined_write: 0
+2025/04/01-01:36:33.957420 eda8                  Options.unordered_write: 0
+2025/04/01-01:36:33.957425 eda8         Options.allow_concurrent_memtable_write: 1
+2025/04/01-01:36:33.957430 eda8      Options.enable_write_thread_adaptive_yield: 1
+2025/04/01-01:36:33.957435 eda8             Options.write_thread_max_yield_usec: 100
+2025/04/01-01:36:33.957440 eda8            Options.write_thread_slow_yield_usec: 3
+2025/04/01-01:36:33.957445 eda8                               Options.row_cache: None
+2025/04/01-01:36:33.957450 eda8                              Options.wal_filter: None
+2025/04/01-01:36:33.957455 eda8             Options.avoid_flush_during_recovery: 0
+2025/04/01-01:36:33.957460 eda8             Options.allow_ingest_behind: 0
+2025/04/01-01:36:33.957465 eda8             Options.two_write_queues: 0
+2025/04/01-01:36:33.957470 eda8             Options.manual_wal_flush: 0
+2025/04/01-01:36:33.957474 eda8             Options.wal_compression: 0
+2025/04/01-01:36:33.957479 eda8             Options.background_close_inactive_wals: 0
+2025/04/01-01:36:33.957485 eda8             Options.atomic_flush: 0
+2025/04/01-01:36:33.957490 eda8             Options.avoid_unnecessary_blocking_io: 0
+2025/04/01-01:36:33.957495 eda8             Options.prefix_seek_opt_in_only: 0
+2025/04/01-01:36:33.957499 eda8                 Options.persist_stats_to_disk: 0
+2025/04/01-01:36:33.957503 eda8                 Options.write_dbid_to_manifest: 1
+2025/04/01-01:36:33.957508 eda8                 Options.write_identity_file: 1
+2025/04/01-01:36:33.957513 eda8                 Options.log_readahead_size: 0
+2025/04/01-01:36:33.957518 eda8                 Options.file_checksum_gen_factory: Unknown
+2025/04/01-01:36:33.957524 eda8                 Options.best_efforts_recovery: 0
+2025/04/01-01:36:33.957529 eda8                Options.max_bgerror_resume_count: 2147483647
+2025/04/01-01:36:33.957534 eda8            Options.bgerror_resume_retry_interval: 1000000
+2025/04/01-01:36:33.957539 eda8             Options.allow_data_in_errors: 0
+2025/04/01-01:36:33.957544 eda8             Options.db_host_id: __hostname__
+2025/04/01-01:36:33.957549 eda8             Options.enforce_single_del_contracts: true
+2025/04/01-01:36:33.957554 eda8             Options.metadata_write_temperature: kUnknown
+2025/04/01-01:36:33.957560 eda8             Options.wal_write_temperature: kUnknown
+2025/04/01-01:36:33.957565 eda8             Options.max_background_jobs: 2
+2025/04/01-01:36:33.957570 eda8             Options.max_background_compactions: -1
+2025/04/01-01:36:33.957575 eda8             Options.max_subcompactions: 1
+2025/04/01-01:36:33.957580 eda8             Options.avoid_flush_during_shutdown: 0
+2025/04/01-01:36:33.957585 eda8           Options.writable_file_max_buffer_size: 1048576
+2025/04/01-01:36:33.957590 eda8             Options.delayed_write_rate : 16777216
+2025/04/01-01:36:33.957596 eda8             Options.max_total_wal_size: 0
+2025/04/01-01:36:33.957601 eda8             Options.delete_obsolete_files_period_micros: 21600000000
+2025/04/01-01:36:33.957607 eda8                   Options.stats_dump_period_sec: 600
+2025/04/01-01:36:33.957612 eda8                 Options.stats_persist_period_sec: 600
+2025/04/01-01:36:33.957618 eda8                 Options.stats_history_buffer_size: 1048576
+2025/04/01-01:36:33.957623 eda8                          Options.max_open_files: -1
+2025/04/01-01:36:33.957626 eda8                          Options.bytes_per_sync: 0
+2025/04/01-01:36:33.957629 eda8                      Options.wal_bytes_per_sync: 0
+2025/04/01-01:36:33.957632 eda8                   Options.strict_bytes_per_sync: 0
+2025/04/01-01:36:33.957635 eda8       Options.compaction_readahead_size: 2097152
+2025/04/01-01:36:33.957638 eda8                  Options.max_background_flushes: -1
+2025/04/01-01:36:33.957709 eda8 Options.daily_offpeak_time_utc: 
+2025/04/01-01:36:33.957719 eda8 Compression algorithms supported:
+2025/04/01-01:36:33.957736 eda8 	kZSTD supported: 1
+2025/04/01-01:36:33.957741 eda8 	kSnappyCompression supported: 1
+2025/04/01-01:36:33.957746 eda8 	kBZip2Compression supported: 0
+2025/04/01-01:36:33.957751 eda8 	kZlibCompression supported: 1
+2025/04/01-01:36:33.957756 eda8 	kLZ4Compression supported: 1
+2025/04/01-01:36:33.957761 eda8 	kXpressCompression supported: 0
+2025/04/01-01:36:33.957767 eda8 	kLZ4HCCompression supported: 1
+2025/04/01-01:36:33.957773 eda8 	kZSTDNotFinalCompression supported: 1
+2025/04/01-01:36:33.957787 eda8 Fast CRC32 supported: Not supported on x86
+2025/04/01-01:36:33.957793 eda8 DMutex implementation: std::mutex
+2025/04/01-01:36:33.957798 eda8 Jemalloc supported: 0
+2025/04/01-01:36:33.964590 eda8 [db\version_set.cc:6030] Recovering from manifest file: A:\resources\rocks-db\blockchain-db/MANIFEST-000222
+2025/04/01-01:36:33.970786 eda8 [db\column_family.cc:629] --------------- Options for column family [default]:
+2025/04/01-01:36:33.970814 eda8               Options.comparator: leveldb.BytewiseComparator
+2025/04/01-01:36:33.970823 eda8           Options.merge_operator: None
+2025/04/01-01:36:33.970827 eda8        Options.compaction_filter: None
+2025/04/01-01:36:33.970830 eda8        Options.compaction_filter_factory: None
+2025/04/01-01:36:33.970833 eda8  Options.sst_partitioner_factory: None
+2025/04/01-01:36:33.970835 eda8         Options.memtable_factory: SkipListFactory
+2025/04/01-01:36:33.970838 eda8            Options.table_factory: BlockBasedTable
+2025/04/01-01:36:33.970870 eda8            table_factory options:   flush_block_policy_factory: FlushBlockBySizePolicyFactory (000002135A87B500)
+  cache_index_and_filter_blocks: 0
+  cache_index_and_filter_blocks_with_high_priority: 1
+  pin_l0_filter_and_index_blocks_in_cache: 0
+  pin_top_level_index_and_filter: 1
+  index_type: 0
+  data_block_index_type: 0
+  index_shortening: 1
+  data_block_hash_table_util_ratio: 0.750000
+  checksum: 4
+  no_block_cache: 0
+  block_cache: 000002135A706C50
+  block_cache_name: LRUCache
+  block_cache_options:
+    capacity : 33554432
+    num_shard_bits : 6
+    strict_capacity_limit : 0
+    memory_allocator : None
+    high_pri_pool_ratio: 0.500
+    low_pri_pool_ratio: 0.000
+  persistent_cache: 0000000000000000
+  block_size: 4096
+  block_size_deviation: 10
+  block_restart_interval: 16
+  index_block_restart_interval: 1
+  metadata_block_size: 4096
+  partition_filters: 0
+  use_delta_encoding: 1
+  filter_policy: nullptr
+  whole_key_filtering: 1
+  verify_compression: 0
+  read_amp_bytes_per_bit: 0
+  format_version: 6
+  enable_index_compression: 1
+  block_align: 0
+  max_auto_readahead_size: 262144
+  prepopulate_block_cache: 0
+  initial_auto_readahead_size: 8192
+  num_file_reads_for_auto_readahead: 2
+2025/04/01-01:36:33.970876 eda8        Options.write_buffer_size: 67108864
+2025/04/01-01:36:33.970878 eda8  Options.max_write_buffer_number: 2
+2025/04/01-01:36:33.970881 eda8          Options.compression: Snappy
+2025/04/01-01:36:33.970884 eda8                  Options.bottommost_compression: Disabled
+2025/04/01-01:36:33.970886 eda8       Options.prefix_extractor: nullptr
+2025/04/01-01:36:33.970889 eda8   Options.memtable_insert_with_hint_prefix_extractor: nullptr
+2025/04/01-01:36:33.970892 eda8             Options.num_levels: 7
+2025/04/01-01:36:33.970894 eda8        Options.min_write_buffer_number_to_merge: 1
+2025/04/01-01:36:33.970897 eda8     Options.max_write_buffer_number_to_maintain: 0
+2025/04/01-01:36:33.970900 eda8     Options.max_write_buffer_size_to_maintain: 0
+2025/04/01-01:36:33.970902 eda8            Options.bottommost_compression_opts.window_bits: -14
+2025/04/01-01:36:33.970905 eda8                  Options.bottommost_compression_opts.level: 32767
+2025/04/01-01:36:33.970908 eda8               Options.bottommost_compression_opts.strategy: 0
+2025/04/01-01:36:33.970911 eda8         Options.bottommost_compression_opts.max_dict_bytes: 0
+2025/04/01-01:36:33.970917 eda8         Options.bottommost_compression_opts.zstd_max_train_bytes: 0
+2025/04/01-01:36:33.970921 eda8         Options.bottommost_compression_opts.parallel_threads: 1
+2025/04/01-01:36:33.970923 eda8                  Options.bottommost_compression_opts.enabled: false
+2025/04/01-01:36:33.970926 eda8         Options.bottommost_compression_opts.max_dict_buffer_bytes: 0
+2025/04/01-01:36:33.970929 eda8         Options.bottommost_compression_opts.use_zstd_dict_trainer: true
+2025/04/01-01:36:33.970932 eda8            Options.compression_opts.window_bits: -14
+2025/04/01-01:36:33.970934 eda8                  Options.compression_opts.level: 32767
+2025/04/01-01:36:33.970937 eda8               Options.compression_opts.strategy: 0
+2025/04/01-01:36:33.970940 eda8         Options.compression_opts.max_dict_bytes: 0
+2025/04/01-01:36:33.970942 eda8         Options.compression_opts.zstd_max_train_bytes: 0
+2025/04/01-01:36:33.970945 eda8         Options.compression_opts.use_zstd_dict_trainer: true
+2025/04/01-01:36:33.970948 eda8         Options.compression_opts.parallel_threads: 1
+2025/04/01-01:36:33.970950 eda8                  Options.compression_opts.enabled: false
+2025/04/01-01:36:33.970953 eda8         Options.compression_opts.max_dict_buffer_bytes: 0
+2025/04/01-01:36:33.970956 eda8      Options.level0_file_num_compaction_trigger: 4
+2025/04/01-01:36:33.970958 eda8          Options.level0_slowdown_writes_trigger: 20
+2025/04/01-01:36:33.970961 eda8              Options.level0_stop_writes_trigger: 36
+2025/04/01-01:36:33.970963 eda8                   Options.target_file_size_base: 67108864
+2025/04/01-01:36:33.970966 eda8             Options.target_file_size_multiplier: 1
+2025/04/01-01:36:33.970969 eda8                Options.max_bytes_for_level_base: 268435456
+2025/04/01-01:36:33.970971 eda8 Options.level_compaction_dynamic_level_bytes: 1
+2025/04/01-01:36:33.970974 eda8          Options.max_bytes_for_level_multiplier: 10.000000
+2025/04/01-01:36:33.970978 eda8 Options.max_bytes_for_level_multiplier_addtl[0]: 1
+2025/04/01-01:36:33.970980 eda8 Options.max_bytes_for_level_multiplier_addtl[1]: 1
+2025/04/01-01:36:33.970983 eda8 Options.max_bytes_for_level_multiplier_addtl[2]: 1
+2025/04/01-01:36:33.970986 eda8 Options.max_bytes_for_level_multiplier_addtl[3]: 1
+2025/04/01-01:36:33.970988 eda8 Options.max_bytes_for_level_multiplier_addtl[4]: 1
+2025/04/01-01:36:33.970991 eda8 Options.max_bytes_for_level_multiplier_addtl[5]: 1
+2025/04/01-01:36:33.970994 eda8 Options.max_bytes_for_level_multiplier_addtl[6]: 1
+2025/04/01-01:36:33.970996 eda8       Options.max_sequential_skip_in_iterations: 8
+2025/04/01-01:36:33.970999 eda8                    Options.max_compaction_bytes: 1677721600
+2025/04/01-01:36:33.971002 eda8                        Options.arena_block_size: 1048576
+2025/04/01-01:36:33.971004 eda8   Options.soft_pending_compaction_bytes_limit: 68719476736
+2025/04/01-01:36:33.971007 eda8   Options.hard_pending_compaction_bytes_limit: 274877906944
+2025/04/01-01:36:33.971010 eda8                Options.disable_auto_compactions: 0
+2025/04/01-01:36:33.971013 eda8                        Options.compaction_style: kCompactionStyleLevel
+2025/04/01-01:36:33.971017 eda8                          Options.compaction_pri: kMinOverlappingRatio
+2025/04/01-01:36:33.971020 eda8 Options.compaction_options_universal.size_ratio: 1
+2025/04/01-01:36:33.971022 eda8 Options.compaction_options_universal.min_merge_width: 2
+2025/04/01-01:36:33.971025 eda8 Options.compaction_options_universal.max_merge_width: 4294967295
+2025/04/01-01:36:33.971027 eda8 Options.compaction_options_universal.max_size_amplification_percent: 200
+2025/04/01-01:36:33.971030 eda8 Options.compaction_options_universal.compression_size_percent: -1
+2025/04/01-01:36:33.971038 eda8 Options.compaction_options_universal.stop_style: kCompactionStopStyleTotalSize
+2025/04/01-01:36:33.971041 eda8 Options.compaction_options_universal.max_read_amp: -1
+2025/04/01-01:36:33.971043 eda8 Options.compaction_options_fifo.max_table_files_size: 1073741824
+2025/04/01-01:36:33.971046 eda8 Options.compaction_options_fifo.allow_compaction: 0
+2025/04/01-01:36:33.971085 eda8                   Options.table_properties_collectors: 
+2025/04/01-01:36:33.971090 eda8                   Options.inplace_update_support: 0
+2025/04/01-01:36:33.971093 eda8                 Options.inplace_update_num_locks: 10000
+2025/04/01-01:36:33.971096 eda8               Options.memtable_prefix_bloom_size_ratio: 0.000000
+2025/04/01-01:36:33.971099 eda8               Options.memtable_whole_key_filtering: 0
+2025/04/01-01:36:33.971102 eda8   Options.memtable_huge_page_size: 0
+2025/04/01-01:36:33.971104 eda8                           Options.bloom_locality: 0
+2025/04/01-01:36:33.971107 eda8                    Options.max_successive_merges: 0
+2025/04/01-01:36:33.971110 eda8             Options.strict_max_successive_merges: 0
+2025/04/01-01:36:33.971112 eda8                Options.optimize_filters_for_hits: 0
+2025/04/01-01:36:33.971115 eda8                Options.paranoid_file_checks: 0
+2025/04/01-01:36:33.971117 eda8                Options.force_consistency_checks: 1
+2025/04/01-01:36:33.971120 eda8                Options.report_bg_io_stats: 0
+2025/04/01-01:36:33.971122 eda8                               Options.ttl: 2592000
+2025/04/01-01:36:33.971125 eda8          Options.periodic_compaction_seconds: 0
+2025/04/01-01:36:33.971128 eda8                        Options.default_temperature: kUnknown
+2025/04/01-01:36:33.971131 eda8  Options.preclude_last_level_data_seconds: 0
+2025/04/01-01:36:33.971134 eda8    Options.preserve_internal_time_seconds: 0
+2025/04/01-01:36:33.971136 eda8                       Options.enable_blob_files: false
+2025/04/01-01:36:33.971139 eda8                           Options.min_blob_size: 0
+2025/04/01-01:36:33.971142 eda8                          Options.blob_file_size: 268435456
+2025/04/01-01:36:33.971144 eda8                   Options.blob_compression_type: NoCompression
+2025/04/01-01:36:33.971147 eda8          Options.enable_blob_garbage_collection: false
+2025/04/01-01:36:33.971150 eda8      Options.blob_garbage_collection_age_cutoff: 0.250000
+2025/04/01-01:36:33.971153 eda8 Options.blob_garbage_collection_force_threshold: 1.000000
+2025/04/01-01:36:33.971156 eda8          Options.blob_compaction_readahead_size: 0
+2025/04/01-01:36:33.971159 eda8                Options.blob_file_starting_level: 0
+2025/04/01-01:36:33.971161 eda8         Options.experimental_mempurge_threshold: 0.000000
+2025/04/01-01:36:33.971164 eda8            Options.memtable_max_range_deletions: 0
+2025/04/01-01:36:33.973214 eda8 [db\version_set.cc:6088] Recovered from manifest file:A:\resources\rocks-db\blockchain-db/MANIFEST-000222 succeeded,manifest_file_number is 222, next_file_number is 224, last_sequence is 20, log_number is 218,prev_log_number is 0,max_column_family is 0,min_log_number_to_keep is 218
+2025/04/01-01:36:33.973226 eda8 [db\version_set.cc:6097] Column family [default] (ID 0), log number is 218
+2025/04/01-01:36:33.973483 eda8 [db\db_impl\db_impl_open.cc:686] DB ID: 2b046b0a-fa6a-11ef-ab34-0c9a3cb28d82
+2025/04/01-01:36:33.976450 eda8 EVENT_LOG_v1 {"time_micros": 1743460593976262, "job": 1, "event": "recovery_started", "wal_files": [221]}
+2025/04/01-01:36:33.976477 eda8 [db\db_impl\db_impl_open.cc:1189] Recovering log #221 mode 2
+2025/04/01-01:36:33.976639 eda8 [db\db_impl\db_impl_open.cc:1378] Recovered to log #221 seq #72057594037927935
+2025/04/01-01:36:33.977433 eda8 EVENT_LOG_v1 {"time_micros": 1743460593977429, "job": 1, "event": "recovery_finished"}
+2025/04/01-01:36:33.977769 eda8 [db\version_set.cc:5553] Creating manifest 226
+2025/04/01-01:36:33.985577 eda8 [db\db_impl\db_impl_open.cc:2252] SstFileManager instance 000002135AEBF750
+2025/04/01-01:36:33.988244 eda8 [file\delete_scheduler.cc:78] Deleted file A:\resources\rocks-db\blockchain-db/000221.log immediately, rate_bytes_per_sec 0, total_trash_size 0, total_size 4013, max_trash_db_ratio 0.250000
+2025/04/01-01:36:33.988459 eda8 DB pointer 0000021359944980
+2025/04/01-01:36:33.988924 11b04 [db\db_impl\db_impl.cc:1210] ------- DUMPING STATS -------
+2025/04/01-01:36:33.988939 11b04 [db\db_impl\db_impl.cc:1211] 
+** DB Stats **
+Uptime(secs): 0.0 total, 0.0 interval
+Cumulative writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 GB, 0.00 MB/s
+Cumulative WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Cumulative stall: 00:00:0.000 H:M:S, 0.0 percent
+Interval writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 MB, 0.00 MB/s
+Interval WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Interval stall: 00:00:0.000 H:M:S, 0.0 percent
+Write Stall (count): write-buffer-manager-limit-stops: 0
+
+** Compaction Stats [default] **
+Level    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop Rblob(GB) Wblob(GB)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  L0      2/0    2.67 KB   0.5      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+  L6      1/0    1.25 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+ Sum      3/0    3.92 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+ Int      0/0    0.00 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+
+** Compaction Stats [default] **
+Priority    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop Rblob(GB) Wblob(GB)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Blob file count: 0, total size: 0.0 GB, garbage size: 0.0 GB, space amp: 0.0
+
+Uptime(secs): 0.0 total, 0.0 interval
+Flush(GB): cumulative 0.000, interval 0.000
+AddFile(GB): cumulative 0.000, interval 0.000
+AddFile(Total Files): cumulative 0, interval 0
+AddFile(L0 Files): cumulative 0, interval 0
+AddFile(Keys): cumulative 0, interval 0
+Cumulative compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Interval compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Estimated pending compaction bytes: 0
+Write Stall (count): cf-l0-file-count-limit-delays-with-ongoing-compaction: 0, cf-l0-file-count-limit-stops-with-ongoing-compaction: 0, l0-file-count-limit-delays: 0, l0-file-count-limit-stops: 0, memtable-limit-delays: 0, memtable-limit-stops: 0, pending-compaction-bytes-delays: 0, pending-compaction-bytes-stops: 0, total-delays: 0, total-stops: 0
+Block cache LRUCache@000002135A706C50#65856 capacity: 32.00 MB seed: 1200224537 usage: 0.08 KB table_size: 1024 occupancy: 1 collections: 1 last_copies: 0 last_secs: 6e-05 secs_since: 0
+Block cache entry stats(count,size,portion): Misc(1,0.00 KB,0%)
+
+** File Read Latency Histogram By Level [default] **

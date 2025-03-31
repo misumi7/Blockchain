@@ -15,16 +15,24 @@ public class BlockchainService {
         this.blockchainRepository = blockchainRepository;
     }
 
-    public Map<String, String> getAllBlocks() {
+    public Map<String, Block> getAllBlocks() {
         return blockchainRepository.findAllBlocks();
     }
 
-    public String getBlock(String hash) {
+    public Block getBlock(String hash) {
         return blockchainRepository.findBlock(hash);
     }
 
     public boolean addBlock(Block block) {
         return blockchainRepository.saveBlock(block);
+    }
+
+    public boolean deleteBlock(String hash) {
+        return blockchainRepository.deleteBlock(hash);
+    }
+
+    public boolean deleteAllBlocks() {
+        return blockchainRepository.deleteAllBlocks();
     }
 
 }

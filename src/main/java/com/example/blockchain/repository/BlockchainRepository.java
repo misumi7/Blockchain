@@ -24,7 +24,7 @@ public class BlockchainRepository {
         RocksDB.loadLibrary();
         final Options options = new Options();
         options.setCreateIfMissing(true);
-        dbDir = new File("/resources/rocks-db", NAME);
+        dbDir = new File(System.getProperty("user.dir") + "src/main/java/com/example/blockchain/data/", NAME);
         try {
             Files.createDirectories(dbDir.getParentFile().toPath());
             Files.createDirectories(dbDir.getAbsoluteFile().toPath());
@@ -35,10 +35,10 @@ public class BlockchainRepository {
         }
     }
 
-    public String findBlock(String key){
-        String value = null;
+    public Block findBlock(String key){
+        Block value = null;
         try {
-            value = new String(db.get(key.getBytes()));
+            value = Block.fromJson(new String(db.get(key.getBytes())));
         }
         catch (RocksDBException e) {
             e.printStackTrace();
@@ -46,12 +46,12 @@ public class BlockchainRepository {
         return value;
     }
 
-    public Map<String, String> findAllBlocks(){
-        Map<String, String> blockchain = new HashMap<>();
+    public Map<String, Block> findAllBlocks(){
+        Map<String, Block> blockchain = new HashMap<>();
         RocksIterator it = db.newIterator();
         for(it.seekToFirst(); it.isValid(); it.next()) {
             String key = new String(it.key(), StandardCharsets.UTF_8);
-            String value = new String(it.value(), StandardCharsets.UTF_8);
+            Block value = Block.fromJson(new String(it.value(), StandardCharsets.UTF_8));
             blockchain.put(key, value);
         }
         it.close();
@@ -61,7 +61,7 @@ public class BlockchainRepository {
     // synchronized as put() and delete() are not thread-safe
     public synchronized boolean saveBlock(Block block) {
         try {
-            db.put(block.getBlockHash().getBytes(), block.toJson().getBytes());
+            db.put(block.getBlockHash().getBytes(), Block.toJson(block).getBytes());
             return true;
         }
         catch (RocksDBException e) {
@@ -70,12 +70,32 @@ public class BlockchainRepository {
         }
     }
 
-    public synchronized void deleteBlock(String key) {
+    public synchronized boolean deleteBlock(String key) {
         try{
             db.delete(key.getBytes());
+            return true;
         }
         catch (RocksDBException e) {
             e.printStackTrace();
+            return false;
         }
     }
+
+
+    public synchronized boolean deleteAllBlocks(){
+        RocksIterator it = db.newIterator();
+        for(it.seekToFirst(); it.isValid(); it.next()) {
+            String key = new String(it.key(), StandardCharsets.UTF_8);
+            try {
+                db.delete(key.getBytes());
+            }
+            catch (RocksDBException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        it.close();
+        return true;
+    }
+
 }

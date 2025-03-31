@@ -1,0 +1,300 @@
+2025/03/31-17:59:29.380726 ffec RocksDB version: 9.10.0
+2025/03/31-17:59:29.380814 ffec Git sha ae8fb3e5000e46d8d4c9dbf3a36019c0aaceebff
+2025/03/31-17:59:29.380835 ffec Compile date 2025-01-22 17:43:14
+2025/03/31-17:59:29.380858 ffec DB SUMMARY
+2025/03/31-17:59:29.380874 ffec Host name (Env):  MISUMI7
+2025/03/31-17:59:29.380886 ffec DB Session ID:  HICHPRSHB639RLSCRXYS
+2025/03/31-17:59:29.382241 ffec CURRENT file:  CURRENT
+2025/03/31-17:59:29.382262 ffec IDENTITY file:  IDENTITY
+2025/03/31-17:59:29.382303 ffec MANIFEST file:  MANIFEST-000194 size: 795 Bytes
+2025/03/31-17:59:29.382322 ffec SST files in A:\resources\rocks-db\blockchain-db dir, Total Num: 3, files: 000112.sst 000117.sst 000132.sst 
+2025/03/31-17:59:29.382332 ffec Write Ahead Log file in A:\resources\rocks-db\blockchain-db: 000193.log size: 0 ; 
+2025/03/31-17:59:29.382515 ffec                         Options.error_if_exists: 0
+2025/03/31-17:59:29.382525 ffec                       Options.create_if_missing: 1
+2025/03/31-17:59:29.382529 ffec                         Options.paranoid_checks: 1
+2025/03/31-17:59:29.382532 ffec             Options.flush_verify_memtable_count: 1
+2025/03/31-17:59:29.382535 ffec          Options.compaction_verify_record_count: 1
+2025/03/31-17:59:29.382538 ffec                               Options.track_and_verify_wals_in_manifest: 0
+2025/03/31-17:59:29.382541 ffec        Options.verify_sst_unique_id_in_manifest: 1
+2025/03/31-17:59:29.382544 ffec                                     Options.env: 0000028C774C6100
+2025/03/31-17:59:29.382547 ffec                                      Options.fs: WinFS
+2025/03/31-17:59:29.382551 ffec                                Options.info_log: 0000028C76E53140
+2025/03/31-17:59:29.382556 ffec                Options.max_file_opening_threads: 16
+2025/03/31-17:59:29.382561 ffec                              Options.statistics: 0000000000000000
+2025/03/31-17:59:29.382566 ffec                               Options.use_fsync: 0
+2025/03/31-17:59:29.382571 ffec                       Options.max_log_file_size: 0
+2025/03/31-17:59:29.382576 ffec                  Options.max_manifest_file_size: 1073741824
+2025/03/31-17:59:29.382580 ffec                   Options.log_file_time_to_roll: 0
+2025/03/31-17:59:29.382585 ffec                       Options.keep_log_file_num: 1000
+2025/03/31-17:59:29.382591 ffec                    Options.recycle_log_file_num: 0
+2025/03/31-17:59:29.382596 ffec                         Options.allow_fallocate: 1
+2025/03/31-17:59:29.382601 ffec                        Options.allow_mmap_reads: 0
+2025/03/31-17:59:29.382607 ffec                       Options.allow_mmap_writes: 0
+2025/03/31-17:59:29.382610 ffec                        Options.use_direct_reads: 0
+2025/03/31-17:59:29.382615 ffec                        Options.use_direct_io_for_flush_and_compaction: 0
+2025/03/31-17:59:29.382620 ffec          Options.create_missing_column_families: 0
+2025/03/31-17:59:29.382626 ffec                              Options.db_log_dir: 
+2025/03/31-17:59:29.382629 ffec                                 Options.wal_dir: 
+2025/03/31-17:59:29.382632 ffec                Options.table_cache_numshardbits: 6
+2025/03/31-17:59:29.382635 ffec                         Options.WAL_ttl_seconds: 0
+2025/03/31-17:59:29.382638 ffec                       Options.WAL_size_limit_MB: 0
+2025/03/31-17:59:29.382644 ffec                        Options.max_write_batch_group_size_bytes: 1048576
+2025/03/31-17:59:29.382649 ffec             Options.manifest_preallocation_size: 4194304
+2025/03/31-17:59:29.382656 ffec                     Options.is_fd_close_on_exec: 1
+2025/03/31-17:59:29.382661 ffec                   Options.advise_random_on_open: 1
+2025/03/31-17:59:29.382666 ffec                    Options.db_write_buffer_size: 0
+2025/03/31-17:59:29.382671 ffec                    Options.write_buffer_manager: 0000028C774C61F0
+2025/03/31-17:59:29.382676 ffec           Options.random_access_max_buffer_size: 1048576
+2025/03/31-17:59:29.382682 ffec                      Options.use_adaptive_mutex: 0
+2025/03/31-17:59:29.382687 ffec                            Options.rate_limiter: 0000000000000000
+2025/03/31-17:59:29.382734 ffec     Options.sst_file_manager.rate_bytes_per_sec: 0
+2025/03/31-17:59:29.382743 ffec                       Options.wal_recovery_mode: 2
+2025/03/31-17:59:29.382748 ffec                  Options.enable_thread_tracking: 0
+2025/03/31-17:59:29.382753 ffec                  Options.enable_pipelined_write: 0
+2025/03/31-17:59:29.382758 ffec                  Options.unordered_write: 0
+2025/03/31-17:59:29.382764 ffec         Options.allow_concurrent_memtable_write: 1
+2025/03/31-17:59:29.382769 ffec      Options.enable_write_thread_adaptive_yield: 1
+2025/03/31-17:59:29.382775 ffec             Options.write_thread_max_yield_usec: 100
+2025/03/31-17:59:29.382780 ffec            Options.write_thread_slow_yield_usec: 3
+2025/03/31-17:59:29.382786 ffec                               Options.row_cache: None
+2025/03/31-17:59:29.382790 ffec                              Options.wal_filter: None
+2025/03/31-17:59:29.382796 ffec             Options.avoid_flush_during_recovery: 0
+2025/03/31-17:59:29.382801 ffec             Options.allow_ingest_behind: 0
+2025/03/31-17:59:29.382805 ffec             Options.two_write_queues: 0
+2025/03/31-17:59:29.382807 ffec             Options.manual_wal_flush: 0
+2025/03/31-17:59:29.382810 ffec             Options.wal_compression: 0
+2025/03/31-17:59:29.382813 ffec             Options.background_close_inactive_wals: 0
+2025/03/31-17:59:29.382815 ffec             Options.atomic_flush: 0
+2025/03/31-17:59:29.382818 ffec             Options.avoid_unnecessary_blocking_io: 0
+2025/03/31-17:59:29.382821 ffec             Options.prefix_seek_opt_in_only: 0
+2025/03/31-17:59:29.382823 ffec                 Options.persist_stats_to_disk: 0
+2025/03/31-17:59:29.382826 ffec                 Options.write_dbid_to_manifest: 1
+2025/03/31-17:59:29.382829 ffec                 Options.write_identity_file: 1
+2025/03/31-17:59:29.382832 ffec                 Options.log_readahead_size: 0
+2025/03/31-17:59:29.382834 ffec                 Options.file_checksum_gen_factory: Unknown
+2025/03/31-17:59:29.382837 ffec                 Options.best_efforts_recovery: 0
+2025/03/31-17:59:29.382840 ffec                Options.max_bgerror_resume_count: 2147483647
+2025/03/31-17:59:29.382843 ffec            Options.bgerror_resume_retry_interval: 1000000
+2025/03/31-17:59:29.382845 ffec             Options.allow_data_in_errors: 0
+2025/03/31-17:59:29.382848 ffec             Options.db_host_id: __hostname__
+2025/03/31-17:59:29.382851 ffec             Options.enforce_single_del_contracts: true
+2025/03/31-17:59:29.382855 ffec             Options.metadata_write_temperature: kUnknown
+2025/03/31-17:59:29.382857 ffec             Options.wal_write_temperature: kUnknown
+2025/03/31-17:59:29.382860 ffec             Options.max_background_jobs: 2
+2025/03/31-17:59:29.382863 ffec             Options.max_background_compactions: -1
+2025/03/31-17:59:29.382865 ffec             Options.max_subcompactions: 1
+2025/03/31-17:59:29.382868 ffec             Options.avoid_flush_during_shutdown: 0
+2025/03/31-17:59:29.382871 ffec           Options.writable_file_max_buffer_size: 1048576
+2025/03/31-17:59:29.382874 ffec             Options.delayed_write_rate : 16777216
+2025/03/31-17:59:29.382877 ffec             Options.max_total_wal_size: 0
+2025/03/31-17:59:29.382879 ffec             Options.delete_obsolete_files_period_micros: 21600000000
+2025/03/31-17:59:29.382882 ffec                   Options.stats_dump_period_sec: 600
+2025/03/31-17:59:29.382885 ffec                 Options.stats_persist_period_sec: 600
+2025/03/31-17:59:29.382888 ffec                 Options.stats_history_buffer_size: 1048576
+2025/03/31-17:59:29.382891 ffec                          Options.max_open_files: -1
+2025/03/31-17:59:29.382893 ffec                          Options.bytes_per_sync: 0
+2025/03/31-17:59:29.382896 ffec                      Options.wal_bytes_per_sync: 0
+2025/03/31-17:59:29.382899 ffec                   Options.strict_bytes_per_sync: 0
+2025/03/31-17:59:29.382902 ffec       Options.compaction_readahead_size: 2097152
+2025/03/31-17:59:29.382904 ffec                  Options.max_background_flushes: -1
+2025/03/31-17:59:29.382926 ffec Options.daily_offpeak_time_utc: 
+2025/03/31-17:59:29.382931 ffec Compression algorithms supported:
+2025/03/31-17:59:29.382947 ffec 	kZSTD supported: 1
+2025/03/31-17:59:29.382952 ffec 	kSnappyCompression supported: 1
+2025/03/31-17:59:29.382955 ffec 	kBZip2Compression supported: 0
+2025/03/31-17:59:29.382958 ffec 	kZlibCompression supported: 1
+2025/03/31-17:59:29.382960 ffec 	kLZ4Compression supported: 1
+2025/03/31-17:59:29.382963 ffec 	kXpressCompression supported: 0
+2025/03/31-17:59:29.382966 ffec 	kLZ4HCCompression supported: 1
+2025/03/31-17:59:29.382969 ffec 	kZSTDNotFinalCompression supported: 1
+2025/03/31-17:59:29.382979 ffec Fast CRC32 supported: Not supported on x86
+2025/03/31-17:59:29.382985 ffec DMutex implementation: std::mutex
+2025/03/31-17:59:29.382989 ffec Jemalloc supported: 0
+2025/03/31-17:59:29.392165 ffec [db\version_set.cc:6030] Recovering from manifest file: A:\resources\rocks-db\blockchain-db/MANIFEST-000194
+2025/03/31-17:59:29.398534 ffec [db\column_family.cc:629] --------------- Options for column family [default]:
+2025/03/31-17:59:29.398559 ffec               Options.comparator: leveldb.BytewiseComparator
+2025/03/31-17:59:29.398567 ffec           Options.merge_operator: None
+2025/03/31-17:59:29.398570 ffec        Options.compaction_filter: None
+2025/03/31-17:59:29.398573 ffec        Options.compaction_filter_factory: None
+2025/03/31-17:59:29.398576 ffec  Options.sst_partitioner_factory: None
+2025/03/31-17:59:29.398579 ffec         Options.memtable_factory: SkipListFactory
+2025/03/31-17:59:29.398581 ffec            Options.table_factory: BlockBasedTable
+2025/03/31-17:59:29.398608 ffec            table_factory options:   flush_block_policy_factory: FlushBlockBySizePolicyFactory (0000028C76576C30)
+  cache_index_and_filter_blocks: 0
+  cache_index_and_filter_blocks_with_high_priority: 1
+  pin_l0_filter_and_index_blocks_in_cache: 0
+  pin_top_level_index_and_filter: 1
+  index_type: 0
+  data_block_index_type: 0
+  index_shortening: 1
+  data_block_hash_table_util_ratio: 0.750000
+  checksum: 4
+  no_block_cache: 0
+  block_cache: 0000028C77A41550
+  block_cache_name: LRUCache
+  block_cache_options:
+    capacity : 33554432
+    num_shard_bits : 6
+    strict_capacity_limit : 0
+    memory_allocator : None
+    high_pri_pool_ratio: 0.500
+    low_pri_pool_ratio: 0.000
+  persistent_cache: 0000000000000000
+  block_size: 4096
+  block_size_deviation: 10
+  block_restart_interval: 16
+  index_block_restart_interval: 1
+  metadata_block_size: 4096
+  partition_filters: 0
+  use_delta_encoding: 1
+  filter_policy: nullptr
+  whole_key_filtering: 1
+  verify_compression: 0
+  read_amp_bytes_per_bit: 0
+  format_version: 6
+  enable_index_compression: 1
+  block_align: 0
+  max_auto_readahead_size: 262144
+  prepopulate_block_cache: 0
+  initial_auto_readahead_size: 8192
+  num_file_reads_for_auto_readahead: 2
+2025/03/31-17:59:29.398613 ffec        Options.write_buffer_size: 67108864
+2025/03/31-17:59:29.398615 ffec  Options.max_write_buffer_number: 2
+2025/03/31-17:59:29.398618 ffec          Options.compression: Snappy
+2025/03/31-17:59:29.398621 ffec                  Options.bottommost_compression: Disabled
+2025/03/31-17:59:29.398624 ffec       Options.prefix_extractor: nullptr
+2025/03/31-17:59:29.398627 ffec   Options.memtable_insert_with_hint_prefix_extractor: nullptr
+2025/03/31-17:59:29.398629 ffec             Options.num_levels: 7
+2025/03/31-17:59:29.398632 ffec        Options.min_write_buffer_number_to_merge: 1
+2025/03/31-17:59:29.398635 ffec     Options.max_write_buffer_number_to_maintain: 0
+2025/03/31-17:59:29.398637 ffec     Options.max_write_buffer_size_to_maintain: 0
+2025/03/31-17:59:29.398640 ffec            Options.bottommost_compression_opts.window_bits: -14
+2025/03/31-17:59:29.398643 ffec                  Options.bottommost_compression_opts.level: 32767
+2025/03/31-17:59:29.398646 ffec               Options.bottommost_compression_opts.strategy: 0
+2025/03/31-17:59:29.398649 ffec         Options.bottommost_compression_opts.max_dict_bytes: 0
+2025/03/31-17:59:29.398694 ffec         Options.bottommost_compression_opts.zstd_max_train_bytes: 0
+2025/03/31-17:59:29.398700 ffec         Options.bottommost_compression_opts.parallel_threads: 1
+2025/03/31-17:59:29.398703 ffec                  Options.bottommost_compression_opts.enabled: false
+2025/03/31-17:59:29.398706 ffec         Options.bottommost_compression_opts.max_dict_buffer_bytes: 0
+2025/03/31-17:59:29.398709 ffec         Options.bottommost_compression_opts.use_zstd_dict_trainer: true
+2025/03/31-17:59:29.398712 ffec            Options.compression_opts.window_bits: -14
+2025/03/31-17:59:29.398714 ffec                  Options.compression_opts.level: 32767
+2025/03/31-17:59:29.398717 ffec               Options.compression_opts.strategy: 0
+2025/03/31-17:59:29.398720 ffec         Options.compression_opts.max_dict_bytes: 0
+2025/03/31-17:59:29.398722 ffec         Options.compression_opts.zstd_max_train_bytes: 0
+2025/03/31-17:59:29.398725 ffec         Options.compression_opts.use_zstd_dict_trainer: true
+2025/03/31-17:59:29.398728 ffec         Options.compression_opts.parallel_threads: 1
+2025/03/31-17:59:29.398731 ffec                  Options.compression_opts.enabled: false
+2025/03/31-17:59:29.398733 ffec         Options.compression_opts.max_dict_buffer_bytes: 0
+2025/03/31-17:59:29.398736 ffec      Options.level0_file_num_compaction_trigger: 4
+2025/03/31-17:59:29.398739 ffec          Options.level0_slowdown_writes_trigger: 20
+2025/03/31-17:59:29.398741 ffec              Options.level0_stop_writes_trigger: 36
+2025/03/31-17:59:29.398744 ffec                   Options.target_file_size_base: 67108864
+2025/03/31-17:59:29.398747 ffec             Options.target_file_size_multiplier: 1
+2025/03/31-17:59:29.398750 ffec                Options.max_bytes_for_level_base: 268435456
+2025/03/31-17:59:29.398752 ffec Options.level_compaction_dynamic_level_bytes: 1
+2025/03/31-17:59:29.398755 ffec          Options.max_bytes_for_level_multiplier: 10.000000
+2025/03/31-17:59:29.398758 ffec Options.max_bytes_for_level_multiplier_addtl[0]: 1
+2025/03/31-17:59:29.398761 ffec Options.max_bytes_for_level_multiplier_addtl[1]: 1
+2025/03/31-17:59:29.398764 ffec Options.max_bytes_for_level_multiplier_addtl[2]: 1
+2025/03/31-17:59:29.398767 ffec Options.max_bytes_for_level_multiplier_addtl[3]: 1
+2025/03/31-17:59:29.398769 ffec Options.max_bytes_for_level_multiplier_addtl[4]: 1
+2025/03/31-17:59:29.398772 ffec Options.max_bytes_for_level_multiplier_addtl[5]: 1
+2025/03/31-17:59:29.398775 ffec Options.max_bytes_for_level_multiplier_addtl[6]: 1
+2025/03/31-17:59:29.398778 ffec       Options.max_sequential_skip_in_iterations: 8
+2025/03/31-17:59:29.398780 ffec                    Options.max_compaction_bytes: 1677721600
+2025/03/31-17:59:29.398783 ffec                        Options.arena_block_size: 1048576
+2025/03/31-17:59:29.398786 ffec   Options.soft_pending_compaction_bytes_limit: 68719476736
+2025/03/31-17:59:29.398788 ffec   Options.hard_pending_compaction_bytes_limit: 274877906944
+2025/03/31-17:59:29.398791 ffec                Options.disable_auto_compactions: 0
+2025/03/31-17:59:29.398795 ffec                        Options.compaction_style: kCompactionStyleLevel
+2025/03/31-17:59:29.398798 ffec                          Options.compaction_pri: kMinOverlappingRatio
+2025/03/31-17:59:29.398801 ffec Options.compaction_options_universal.size_ratio: 1
+2025/03/31-17:59:29.398804 ffec Options.compaction_options_universal.min_merge_width: 2
+2025/03/31-17:59:29.398806 ffec Options.compaction_options_universal.max_merge_width: 4294967295
+2025/03/31-17:59:29.398809 ffec Options.compaction_options_universal.max_size_amplification_percent: 200
+2025/03/31-17:59:29.398812 ffec Options.compaction_options_universal.compression_size_percent: -1
+2025/03/31-17:59:29.398820 ffec Options.compaction_options_universal.stop_style: kCompactionStopStyleTotalSize
+2025/03/31-17:59:29.398823 ffec Options.compaction_options_universal.max_read_amp: -1
+2025/03/31-17:59:29.398826 ffec Options.compaction_options_fifo.max_table_files_size: 1073741824
+2025/03/31-17:59:29.398829 ffec Options.compaction_options_fifo.allow_compaction: 0
+2025/03/31-17:59:29.398835 ffec                   Options.table_properties_collectors: 
+2025/03/31-17:59:29.398838 ffec                   Options.inplace_update_support: 0
+2025/03/31-17:59:29.398841 ffec                 Options.inplace_update_num_locks: 10000
+2025/03/31-17:59:29.398844 ffec               Options.memtable_prefix_bloom_size_ratio: 0.000000
+2025/03/31-17:59:29.398847 ffec               Options.memtable_whole_key_filtering: 0
+2025/03/31-17:59:29.398850 ffec   Options.memtable_huge_page_size: 0
+2025/03/31-17:59:29.398853 ffec                           Options.bloom_locality: 0
+2025/03/31-17:59:29.398855 ffec                    Options.max_successive_merges: 0
+2025/03/31-17:59:29.398858 ffec             Options.strict_max_successive_merges: 0
+2025/03/31-17:59:29.398861 ffec                Options.optimize_filters_for_hits: 0
+2025/03/31-17:59:29.398864 ffec                Options.paranoid_file_checks: 0
+2025/03/31-17:59:29.398866 ffec                Options.force_consistency_checks: 1
+2025/03/31-17:59:29.398869 ffec                Options.report_bg_io_stats: 0
+2025/03/31-17:59:29.398872 ffec                               Options.ttl: 2592000
+2025/03/31-17:59:29.398874 ffec          Options.periodic_compaction_seconds: 0
+2025/03/31-17:59:29.398878 ffec                        Options.default_temperature: kUnknown
+2025/03/31-17:59:29.398880 ffec  Options.preclude_last_level_data_seconds: 0
+2025/03/31-17:59:29.398883 ffec    Options.preserve_internal_time_seconds: 0
+2025/03/31-17:59:29.398886 ffec                       Options.enable_blob_files: false
+2025/03/31-17:59:29.398888 ffec                           Options.min_blob_size: 0
+2025/03/31-17:59:29.398891 ffec                          Options.blob_file_size: 268435456
+2025/03/31-17:59:29.398894 ffec                   Options.blob_compression_type: NoCompression
+2025/03/31-17:59:29.398897 ffec          Options.enable_blob_garbage_collection: false
+2025/03/31-17:59:29.398899 ffec      Options.blob_garbage_collection_age_cutoff: 0.250000
+2025/03/31-17:59:29.398903 ffec Options.blob_garbage_collection_force_threshold: 1.000000
+2025/03/31-17:59:29.398906 ffec          Options.blob_compaction_readahead_size: 0
+2025/03/31-17:59:29.398908 ffec                Options.blob_file_starting_level: 0
+2025/03/31-17:59:29.398911 ffec         Options.experimental_mempurge_threshold: 0.000000
+2025/03/31-17:59:29.398914 ffec            Options.memtable_max_range_deletions: 0
+2025/03/31-17:59:29.401052 ffec [db\version_set.cc:6088] Recovered from manifest file:A:\resources\rocks-db\blockchain-db/MANIFEST-000194 succeeded,manifest_file_number is 194, next_file_number is 196, last_sequence is 20, log_number is 190,prev_log_number is 0,max_column_family is 0,min_log_number_to_keep is 190
+2025/03/31-17:59:29.401069 ffec [db\version_set.cc:6097] Column family [default] (ID 0), log number is 190
+2025/03/31-17:59:29.401320 ffec [db\db_impl\db_impl_open.cc:686] DB ID: 2b046b0a-fa6a-11ef-ab34-0c9a3cb28d82
+2025/03/31-17:59:29.404201 ffec EVENT_LOG_v1 {"time_micros": 1743433169404168, "job": 1, "event": "recovery_started", "wal_files": [193]}
+2025/03/31-17:59:29.404222 ffec [db\db_impl\db_impl_open.cc:1189] Recovering log #193 mode 2
+2025/03/31-17:59:29.404432 ffec [db\db_impl\db_impl_open.cc:1378] Recovered to log #193 seq #72057594037927935
+2025/03/31-17:59:29.405203 ffec EVENT_LOG_v1 {"time_micros": 1743433169405196, "job": 1, "event": "recovery_finished"}
+2025/03/31-17:59:29.405610 ffec [db\version_set.cc:5553] Creating manifest 198
+2025/03/31-17:59:29.413206 ffec [db\db_impl\db_impl_open.cc:2252] SstFileManager instance 0000028C7768EFD0
+2025/03/31-17:59:29.416114 ffec [file\delete_scheduler.cc:78] Deleted file A:\resources\rocks-db\blockchain-db/000193.log immediately, rate_bytes_per_sec 0, total_trash_size 0, total_size 4013, max_trash_db_ratio 0.250000
+2025/03/31-17:59:29.416393 ffec DB pointer 0000028C762B4400
+2025/03/31-17:59:29.416958 b338 [db\db_impl\db_impl.cc:1210] ------- DUMPING STATS -------
+2025/03/31-17:59:29.416971 b338 [db\db_impl\db_impl.cc:1211] 
+** DB Stats **
+Uptime(secs): 0.0 total, 0.0 interval
+Cumulative writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 GB, 0.00 MB/s
+Cumulative WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Cumulative stall: 00:00:0.000 H:M:S, 0.0 percent
+Interval writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 MB, 0.00 MB/s
+Interval WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Interval stall: 00:00:0.000 H:M:S, 0.0 percent
+Write Stall (count): write-buffer-manager-limit-stops: 0
+
+** Compaction Stats [default] **
+Level    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop Rblob(GB) Wblob(GB)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  L0      2/0    2.67 KB   0.5      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+  L6      1/0    1.25 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+ Sum      3/0    3.92 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+ Int      0/0    0.00 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+
+** Compaction Stats [default] **
+Priority    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop Rblob(GB) Wblob(GB)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Blob file count: 0, total size: 0.0 GB, garbage size: 0.0 GB, space amp: 0.0
+
+Uptime(secs): 0.0 total, 0.0 interval
+Flush(GB): cumulative 0.000, interval 0.000
+AddFile(GB): cumulative 0.000, interval 0.000
+AddFile(Total Files): cumulative 0, interval 0
+AddFile(L0 Files): cumulative 0, interval 0
+AddFile(Keys): cumulative 0, interval 0
+Cumulative compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Interval compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Estimated pending compaction bytes: 0
+Write Stall (count): cf-l0-file-count-limit-delays-with-ongoing-compaction: 0, cf-l0-file-count-limit-stops-with-ongoing-compaction: 0, l0-file-count-limit-delays: 0, l0-file-count-limit-stops: 0, memtable-limit-delays: 0, memtable-limit-stops: 0, pending-compaction-bytes-delays: 0, pending-compaction-bytes-stops: 0, total-delays: 0, total-stops: 0
+Block cache LRUCache@0000028C77A41550#65248 capacity: 32.00 MB seed: 1200224537 usage: 0.08 KB table_size: 1024 occupancy: 1 collections: 1 last_copies: 0 last_secs: 0.000121 secs_since: 0
+Block cache entry stats(count,size,portion): Misc(1,0.00 KB,0%)
+
+** File Read Latency Histogram By Level [default] **

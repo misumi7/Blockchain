@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "api/blockchain")
+@RequestMapping(path = "api/blocks")
 public class BlockchainController {
     private final BlockchainService blockchainService;
 
@@ -17,18 +17,28 @@ public class BlockchainController {
         this.blockchainService = blockchainService;
     }
 
-    @GetMapping(value = "/blocks")
-    public Map<String, String> getBlockchain() {
+    @GetMapping
+    public Map<String, Block> getBlockchain() {
         return blockchainService.getAllBlocks();
     }
 
-    @GetMapping(value = "/blocks/{hash}")
-    public String getBlock(@PathVariable("hash") String hash) {
+    @GetMapping(value = "/{hash}")
+    public Block getBlock(@PathVariable("hash") String hash) {
         return blockchainService.getBlock(hash);
     }
 
-    @PostMapping(value = "/blocks")
+    @PostMapping
     public boolean addBlock(@RequestBody Block block) {
         return blockchainService.addBlock(block);
+    }
+
+    @DeleteMapping(value = "/{hash}")
+    public boolean deleteBlock(@PathVariable("hash") String hash) {
+        return blockchainService.deleteBlock(hash);
+    }
+
+    @DeleteMapping
+    public boolean deleteAllBlocks() {
+        return blockchainService.deleteAllBlocks();
     }
 }

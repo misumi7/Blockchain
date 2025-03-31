@@ -1,0 +1,115 @@
+2025/04/01-01:40:12.923375 f268 RocksDB version: 9.10.0
+2025/04/01-01:40:12.923431 f268 Git sha ae8fb3e5000e46d8d4c9dbf3a36019c0aaceebff
+2025/04/01-01:40:12.923446 f268 Compile date 2025-01-22 17:43:14
+2025/04/01-01:40:12.923459 f268 DB SUMMARY
+2025/04/01-01:40:12.923468 f268 Host name (Env):  MISUMI7
+2025/04/01-01:40:12.923475 f268 DB Session ID:  4WVZ0F1401QWZ8A2EEFK
+2025/04/01-01:40:12.924873 f268 CURRENT file:  CURRENT
+2025/04/01-01:40:12.924897 f268 IDENTITY file:  IDENTITY
+2025/04/01-01:40:12.924940 f268 MANIFEST file:  MANIFEST-000226 size: 795 Bytes
+2025/04/01-01:40:12.924959 f268 SST files in A:\resources\rocks-db\blockchain-db dir, Total Num: 3, files: 000112.sst 000117.sst 000132.sst 
+2025/04/01-01:40:12.924969 f268 Write Ahead Log file in A:\resources\rocks-db\blockchain-db: 000225.log size: 0 ; 
+2025/04/01-01:40:12.925168 f268                         Options.error_if_exists: 0
+2025/04/01-01:40:12.925177 f268                       Options.create_if_missing: 1
+2025/04/01-01:40:12.925182 f268                         Options.paranoid_checks: 1
+2025/04/01-01:40:12.925184 f268             Options.flush_verify_memtable_count: 1
+2025/04/01-01:40:12.925187 f268          Options.compaction_verify_record_count: 1
+2025/04/01-01:40:12.925190 f268                               Options.track_and_verify_wals_in_manifest: 0
+2025/04/01-01:40:12.925193 f268        Options.verify_sst_unique_id_in_manifest: 1
+2025/04/01-01:40:12.925196 f268                                     Options.env: 0000022E9EF35BD0
+2025/04/01-01:40:12.925199 f268                                      Options.fs: WinFS
+2025/04/01-01:40:12.925202 f268                                Options.info_log: 0000022E9F9B82C0
+2025/04/01-01:40:12.925204 f268                Options.max_file_opening_threads: 16
+2025/04/01-01:40:12.925207 f268                              Options.statistics: 0000000000000000
+2025/04/01-01:40:12.925210 f268                               Options.use_fsync: 0
+2025/04/01-01:40:12.925212 f268                       Options.max_log_file_size: 0
+2025/04/01-01:40:12.925215 f268                  Options.max_manifest_file_size: 1073741824
+2025/04/01-01:40:12.925218 f268                   Options.log_file_time_to_roll: 0
+2025/04/01-01:40:12.925221 f268                       Options.keep_log_file_num: 1000
+2025/04/01-01:40:12.925224 f268                    Options.recycle_log_file_num: 0
+2025/04/01-01:40:12.925227 f268                         Options.allow_fallocate: 1
+2025/04/01-01:40:12.925229 f268                        Options.allow_mmap_reads: 0
+2025/04/01-01:40:12.925232 f268                       Options.allow_mmap_writes: 0
+2025/04/01-01:40:12.925235 f268                        Options.use_direct_reads: 0
+2025/04/01-01:40:12.925237 f268                        Options.use_direct_io_for_flush_and_compaction: 0
+2025/04/01-01:40:12.925240 f268          Options.create_missing_column_families: 0
+2025/04/01-01:40:12.925243 f268                              Options.db_log_dir: 
+2025/04/01-01:40:12.925245 f268                                 Options.wal_dir: 
+2025/04/01-01:40:12.925248 f268                Options.table_cache_numshardbits: 6
+2025/04/01-01:40:12.925251 f268                         Options.WAL_ttl_seconds: 0
+2025/04/01-01:40:12.925253 f268                       Options.WAL_size_limit_MB: 0
+2025/04/01-01:40:12.925256 f268                        Options.max_write_batch_group_size_bytes: 1048576
+2025/04/01-01:40:12.925259 f268             Options.manifest_preallocation_size: 4194304
+2025/04/01-01:40:12.925261 f268                     Options.is_fd_close_on_exec: 1
+2025/04/01-01:40:12.925264 f268                   Options.advise_random_on_open: 1
+2025/04/01-01:40:12.925267 f268                    Options.db_write_buffer_size: 0
+2025/04/01-01:40:12.925269 f268                    Options.write_buffer_manager: 0000022E9EF32930
+2025/04/01-01:40:12.925272 f268           Options.random_access_max_buffer_size: 1048576
+2025/04/01-01:40:12.925275 f268                      Options.use_adaptive_mutex: 0
+2025/04/01-01:40:12.925277 f268                            Options.rate_limiter: 0000000000000000
+2025/04/01-01:40:12.925309 f268     Options.sst_file_manager.rate_bytes_per_sec: 0
+2025/04/01-01:40:12.925314 f268                       Options.wal_recovery_mode: 2
+2025/04/01-01:40:12.925317 f268                  Options.enable_thread_tracking: 0
+2025/04/01-01:40:12.925320 f268                  Options.enable_pipelined_write: 0
+2025/04/01-01:40:12.925322 f268                  Options.unordered_write: 0
+2025/04/01-01:40:12.925325 f268         Options.allow_concurrent_memtable_write: 1
+2025/04/01-01:40:12.925328 f268      Options.enable_write_thread_adaptive_yield: 1
+2025/04/01-01:40:12.925330 f268             Options.write_thread_max_yield_usec: 100
+2025/04/01-01:40:12.925333 f268            Options.write_thread_slow_yield_usec: 3
+2025/04/01-01:40:12.925335 f268                               Options.row_cache: None
+2025/04/01-01:40:12.925338 f268                              Options.wal_filter: None
+2025/04/01-01:40:12.925341 f268             Options.avoid_flush_during_recovery: 0
+2025/04/01-01:40:12.925344 f268             Options.allow_ingest_behind: 0
+2025/04/01-01:40:12.925346 f268             Options.two_write_queues: 0
+2025/04/01-01:40:12.925349 f268             Options.manual_wal_flush: 0
+2025/04/01-01:40:12.925351 f268             Options.wal_compression: 0
+2025/04/01-01:40:12.925354 f268             Options.background_close_inactive_wals: 0
+2025/04/01-01:40:12.925357 f268             Options.atomic_flush: 0
+2025/04/01-01:40:12.925359 f268             Options.avoid_unnecessary_blocking_io: 0
+2025/04/01-01:40:12.925362 f268             Options.prefix_seek_opt_in_only: 0
+2025/04/01-01:40:12.925364 f268                 Options.persist_stats_to_disk: 0
+2025/04/01-01:40:12.925367 f268                 Options.write_dbid_to_manifest: 1
+2025/04/01-01:40:12.925370 f268                 Options.write_identity_file: 1
+2025/04/01-01:40:12.925372 f268                 Options.log_readahead_size: 0
+2025/04/01-01:40:12.925375 f268                 Options.file_checksum_gen_factory: Unknown
+2025/04/01-01:40:12.925378 f268                 Options.best_efforts_recovery: 0
+2025/04/01-01:40:12.925380 f268                Options.max_bgerror_resume_count: 2147483647
+2025/04/01-01:40:12.925383 f268            Options.bgerror_resume_retry_interval: 1000000
+2025/04/01-01:40:12.925386 f268             Options.allow_data_in_errors: 0
+2025/04/01-01:40:12.925388 f268             Options.db_host_id: __hostname__
+2025/04/01-01:40:12.925391 f268             Options.enforce_single_del_contracts: true
+2025/04/01-01:40:12.925394 f268             Options.metadata_write_temperature: kUnknown
+2025/04/01-01:40:12.925397 f268             Options.wal_write_temperature: kUnknown
+2025/04/01-01:40:12.925400 f268             Options.max_background_jobs: 2
+2025/04/01-01:40:12.925403 f268             Options.max_background_compactions: -1
+2025/04/01-01:40:12.925405 f268             Options.max_subcompactions: 1
+2025/04/01-01:40:12.925408 f268             Options.avoid_flush_during_shutdown: 0
+2025/04/01-01:40:12.925411 f268           Options.writable_file_max_buffer_size: 1048576
+2025/04/01-01:40:12.925413 f268             Options.delayed_write_rate : 16777216
+2025/04/01-01:40:12.925416 f268             Options.max_total_wal_size: 0
+2025/04/01-01:40:12.925419 f268             Options.delete_obsolete_files_period_micros: 21600000000
+2025/04/01-01:40:12.925421 f268                   Options.stats_dump_period_sec: 600
+2025/04/01-01:40:12.925424 f268                 Options.stats_persist_period_sec: 600
+2025/04/01-01:40:12.925427 f268                 Options.stats_history_buffer_size: 1048576
+2025/04/01-01:40:12.925429 f268                          Options.max_open_files: -1
+2025/04/01-01:40:12.925432 f268                          Options.bytes_per_sync: 0
+2025/04/01-01:40:12.925434 f268                      Options.wal_bytes_per_sync: 0
+2025/04/01-01:40:12.925437 f268                   Options.strict_bytes_per_sync: 0
+2025/04/01-01:40:12.925440 f268       Options.compaction_readahead_size: 2097152
+2025/04/01-01:40:12.925442 f268                  Options.max_background_flushes: -1
+2025/04/01-01:40:12.925460 f268 Options.daily_offpeak_time_utc: 
+2025/04/01-01:40:12.925463 f268 Compression algorithms supported:
+2025/04/01-01:40:12.925474 f268 	kZSTD supported: 1
+2025/04/01-01:40:12.925477 f268 	kSnappyCompression supported: 1
+2025/04/01-01:40:12.925480 f268 	kBZip2Compression supported: 0
+2025/04/01-01:40:12.925483 f268 	kZlibCompression supported: 1
+2025/04/01-01:40:12.925485 f268 	kLZ4Compression supported: 1
+2025/04/01-01:40:12.925488 f268 	kXpressCompression supported: 0
+2025/04/01-01:40:12.925491 f268 	kLZ4HCCompression supported: 1
+2025/04/01-01:40:12.925493 f268 	kZSTDNotFinalCompression supported: 1
+2025/04/01-01:40:12.925501 f268 Fast CRC32 supported: Not supported on x86
+2025/04/01-01:40:12.925504 f268 DMutex implementation: std::mutex
+2025/04/01-01:40:12.925506 f268 Jemalloc supported: 0
+2025/04/01-01:40:12.925929 f268 [WARN] [db\db_impl\db_impl_open.cc:2313] DB::Open() failed: IO error: Failed to create lock file: A:\resources\rocks-db\blockchain-db/LOCK: The process cannot access the file because it is being used by another process.
+2025/04/01-01:40:12.925962 f268 [db\db_impl\db_impl.cc:500] Shutdown: canceling all background work
+2025/04/01-01:40:12.926022 f268 [db\db_impl\db_impl.cc:709] Shutdown complete

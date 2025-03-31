@@ -1,0 +1,299 @@
+2025/04/01-01:45:16.810178 f280 RocksDB version: 9.10.0
+2025/04/01-01:45:16.810240 f280 Git sha ae8fb3e5000e46d8d4c9dbf3a36019c0aaceebff
+2025/04/01-01:45:16.810255 f280 Compile date 2025-01-22 17:43:14
+2025/04/01-01:45:16.810265 f280 DB SUMMARY
+2025/04/01-01:45:16.810274 f280 Host name (Env):  MISUMI7
+2025/04/01-01:45:16.810281 f280 DB Session ID:  BL8T9727XKF20EFDI5AR
+2025/04/01-01:45:16.811257 f280 CURRENT file:  CURRENT
+2025/04/01-01:45:16.811283 f280 IDENTITY file:  IDENTITY
+2025/04/01-01:45:16.811324 f280 MANIFEST file:  MANIFEST-000111 size: 523 Bytes
+2025/04/01-01:45:16.811336 f280 SST files in A:\resources\rocks-db\utxo-db dir, Total Num: 2, files: 000016.sst 000025.sst 
+2025/04/01-01:45:16.811346 f280 Write Ahead Log file in A:\resources\rocks-db\utxo-db: 000110.log size: 0 ; 
+2025/04/01-01:45:16.811492 f280                         Options.error_if_exists: 0
+2025/04/01-01:45:16.811499 f280                       Options.create_if_missing: 1
+2025/04/01-01:45:16.811503 f280                         Options.paranoid_checks: 1
+2025/04/01-01:45:16.811506 f280             Options.flush_verify_memtable_count: 1
+2025/04/01-01:45:16.811508 f280          Options.compaction_verify_record_count: 1
+2025/04/01-01:45:16.811511 f280                               Options.track_and_verify_wals_in_manifest: 0
+2025/04/01-01:45:16.811514 f280        Options.verify_sst_unique_id_in_manifest: 1
+2025/04/01-01:45:16.811517 f280                                     Options.env: 0000020582652AA0
+2025/04/01-01:45:16.811520 f280                                      Options.fs: WinFS
+2025/04/01-01:45:16.811523 f280                                Options.info_log: 00000205825B99A0
+2025/04/01-01:45:16.811526 f280                Options.max_file_opening_threads: 16
+2025/04/01-01:45:16.811528 f280                              Options.statistics: 0000000000000000
+2025/04/01-01:45:16.811531 f280                               Options.use_fsync: 0
+2025/04/01-01:45:16.811534 f280                       Options.max_log_file_size: 0
+2025/04/01-01:45:16.811537 f280                  Options.max_manifest_file_size: 1073741824
+2025/04/01-01:45:16.811539 f280                   Options.log_file_time_to_roll: 0
+2025/04/01-01:45:16.811542 f280                       Options.keep_log_file_num: 1000
+2025/04/01-01:45:16.811545 f280                    Options.recycle_log_file_num: 0
+2025/04/01-01:45:16.811547 f280                         Options.allow_fallocate: 1
+2025/04/01-01:45:16.811550 f280                        Options.allow_mmap_reads: 0
+2025/04/01-01:45:16.811553 f280                       Options.allow_mmap_writes: 0
+2025/04/01-01:45:16.811555 f280                        Options.use_direct_reads: 0
+2025/04/01-01:45:16.811558 f280                        Options.use_direct_io_for_flush_and_compaction: 0
+2025/04/01-01:45:16.811561 f280          Options.create_missing_column_families: 0
+2025/04/01-01:45:16.811563 f280                              Options.db_log_dir: 
+2025/04/01-01:45:16.811566 f280                                 Options.wal_dir: 
+2025/04/01-01:45:16.811569 f280                Options.table_cache_numshardbits: 6
+2025/04/01-01:45:16.811572 f280                         Options.WAL_ttl_seconds: 0
+2025/04/01-01:45:16.811574 f280                       Options.WAL_size_limit_MB: 0
+2025/04/01-01:45:16.811577 f280                        Options.max_write_batch_group_size_bytes: 1048576
+2025/04/01-01:45:16.811580 f280             Options.manifest_preallocation_size: 4194304
+2025/04/01-01:45:16.811582 f280                     Options.is_fd_close_on_exec: 1
+2025/04/01-01:45:16.811585 f280                   Options.advise_random_on_open: 1
+2025/04/01-01:45:16.811587 f280                    Options.db_write_buffer_size: 0
+2025/04/01-01:45:16.811590 f280                    Options.write_buffer_manager: 0000020582654F30
+2025/04/01-01:45:16.811593 f280           Options.random_access_max_buffer_size: 1048576
+2025/04/01-01:45:16.811595 f280                      Options.use_adaptive_mutex: 0
+2025/04/01-01:45:16.811598 f280                            Options.rate_limiter: 0000000000000000
+2025/04/01-01:45:16.811624 f280     Options.sst_file_manager.rate_bytes_per_sec: 0
+2025/04/01-01:45:16.811629 f280                       Options.wal_recovery_mode: 2
+2025/04/01-01:45:16.811632 f280                  Options.enable_thread_tracking: 0
+2025/04/01-01:45:16.811634 f280                  Options.enable_pipelined_write: 0
+2025/04/01-01:45:16.811637 f280                  Options.unordered_write: 0
+2025/04/01-01:45:16.811640 f280         Options.allow_concurrent_memtable_write: 1
+2025/04/01-01:45:16.811642 f280      Options.enable_write_thread_adaptive_yield: 1
+2025/04/01-01:45:16.811645 f280             Options.write_thread_max_yield_usec: 100
+2025/04/01-01:45:16.811648 f280            Options.write_thread_slow_yield_usec: 3
+2025/04/01-01:45:16.811650 f280                               Options.row_cache: None
+2025/04/01-01:45:16.811653 f280                              Options.wal_filter: None
+2025/04/01-01:45:16.811655 f280             Options.avoid_flush_during_recovery: 0
+2025/04/01-01:45:16.811658 f280             Options.allow_ingest_behind: 0
+2025/04/01-01:45:16.811661 f280             Options.two_write_queues: 0
+2025/04/01-01:45:16.811663 f280             Options.manual_wal_flush: 0
+2025/04/01-01:45:16.811666 f280             Options.wal_compression: 0
+2025/04/01-01:45:16.811668 f280             Options.background_close_inactive_wals: 0
+2025/04/01-01:45:16.811671 f280             Options.atomic_flush: 0
+2025/04/01-01:45:16.811673 f280             Options.avoid_unnecessary_blocking_io: 0
+2025/04/01-01:45:16.811676 f280             Options.prefix_seek_opt_in_only: 0
+2025/04/01-01:45:16.811679 f280                 Options.persist_stats_to_disk: 0
+2025/04/01-01:45:16.811682 f280                 Options.write_dbid_to_manifest: 1
+2025/04/01-01:45:16.811684 f280                 Options.write_identity_file: 1
+2025/04/01-01:45:16.811687 f280                 Options.log_readahead_size: 0
+2025/04/01-01:45:16.811689 f280                 Options.file_checksum_gen_factory: Unknown
+2025/04/01-01:45:16.811692 f280                 Options.best_efforts_recovery: 0
+2025/04/01-01:45:16.811695 f280                Options.max_bgerror_resume_count: 2147483647
+2025/04/01-01:45:16.811697 f280            Options.bgerror_resume_retry_interval: 1000000
+2025/04/01-01:45:16.811700 f280             Options.allow_data_in_errors: 0
+2025/04/01-01:45:16.811702 f280             Options.db_host_id: __hostname__
+2025/04/01-01:45:16.811705 f280             Options.enforce_single_del_contracts: true
+2025/04/01-01:45:16.811708 f280             Options.metadata_write_temperature: kUnknown
+2025/04/01-01:45:16.811711 f280             Options.wal_write_temperature: kUnknown
+2025/04/01-01:45:16.811714 f280             Options.max_background_jobs: 2
+2025/04/01-01:45:16.811716 f280             Options.max_background_compactions: -1
+2025/04/01-01:45:16.811719 f280             Options.max_subcompactions: 1
+2025/04/01-01:45:16.811722 f280             Options.avoid_flush_during_shutdown: 0
+2025/04/01-01:45:16.811725 f280           Options.writable_file_max_buffer_size: 1048576
+2025/04/01-01:45:16.811727 f280             Options.delayed_write_rate : 16777216
+2025/04/01-01:45:16.811730 f280             Options.max_total_wal_size: 0
+2025/04/01-01:45:16.811732 f280             Options.delete_obsolete_files_period_micros: 21600000000
+2025/04/01-01:45:16.811735 f280                   Options.stats_dump_period_sec: 600
+2025/04/01-01:45:16.811738 f280                 Options.stats_persist_period_sec: 600
+2025/04/01-01:45:16.811740 f280                 Options.stats_history_buffer_size: 1048576
+2025/04/01-01:45:16.811743 f280                          Options.max_open_files: -1
+2025/04/01-01:45:16.811746 f280                          Options.bytes_per_sync: 0
+2025/04/01-01:45:16.811748 f280                      Options.wal_bytes_per_sync: 0
+2025/04/01-01:45:16.811751 f280                   Options.strict_bytes_per_sync: 0
+2025/04/01-01:45:16.811753 f280       Options.compaction_readahead_size: 2097152
+2025/04/01-01:45:16.811756 f280                  Options.max_background_flushes: -1
+2025/04/01-01:45:16.811911 f280 Options.daily_offpeak_time_utc: 
+2025/04/01-01:45:16.811920 f280 Compression algorithms supported:
+2025/04/01-01:45:16.811925 f280 	kZSTD supported: 1
+2025/04/01-01:45:16.811928 f280 	kSnappyCompression supported: 1
+2025/04/01-01:45:16.811930 f280 	kBZip2Compression supported: 0
+2025/04/01-01:45:16.811933 f280 	kZlibCompression supported: 1
+2025/04/01-01:45:16.811936 f280 	kLZ4Compression supported: 1
+2025/04/01-01:45:16.811939 f280 	kXpressCompression supported: 0
+2025/04/01-01:45:16.811941 f280 	kLZ4HCCompression supported: 1
+2025/04/01-01:45:16.811944 f280 	kZSTDNotFinalCompression supported: 1
+2025/04/01-01:45:16.811948 f280 Fast CRC32 supported: Not supported on x86
+2025/04/01-01:45:16.811950 f280 DMutex implementation: std::mutex
+2025/04/01-01:45:16.811953 f280 Jemalloc supported: 0
+2025/04/01-01:45:16.818424 f280 [db\version_set.cc:6030] Recovering from manifest file: A:\resources\rocks-db\utxo-db/MANIFEST-000111
+2025/04/01-01:45:16.823564 f280 [db\column_family.cc:629] --------------- Options for column family [default]:
+2025/04/01-01:45:16.823582 f280               Options.comparator: leveldb.BytewiseComparator
+2025/04/01-01:45:16.823586 f280           Options.merge_operator: None
+2025/04/01-01:45:16.823590 f280        Options.compaction_filter: None
+2025/04/01-01:45:16.823593 f280        Options.compaction_filter_factory: None
+2025/04/01-01:45:16.823596 f280  Options.sst_partitioner_factory: None
+2025/04/01-01:45:16.823598 f280         Options.memtable_factory: SkipListFactory
+2025/04/01-01:45:16.823601 f280            Options.table_factory: BlockBasedTable
+2025/04/01-01:45:16.823621 f280            table_factory options:   flush_block_policy_factory: FlushBlockBySizePolicyFactory (0000020581C76000)
+  cache_index_and_filter_blocks: 0
+  cache_index_and_filter_blocks_with_high_priority: 1
+  pin_l0_filter_and_index_blocks_in_cache: 0
+  pin_top_level_index_and_filter: 1
+  index_type: 0
+  data_block_index_type: 0
+  index_shortening: 1
+  data_block_hash_table_util_ratio: 0.750000
+  checksum: 4
+  no_block_cache: 0
+  block_cache: 00000205805DE5F0
+  block_cache_name: LRUCache
+  block_cache_options:
+    capacity : 33554432
+    num_shard_bits : 6
+    strict_capacity_limit : 0
+    memory_allocator : None
+    high_pri_pool_ratio: 0.500
+    low_pri_pool_ratio: 0.000
+  persistent_cache: 0000000000000000
+  block_size: 4096
+  block_size_deviation: 10
+  block_restart_interval: 16
+  index_block_restart_interval: 1
+  metadata_block_size: 4096
+  partition_filters: 0
+  use_delta_encoding: 1
+  filter_policy: nullptr
+  whole_key_filtering: 1
+  verify_compression: 0
+  read_amp_bytes_per_bit: 0
+  format_version: 6
+  enable_index_compression: 1
+  block_align: 0
+  max_auto_readahead_size: 262144
+  prepopulate_block_cache: 0
+  initial_auto_readahead_size: 8192
+  num_file_reads_for_auto_readahead: 2
+2025/04/01-01:45:16.823625 f280        Options.write_buffer_size: 67108864
+2025/04/01-01:45:16.823627 f280  Options.max_write_buffer_number: 2
+2025/04/01-01:45:16.823630 f280          Options.compression: Snappy
+2025/04/01-01:45:16.823633 f280                  Options.bottommost_compression: Disabled
+2025/04/01-01:45:16.823635 f280       Options.prefix_extractor: nullptr
+2025/04/01-01:45:16.823638 f280   Options.memtable_insert_with_hint_prefix_extractor: nullptr
+2025/04/01-01:45:16.823640 f280             Options.num_levels: 7
+2025/04/01-01:45:16.823643 f280        Options.min_write_buffer_number_to_merge: 1
+2025/04/01-01:45:16.823646 f280     Options.max_write_buffer_number_to_maintain: 0
+2025/04/01-01:45:16.823648 f280     Options.max_write_buffer_size_to_maintain: 0
+2025/04/01-01:45:16.823651 f280            Options.bottommost_compression_opts.window_bits: -14
+2025/04/01-01:45:16.823654 f280                  Options.bottommost_compression_opts.level: 32767
+2025/04/01-01:45:16.823657 f280               Options.bottommost_compression_opts.strategy: 0
+2025/04/01-01:45:16.823660 f280         Options.bottommost_compression_opts.max_dict_bytes: 0
+2025/04/01-01:45:16.823663 f280         Options.bottommost_compression_opts.zstd_max_train_bytes: 0
+2025/04/01-01:45:16.823674 f280         Options.bottommost_compression_opts.parallel_threads: 1
+2025/04/01-01:45:16.823678 f280                  Options.bottommost_compression_opts.enabled: false
+2025/04/01-01:45:16.823681 f280         Options.bottommost_compression_opts.max_dict_buffer_bytes: 0
+2025/04/01-01:45:16.823684 f280         Options.bottommost_compression_opts.use_zstd_dict_trainer: true
+2025/04/01-01:45:16.823687 f280            Options.compression_opts.window_bits: -14
+2025/04/01-01:45:16.823689 f280                  Options.compression_opts.level: 32767
+2025/04/01-01:45:16.823692 f280               Options.compression_opts.strategy: 0
+2025/04/01-01:45:16.823695 f280         Options.compression_opts.max_dict_bytes: 0
+2025/04/01-01:45:16.823697 f280         Options.compression_opts.zstd_max_train_bytes: 0
+2025/04/01-01:45:16.823700 f280         Options.compression_opts.use_zstd_dict_trainer: true
+2025/04/01-01:45:16.823703 f280         Options.compression_opts.parallel_threads: 1
+2025/04/01-01:45:16.823705 f280                  Options.compression_opts.enabled: false
+2025/04/01-01:45:16.823708 f280         Options.compression_opts.max_dict_buffer_bytes: 0
+2025/04/01-01:45:16.823711 f280      Options.level0_file_num_compaction_trigger: 4
+2025/04/01-01:45:16.823713 f280          Options.level0_slowdown_writes_trigger: 20
+2025/04/01-01:45:16.823716 f280              Options.level0_stop_writes_trigger: 36
+2025/04/01-01:45:16.823719 f280                   Options.target_file_size_base: 67108864
+2025/04/01-01:45:16.823721 f280             Options.target_file_size_multiplier: 1
+2025/04/01-01:45:16.823724 f280                Options.max_bytes_for_level_base: 268435456
+2025/04/01-01:45:16.823727 f280 Options.level_compaction_dynamic_level_bytes: 1
+2025/04/01-01:45:16.823729 f280          Options.max_bytes_for_level_multiplier: 10.000000
+2025/04/01-01:45:16.823733 f280 Options.max_bytes_for_level_multiplier_addtl[0]: 1
+2025/04/01-01:45:16.823735 f280 Options.max_bytes_for_level_multiplier_addtl[1]: 1
+2025/04/01-01:45:16.823738 f280 Options.max_bytes_for_level_multiplier_addtl[2]: 1
+2025/04/01-01:45:16.823741 f280 Options.max_bytes_for_level_multiplier_addtl[3]: 1
+2025/04/01-01:45:16.823743 f280 Options.max_bytes_for_level_multiplier_addtl[4]: 1
+2025/04/01-01:45:16.823746 f280 Options.max_bytes_for_level_multiplier_addtl[5]: 1
+2025/04/01-01:45:16.823749 f280 Options.max_bytes_for_level_multiplier_addtl[6]: 1
+2025/04/01-01:45:16.823751 f280       Options.max_sequential_skip_in_iterations: 8
+2025/04/01-01:45:16.823754 f280                    Options.max_compaction_bytes: 1677721600
+2025/04/01-01:45:16.823757 f280                        Options.arena_block_size: 1048576
+2025/04/01-01:45:16.823759 f280   Options.soft_pending_compaction_bytes_limit: 68719476736
+2025/04/01-01:45:16.823762 f280   Options.hard_pending_compaction_bytes_limit: 274877906944
+2025/04/01-01:45:16.823765 f280                Options.disable_auto_compactions: 0
+2025/04/01-01:45:16.823768 f280                        Options.compaction_style: kCompactionStyleLevel
+2025/04/01-01:45:16.823772 f280                          Options.compaction_pri: kMinOverlappingRatio
+2025/04/01-01:45:16.823774 f280 Options.compaction_options_universal.size_ratio: 1
+2025/04/01-01:45:16.823777 f280 Options.compaction_options_universal.min_merge_width: 2
+2025/04/01-01:45:16.823780 f280 Options.compaction_options_universal.max_merge_width: 4294967295
+2025/04/01-01:45:16.823782 f280 Options.compaction_options_universal.max_size_amplification_percent: 200
+2025/04/01-01:45:16.823785 f280 Options.compaction_options_universal.compression_size_percent: -1
+2025/04/01-01:45:16.823788 f280 Options.compaction_options_universal.stop_style: kCompactionStopStyleTotalSize
+2025/04/01-01:45:16.823791 f280 Options.compaction_options_universal.max_read_amp: -1
+2025/04/01-01:45:16.823794 f280 Options.compaction_options_fifo.max_table_files_size: 1073741824
+2025/04/01-01:45:16.823796 f280 Options.compaction_options_fifo.allow_compaction: 0
+2025/04/01-01:45:16.823834 f280                   Options.table_properties_collectors: 
+2025/04/01-01:45:16.823839 f280                   Options.inplace_update_support: 0
+2025/04/01-01:45:16.823842 f280                 Options.inplace_update_num_locks: 10000
+2025/04/01-01:45:16.823845 f280               Options.memtable_prefix_bloom_size_ratio: 0.000000
+2025/04/01-01:45:16.823848 f280               Options.memtable_whole_key_filtering: 0
+2025/04/01-01:45:16.823850 f280   Options.memtable_huge_page_size: 0
+2025/04/01-01:45:16.823853 f280                           Options.bloom_locality: 0
+2025/04/01-01:45:16.823856 f280                    Options.max_successive_merges: 0
+2025/04/01-01:45:16.823858 f280             Options.strict_max_successive_merges: 0
+2025/04/01-01:45:16.823861 f280                Options.optimize_filters_for_hits: 0
+2025/04/01-01:45:16.823864 f280                Options.paranoid_file_checks: 0
+2025/04/01-01:45:16.823866 f280                Options.force_consistency_checks: 1
+2025/04/01-01:45:16.823869 f280                Options.report_bg_io_stats: 0
+2025/04/01-01:45:16.823871 f280                               Options.ttl: 2592000
+2025/04/01-01:45:16.823874 f280          Options.periodic_compaction_seconds: 0
+2025/04/01-01:45:16.823877 f280                        Options.default_temperature: kUnknown
+2025/04/01-01:45:16.823880 f280  Options.preclude_last_level_data_seconds: 0
+2025/04/01-01:45:16.823882 f280    Options.preserve_internal_time_seconds: 0
+2025/04/01-01:45:16.823885 f280                       Options.enable_blob_files: false
+2025/04/01-01:45:16.823888 f280                           Options.min_blob_size: 0
+2025/04/01-01:45:16.823890 f280                          Options.blob_file_size: 268435456
+2025/04/01-01:45:16.823893 f280                   Options.blob_compression_type: NoCompression
+2025/04/01-01:45:16.823896 f280          Options.enable_blob_garbage_collection: false
+2025/04/01-01:45:16.823898 f280      Options.blob_garbage_collection_age_cutoff: 0.250000
+2025/04/01-01:45:16.823901 f280 Options.blob_garbage_collection_force_threshold: 1.000000
+2025/04/01-01:45:16.823904 f280          Options.blob_compaction_readahead_size: 0
+2025/04/01-01:45:16.823907 f280                Options.blob_file_starting_level: 0
+2025/04/01-01:45:16.823910 f280         Options.experimental_mempurge_threshold: 0.000000
+2025/04/01-01:45:16.823913 f280            Options.memtable_max_range_deletions: 0
+2025/04/01-01:45:16.825359 f280 [db\version_set.cc:6088] Recovered from manifest file:A:\resources\rocks-db\utxo-db/MANIFEST-000111 succeeded,manifest_file_number is 111, next_file_number is 113, last_sequence is 2, log_number is 107,prev_log_number is 0,max_column_family is 0,min_log_number_to_keep is 107
+2025/04/01-01:45:16.825371 f280 [db\version_set.cc:6097] Column family [default] (ID 0), log number is 107
+2025/04/01-01:45:16.825554 f280 [db\db_impl\db_impl_open.cc:686] DB ID: 983c8ffb-fdba-11ef-ab34-0c9a3cb28d82
+2025/04/01-01:45:16.827361 f280 EVENT_LOG_v1 {"time_micros": 1743461116827354, "job": 1, "event": "recovery_started", "wal_files": [110]}
+2025/04/01-01:45:16.827374 f280 [db\db_impl\db_impl_open.cc:1189] Recovering log #110 mode 2
+2025/04/01-01:45:16.827470 f280 [db\db_impl\db_impl_open.cc:1378] Recovered to log #110 seq #72057594037927935
+2025/04/01-01:45:16.828053 f280 EVENT_LOG_v1 {"time_micros": 1743461116828049, "job": 1, "event": "recovery_finished"}
+2025/04/01-01:45:16.828326 f280 [db\version_set.cc:5553] Creating manifest 115
+2025/04/01-01:45:16.834065 f280 [db\db_impl\db_impl_open.cc:2252] SstFileManager instance 0000020580BD5BA0
+2025/04/01-01:45:16.835871 f280 [file\delete_scheduler.cc:78] Deleted file A:\resources\rocks-db\utxo-db/000110.log immediately, rate_bytes_per_sec 0, total_trash_size 0, total_size 2500, max_trash_db_ratio 0.250000
+2025/04/01-01:45:16.836078 f280 DB pointer 000002058216ADC0
+2025/04/01-01:45:22.850210 fc8c [db\db_impl\db_impl.cc:1210] ------- DUMPING STATS -------
+2025/04/01-01:45:22.850233 fc8c [db\db_impl\db_impl.cc:1211] 
+** DB Stats **
+Uptime(secs): 6.0 total, 6.0 interval
+Cumulative writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 GB, 0.00 MB/s
+Cumulative WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Cumulative stall: 00:00:0.000 H:M:S, 0.0 percent
+Interval writes: 0 writes, 0 keys, 0 commit groups, 0.0 writes per commit group, ingest: 0.00 MB, 0.00 MB/s
+Interval WAL: 0 writes, 0 syncs, 0.00 writes per sync, written: 0.00 GB, 0.00 MB/s
+Interval stall: 00:00:0.000 H:M:S, 0.0 percent
+Write Stall (count): write-buffer-manager-limit-stops: 0
+
+** Compaction Stats [default] **
+Level    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop Rblob(GB) Wblob(GB)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  L0      2/0    2.44 KB   0.5      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+ Sum      2/0    2.44 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+ Int      0/0    0.00 KB   0.0      0.0     0.0      0.0       0.0      0.0       0.0   0.0      0.0      0.0      0.00              0.00         0    0.000       0      0       0.0       0.0
+
+** Compaction Stats [default] **
+Priority    Files   Size     Score Read(GB)  Rn(GB) Rnp1(GB) Write(GB) Wnew(GB) Moved(GB) W-Amp Rd(MB/s) Wr(MB/s) Comp(sec) CompMergeCPU(sec) Comp(cnt) Avg(sec) KeyIn KeyDrop Rblob(GB) Wblob(GB)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Blob file count: 0, total size: 0.0 GB, garbage size: 0.0 GB, space amp: 0.0
+
+Uptime(secs): 6.0 total, 6.0 interval
+Flush(GB): cumulative 0.000, interval 0.000
+AddFile(GB): cumulative 0.000, interval 0.000
+AddFile(Total Files): cumulative 0, interval 0
+AddFile(L0 Files): cumulative 0, interval 0
+AddFile(Keys): cumulative 0, interval 0
+Cumulative compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Interval compaction: 0.00 GB write, 0.00 MB/s write, 0.00 GB read, 0.00 MB/s read, 0.0 seconds
+Estimated pending compaction bytes: 0
+Write Stall (count): cf-l0-file-count-limit-delays-with-ongoing-compaction: 0, cf-l0-file-count-limit-stops-with-ongoing-compaction: 0, l0-file-count-limit-delays: 0, l0-file-count-limit-stops: 0, memtable-limit-delays: 0, memtable-limit-stops: 0, pending-compaction-bytes-delays: 0, pending-compaction-bytes-stops: 0, total-delays: 0, total-stops: 0
+Block cache LRUCache@00000205805DE5F0#52888 capacity: 32.00 MB seed: 1200224537 usage: 0.08 KB table_size: 1024 occupancy: 1 collections: 1 last_copies: 0 last_secs: 8.4e-05 secs_since: 0
+Block cache entry stats(count,size,portion): Misc(1,0.00 KB,0%)
+
+** File Read Latency Histogram By Level [default] **

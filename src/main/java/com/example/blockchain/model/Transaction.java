@@ -1,26 +1,36 @@
 package com.example.blockchain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Set;
 
 public class Transaction {
     private final String transactionId;
-    private final List<UTXO> UTXOinputs; // to de spent (deleted from the UTXO pool)
-    private final List<UTXO> UTXOoutputs; // to be added
+    private final Set<String> inputs; // "txId-OutputIndex" to de spent (& deleted from the UTXO db)
+    private final Set<String> outputs; // to be added
     private final long timeStamp;
 
-    public Transaction(String transactionId, List<UTXO> inputs, List<UTXO> outputs, long timeStamp) {
+    @JsonCreator
+    public Transaction(@JsonProperty("transactionId") String transactionId,
+                       @JsonProperty("inputs") Set<String> inputs,
+                       @JsonProperty("outputs") Set<String> outputs,
+                       @JsonProperty("timeStamp") long timeStamp) {
         this.transactionId = transactionId;
-        this.UTXOinputs = inputs;
-        this.UTXOoutputs = outputs;
+        this.inputs = inputs;
+        this.outputs = outputs;
         this.timeStamp = timeStamp;
     }
 
     public String calculateHash(){
         String stringToHash = this.transactionId
-                + this.UTXOinputs.toString()
-                + this.UTXOoutputs.toString()
+                + this.inputs.toString()
+                + this.outputs.toString()
                 + Long.toString(this.timeStamp);
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -43,5 +53,41 @@ public class Transaction {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String toJson(Transaction transaction){
+        try{
+            return new ObjectMapper().writeValueAsString(transaction);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Transaction fromJson(String json){
+        try{
+            return new ObjectMapper().readValue(json, Transaction.class);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public Set<String> getInputs() {
+        return inputs;
+    }
+
+    public Set<String> getOutputs() {
+        return outputs;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
     }
 }

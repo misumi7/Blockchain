@@ -1,6 +1,8 @@
 package com.example.blockchain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -16,15 +18,20 @@ public class Block {
     private String blockHash;
     private long index;
     private long nonce;
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Block(long index, String previousHash, List<Transaction> transactions) {
-        this.TRANSACTIONS = new ArrayList<>(transactions);;
+    @JsonCreator
+    public Block(@JsonProperty("index") long index,
+                 @JsonProperty("previousHash") String previousHash,
+                 @JsonProperty("transactions") List<Transaction> transactions,
+                 @JsonProperty("timeStamp") long timeStamp,
+                 @JsonProperty("nonce") long nonce,
+                 @JsonProperty("blockHash") String blockHash) {
+        this.TRANSACTIONS = transactions != null ? transactions : new ArrayList<>();
         this.PREVIOUS_HASH = previousHash;
-        this.timeStamp = System.currentTimeMillis();
-        this.nonce = 0;
+        this.timeStamp = timeStamp;
+        this.nonce = nonce;
         this.index = index;
-        this.blockHash = this.calculateHash();
+        this.blockHash = blockHash;
     }
 
     public String calculateHash(){
@@ -69,9 +76,9 @@ public class Block {
         return true;
     }
 
-    public String toJson(){
+    public static String toJson(Block block){
         try{
-            return objectMapper.writeValueAsString(this);
+            return new ObjectMapper().writeValueAsString(block);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -79,9 +86,9 @@ public class Block {
         }
     }
 
-    public Block fromJson(String json){
+    public static Block fromJson(String json){
         try{
-            return objectMapper.readValue(json, Block.class);
+            return new ObjectMapper().readValue(json, Block.class);
         }
         catch (IOException e){
             e.printStackTrace();
@@ -89,11 +96,11 @@ public class Block {
         }
     }
 
-    public List<Transaction> getTRANSACTIONS() {
+    public List<Transaction> getTransactions() {
         return TRANSACTIONS;
     }
 
-    public String getPREVIOUS_HASH() {
+    public String getPreviousHash() {
         return PREVIOUS_HASH;
     }
 
