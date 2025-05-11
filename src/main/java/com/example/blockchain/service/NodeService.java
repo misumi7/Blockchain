@@ -2,9 +2,14 @@ package com.example.blockchain.service;
 
 import com.example.blockchain.model.Block;
 import com.example.blockchain.model.Node;
+import com.example.blockchain.model.Transaction;
+import com.example.blockchain.response.ApiException;
+import com.example.blockchain.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,8 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class NodeService {
@@ -21,10 +28,11 @@ public class NodeService {
     private final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(15);
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Autowired // this constructor will be used by spring
+    @Autowired
     public NodeService(Node node) {
         this.node = node;
         discoverPeers();
+        // resend pending transactions
     }
 
     public Set<String> getPeers() {
@@ -32,11 +40,9 @@ public class NodeService {
     }
 
     public Block getBlockFromPeers(String hash) {
-        // To do: test this method and re-test discover and remove dead peers
         Map<Block, Integer> blocks = new HashMap<>();
         for(String peer : node.getPeers()) {
             try {
-                //System.out.println("[PREV. BLOCK NOT FOUND] " + hash.substring(0, 7) + "..");
                 String url = peer + "/api/blocks/" + hash;
                 Block previousBlock = restTemplate.getForObject(url, Block.class);
                 if(!blocks.containsKey(previousBlock)){
@@ -47,7 +53,7 @@ public class NodeService {
                 }
             } catch (RestClientException e) {
                 System.out.println("[BLOCK SEARCH] No answer from " + peer);
-                // ?? should we
+                e.printStackTrace();
                 /*if (!isPeerAlive(peer)) {
                     System.out.println("[PEER REMOVAL] " + peer);
                     this.peers.remove(peer);
@@ -105,6 +111,41 @@ public class NodeService {
         }
     }
 
+    public boolean sendTransaction(Transaction transaction){
+        CountDownLatch latch = new CountDownLatch(node.getPeers().size());
+        AtomicInteger successCount = new AtomicInteger(0);
+        for(String peer : node.getPeers()){
+            Runnable sendTransactionToPeer = () -> {
+                try {
+                    String url = peer + "/api/transactions";
+                    ApiResponse response = restTemplate.postForObject(url, transaction, ApiResponse.class);
+                    if (response.getStatus() == 200) {
+                        successCount.incrementAndGet();
+                    }
+                } catch (Exception e) {
+                    if (isPeerAlive(peer)) {
+                        System.out.println("[TRANSACTION ERROR] Peer didn't answer " + peer);
+                    } else {
+                        System.out.println("[TRANSACTION ERROR] Transaction wasn't accepted by " + peer);
+                    }
+                    e.printStackTrace();
+                }
+                latch.countDown();
+            };
+            executor.execute(sendTransactionToPeer);
+        }
+
+        // Wait for all threads to finish
+        try{
+            latch.await();
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+        return successCount.get() >= node.getPeers().size() / 2;
+    }
+
     private boolean isPeerAlive(String peer){
         String url = peer + "/api/node/ping";
         try{
@@ -113,5 +154,21 @@ public class NodeService {
         } catch (Exception e){
             return false;
         }
+    }
+
+    public Map<String, Block> getUnlinkedBlocks(){
+        return node.getUnlinkedBlocks();
+    }
+
+    public boolean isUTXOAvailable(String key) {
+        return node.getReservedUTXOs().contains(key);
+    }
+
+    public void reserveUTXO(String key) {
+        node.getReservedUTXOs().add(key);
+    }
+
+    public void unlockUTXO(String key) {
+        node.getReservedUTXOs().remove(key);
     }
 }

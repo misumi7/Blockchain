@@ -6,6 +6,7 @@ import com.example.blockchain.service.UTXOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,6 +19,7 @@ public class UTXOController {
         this.utxoService = utxoService;
     }
 
+    // For testing purposes
     @PostMapping
     public boolean addUTXO(@RequestBody UTXO utxo) {
         return utxoService.addUTXO(utxo);
@@ -28,13 +30,13 @@ public class UTXOController {
         return utxoService.getAllUTXOs();
     }
 
-    @GetMapping(value = "/{txId}/{outputIndex}")
-    public UTXO getUTXO(@PathVariable("txId") String txId, @PathVariable("outputIndex") int outputIndex) {
-        return utxoService.getUTXO(txId, outputIndex);
+    @GetMapping(value = "/{publicKey}/{txId}/{outputIndex}")
+    public UTXO getUTXO(@PathVariable("publicKey") String publicKey, @PathVariable("txId") String txId, @PathVariable("outputIndex") int outputIndex) {
+        return utxoService.getUTXO(publicKey, txId, outputIndex);
     }
 
     @GetMapping(value = "/{publicKey}")
-    public Map<String, UTXO> getUtxoByOwner(@PathVariable("publicKey") String publicKey) {
+    public List<UTXO> getUtxoByOwner(@PathVariable("publicKey") String publicKey) {
         return utxoService.getUtxoByOwner(publicKey);
     }
 }

@@ -1,9 +1,11 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Transaction;
+import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.BlockchainService;
 import com.example.blockchain.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,8 +21,9 @@ public class TransactionController {
     }
 
     @PostMapping
-    public boolean addTransaction(@RequestBody Transaction transaction) {
-        return transactionService.saveTransaction(transaction);
+    public ResponseEntity<ApiResponse> addTransaction(@RequestBody Transaction transaction) {
+        transactionService.saveTransaction(transaction);
+        return ResponseEntity.ok(new ApiResponse("Transaction added successfully", 200));
     }
 
     @GetMapping

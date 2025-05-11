@@ -1,8 +1,10 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Node;
+import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,8 +28,8 @@ public class NodeController {
     }
 
     @GetMapping(value = "/ping")
-    public String ping() {
-        return "pong";
+    public ResponseEntity<ApiResponse> ping() {
+        return ResponseEntity.ok(new ApiResponse("Peer is alive", 200));
     }
 
 }

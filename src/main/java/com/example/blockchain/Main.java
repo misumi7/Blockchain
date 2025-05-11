@@ -1,5 +1,7 @@
 package com.example.blockchain;
 
+import com.example.blockchain.model.Block;
+import com.example.blockchain.repository.BlockchainRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,4 +20,5 @@ public class Main {
 	public String hello() {
 		return "Hello World!";
 	}
+
 }

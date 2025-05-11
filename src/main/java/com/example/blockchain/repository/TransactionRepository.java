@@ -69,4 +69,14 @@ public class TransactionRepository {
         }
         return value;
     }
+
+    public boolean deleteTransaction(String transactionId) {
+        try {
+            db.delete(transactionId.getBytes());
+            return true;
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

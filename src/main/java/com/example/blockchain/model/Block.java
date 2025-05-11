@@ -64,7 +64,8 @@ public class Block {
     }
 
     public boolean validateBlock(){
-        return this.blockHash.equals(this.calculateHash()) && this.blockHash.startsWith("0000");
+               // TEMP!!!
+        return /*this.blockHash.equals(this.calculateHash()) &&*/ this.blockHash.startsWith("0000");
     }
 
     public boolean mineBlock(){

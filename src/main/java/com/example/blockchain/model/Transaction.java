@@ -5,33 +5,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 
 public class Transaction {
-    private final String transactionId;
-    private final Set<String> inputs; // "txId-OutputIndex" to de spent (& deleted from the UTXO db)
-    private final Set<String> outputs; // to be added
+    private String transactionId;
+    private final String senderPublicKey;
+    private final String receiverPublicKey;
+    private final List<String> inputs; // "txId:OutputIndex" to de spent (& deleted from the UTXO db)
+    private List<UTXO> outputs; // to be added
     private final long timeStamp;
+    private final long amount;
+    private TransactionStatus status; // "pending", "confirmed", "rejected"
+    private byte[] digitalSignature;
 
     @JsonCreator
-    public Transaction(@JsonProperty("transactionId") String transactionId,
-                       @JsonProperty("inputs") Set<String> inputs,
-                       @JsonProperty("outputs") Set<String> outputs,
-                       @JsonProperty("timeStamp") long timeStamp) {
-        this.transactionId = transactionId;
+    public Transaction(/*@JsonProperty("transactionId") String transactionId,*/
+                       @JsonProperty("inputs") List<String> inputs,
+                       @JsonProperty("outputs") List<UTXO> outputs,
+                       @JsonProperty("timeStamp") long timeStamp,
+                       @JsonProperty("amount") long amount,
+                       @JsonProperty("senderPublicKey") String senderPublicKey,
+                       @JsonProperty("receiverPublicKey") String receiverPublicKey,
+                       @JsonProperty("status") TransactionStatus status) {
         this.inputs = inputs;
         this.outputs = outputs;
         this.timeStamp = timeStamp;
+        this.amount = amount;
+        this.senderPublicKey = senderPublicKey;
+        this.receiverPublicKey = receiverPublicKey;
+        this.transactionId = calculateHash();
     }
 
     public String calculateHash(){
-        String stringToHash = this.transactionId
-                + this.inputs.toString()
-                + this.outputs.toString()
-                + Long.toString(this.timeStamp);
+        String stringToHash = this.inputs.toString()
+                + this.senderPublicKey
+                + this.receiverPublicKey
+                + this.amount
+                + this.timeStamp;
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(stringToHash.getBytes(StandardCharsets.UTF_8));
@@ -75,19 +91,55 @@ public class Transaction {
         }
     }
 
+    public void setDigitalSignature(byte[] digitalSignature) {
+        this.digitalSignature = digitalSignature;
+    }
+
+    public String getReceiverPublicKey() {
+        return receiverPublicKey;
+    }
+
+    public void recalculateTransactionId(){
+        this.transactionId = this.calculateHash();
+    }
+
     public String getTransactionId() {
         return transactionId;
     }
 
-    public Set<String> getInputs() {
+    public List<String> getInputs() {
         return inputs;
     }
 
-    public Set<String> getOutputs() {
+    public List<UTXO> getOutputs() {
         return outputs;
     }
 
     public long getTimeStamp() {
         return timeStamp;
+    }
+
+    public String getSenderPublicKey() {
+        return senderPublicKey;
+    }
+
+    public byte[] getDigitalSignature() {
+        return digitalSignature;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setOutputs(List<UTXO> outputs) {
+        this.outputs = outputs;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
     }
 }

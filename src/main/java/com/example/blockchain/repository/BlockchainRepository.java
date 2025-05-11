@@ -36,14 +36,14 @@ public class BlockchainRepository {
     }
 
     public Block findBlock(String key){
-        Block value = null;
         try {
-            value = Block.fromJson(new String(db.get(key.getBytes())));
+            byte[] blockData = db.get(key.getBytes());
+            return blockData != null ? Block.fromJson(new String(blockData)) : null;
         }
         catch (RocksDBException e) {
             e.printStackTrace();
+            return null;
         }
-        return value;
     }
 
     public Map<String, Block> findAllBlocks(){

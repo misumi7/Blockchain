@@ -10,19 +10,17 @@ public class UTXO {
     private final String txId;
     private final int outputIndex;
     private final String owner;
-    private final double amount;
-    private final boolean spent;
+    private final long amount;
 
     @JsonCreator
     public UTXO(@JsonProperty("txId") String txId,
                 @JsonProperty("outputIndex") int outputIndex,
                 @JsonProperty("owner") String owner,
-                @JsonProperty("amount") double amount) {
+                @JsonProperty("amount") long amount) {
         this.txId = txId;
         this.outputIndex = outputIndex;
         this.owner = owner;
         this.amount = amount;
-        this.spent = false;
     }
 
     public static String toJson(UTXO utxo){
@@ -61,7 +59,7 @@ public class UTXO {
         return amount;
     }
 
-    public boolean isSpent() {
-        return spent;
+    public String getKey() {
+        return owner + ":" + txId + ":" + outputIndex;
     }
 }

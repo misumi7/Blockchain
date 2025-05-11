@@ -17,7 +17,15 @@ public class Node {
     private static final Set<String> PUBLIC_NODES = Set.of("http://localhost:8086");
     private String type = "light"; // light / full
     private final Set<String> peers;
+
+    // don't forget to reserve input utxos of transactions that get in the mempool
     private final PriorityQueue<Transaction> memPool = new PriorityQueue<>();
+    private final Map<String, Block> unlinkedBlocks = new HashMap<>();
+
+    // test when create and validate transactions if their inputs are not reserved
+    // if they are, then transaction is invalid
+    private final Set<String> reservedUTXOs = new HashSet<>();
+
 
     public Node() { // String type,
         this.peers = Collections.synchronizedSet(new HashSet<>(PUBLIC_NODES));
@@ -38,5 +46,13 @@ public class Node {
 
     public PriorityQueue<Transaction> getMemPool() {
         return memPool;
+    }
+
+    public Set<String> getReservedUTXOs() {
+        return reservedUTXOs;
+    }
+
+    public Map<String, Block> getUnlinkedBlocks() {
+        return unlinkedBlocks;
     }
 }

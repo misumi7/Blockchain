@@ -13,8 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class UTXORepository {
@@ -39,7 +38,7 @@ public class UTXORepository {
 
     public boolean saveUTXO(UTXO utxo){
         try {
-            db.put((utxo.getTxId() + "-" + utxo.getOutputIndex()).getBytes(), UTXO.toJson(utxo).getBytes());
+            db.put((utxo.getOwner() + ":" + utxo.getTxId() + ":" + utxo.getOutputIndex()).getBytes(), UTXO.toJson(utxo).getBytes());
             return true;
         }
         catch (RocksDBException e) {
@@ -60,27 +59,44 @@ public class UTXORepository {
         return utxoList;
     }
 
-    public UTXO getUTXO(String txId, int outputIndex) {
+    public UTXO getUTXO(String ownerPublicKey, String txId, int outputIndex) {
         UTXO value = null;
         try {
-            value = UTXO.fromJson(new String(db.get((txId + "-" + outputIndex).getBytes())));
+            value = UTXO.fromJson(new String(db.get((ownerPublicKey + ":" + txId + ":" + outputIndex).getBytes())));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
         return value;
     }
 
-    public Map<String, UTXO> findUtxoByOwner(String publicKey) {
-        Map<String, UTXO> pKeyUtxoList = new HashMap<>();
+    public List<UTXO> getUtxoByOwner(String publicKey) {
+        return getUtxoByOwner(publicKey, false);
+    }
+
+    public List<UTXO> getUtxoByOwner(String publicKey, boolean sort) {
+        List<UTXO> utxoList = new ArrayList<>();
         RocksIterator it = db.newIterator();
-        for(it.seekToFirst(); it.isValid(); it.next()) {
-            String key = new String(it.key(), StandardCharsets.UTF_8);
+        for(it.seek(publicKey.getBytes()); it.isValid() && (new String(it.key(), StandardCharsets.UTF_8).startsWith(publicKey)); it.next()) {
+            //String key = new String(it.key(), StandardCharsets.UTF_8);
             UTXO value = UTXO.fromJson(new String(it.value(), StandardCharsets.UTF_8));
             if (value != null && value.getOwner().equals(publicKey)) {
-                pKeyUtxoList.put(key, value);
+                utxoList.add(value);
             }
         }
         it.close();
-        return pKeyUtxoList;
+        if(sort){
+            utxoList.sort(Comparator.comparingDouble(UTXO::getAmount));
+        }
+        return utxoList;
+    }
+
+    public boolean deleteUTXO(String publicKey, String txId, int outputIndex) {
+        try {
+            db.delete((publicKey + ":" + txId + ":" + outputIndex).getBytes());
+            return true;
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
