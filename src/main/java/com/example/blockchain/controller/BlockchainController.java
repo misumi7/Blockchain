@@ -27,6 +27,11 @@ public class BlockchainController {
         return blockchainService.getBlock(hash);
     }
 
+    @GetMapping(value = "/latest")
+    public Block getLatestBlock() {
+        return blockchainService.getBlock(blockchainService.getLatestBlockIndex());
+    }
+
     @PostMapping
     public boolean addBlock(@RequestBody Block block) {
         return blockchainService.addBlock(block);

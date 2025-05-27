@@ -1,6 +1,7 @@
 package com.example.blockchain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,16 +12,21 @@ import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+
+import static java.lang.Math.min;
 
 public class Transaction {
     private String transactionId;
     private final String senderPublicKey;
     private final String receiverPublicKey;
-    private final List<String> inputs; // "txId:OutputIndex" to de spent (& deleted from the UTXO db)
+    private List<String> inputs; // "txId:OutputIndex" to de spent (& deleted from the UTXO db)
     private List<UTXO> outputs; // to be added
     private final long timeStamp;
     private final long amount;
+    private long transactionFee; // inputs * fee per input in satoshi nakamoto:)))
+    //private int feeRate;
     private TransactionStatus status; // "pending", "confirmed", "rejected"
     private byte[] digitalSignature;
 
@@ -32,7 +38,8 @@ public class Transaction {
                        @JsonProperty("amount") long amount,
                        @JsonProperty("senderPublicKey") String senderPublicKey,
                        @JsonProperty("receiverPublicKey") String receiverPublicKey,
-                       @JsonProperty("status") TransactionStatus status) {
+                       @JsonProperty("status") TransactionStatus status,
+                       @JsonProperty("transactionFee") long transactionFee) {
         this.inputs = inputs;
         this.outputs = outputs;
         this.timeStamp = timeStamp;
@@ -40,13 +47,17 @@ public class Transaction {
         this.senderPublicKey = senderPublicKey;
         this.receiverPublicKey = receiverPublicKey;
         this.transactionId = calculateHash();
+        this.status = status;
+        this.transactionFee = transactionFee;
     }
 
+
     public String calculateHash(){
-        String stringToHash = this.inputs.toString()
+        String stringToHash =  this.inputs == null ? "" : this.inputs.toString()
                 + this.senderPublicKey
                 + this.receiverPublicKey
                 + this.amount
+                + this.transactionFee
                 + this.timeStamp;
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -89,6 +100,12 @@ public class Transaction {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @JsonIgnore
+    public int getTransactionSize(){
+        System.out.println("TRANSACTION SIZE: " + Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length);
+        return Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length;
     }
 
     public void setDigitalSignature(byte[] digitalSignature) {
@@ -134,6 +151,9 @@ public class Transaction {
     public TransactionStatus getStatus() {
         return status;
     }
+    public void setInputs(List<String> inputs) {
+        this.inputs = inputs;
+    }
 
     public void setOutputs(List<UTXO> outputs) {
         this.outputs = outputs;
@@ -141,5 +161,13 @@ public class Transaction {
 
     public void setStatus(TransactionStatus status) {
         this.status = status;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void setTransactionFee(long transactionFee) {
+        this.transactionFee = transactionFee;
     }
 }

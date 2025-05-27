@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -27,8 +28,10 @@ public class Node {
     private final Set<String> reservedUTXOs = new HashSet<>();
 
 
+
     public Node() { // String type,
-        this.peers = Collections.synchronizedSet(new HashSet<>(PUBLIC_NODES));
+        this.peers = ConcurrentHashMap.newKeySet();
+        this.peers.addAll(PUBLIC_NODES);
         //this.type = type; to be read from conf file
     }
 

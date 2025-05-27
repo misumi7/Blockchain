@@ -3,10 +3,7 @@ package com.example.blockchain.repository;
 import com.example.blockchain.controller.TransactionController;
 import com.example.blockchain.model.Transaction;
 import com.example.blockchain.model.UTXO;
-import org.rocksdb.Options;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
@@ -17,29 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class TransactionRepository {
-    private final static String NAME = "transaction-db";
-    File dbDir;
-    RocksDB db;
+public class TransactionRepository{
+    private RocksDB db;
+    private ColumnFamilyHandle transactionCF;
 
-    public TransactionRepository() {
-        RocksDB.loadLibrary();
-        final Options options = new Options();
-        options.setCreateIfMissing(true);
-        dbDir = new File(System.getProperty("user.dir") + "src/main/java/com/example/blockchain/data/", NAME);
-        try {
-            Files.createDirectories(dbDir.getParentFile().toPath());
-            Files.createDirectories(dbDir.getAbsoluteFile().toPath());
-            this.db = RocksDB.open(options, dbDir.getAbsolutePath());
-        }
-        catch (RocksDBException | IOException e) {
-            e.printStackTrace();
-        }
+    public TransactionRepository(BaseRepository baseRepository) {
+        this.db = baseRepository.getDb();
+        this.transactionCF = baseRepository.getTransactionCF();
     }
 
-    public boolean saveTransaction(Transaction transaction){
+    public synchronized boolean saveTransaction(Transaction transaction){
         try{
-            db.put(transaction.getTransactionId().getBytes(), Transaction.toJson(transaction).getBytes());
+            db.put(transactionCF, transaction.getTransactionId().getBytes(), Transaction.toJson(transaction).getBytes());
             return true;
         }
         catch (RocksDBException e){
@@ -48,9 +34,9 @@ public class TransactionRepository {
         }
     }
 
-    public Map<String, Transaction> getAllTransactions(){
+    public synchronized Map<String, Transaction> getAllTransactions(){
         Map<String, Transaction> transactions = new HashMap<>();
-        RocksIterator it = db.newIterator();
+        RocksIterator it = db.newIterator(transactionCF);
         for(it.seekToFirst(); it.isValid(); it.next()) {
             String key = new String(it.key(), StandardCharsets.UTF_8);
             Transaction value = Transaction.fromJson(new String(it.value(), StandardCharsets.UTF_8));
@@ -60,19 +46,19 @@ public class TransactionRepository {
         return transactions;
     }
 
-    public Transaction getTransaction(String transactionId){
+    public synchronized Transaction getTransaction(String transactionId){
         Transaction value = null;
         try {
-            value = Transaction.fromJson(new String(db.get(transactionId.getBytes())));
+            value = Transaction.fromJson(new String(db.get(transactionCF, transactionId.getBytes())));
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
         return value;
     }
 
-    public boolean deleteTransaction(String transactionId) {
+    public synchronized boolean deleteTransaction(String transactionId) {
         try {
-            db.delete(transactionId.getBytes());
+            db.delete(transactionCF, transactionId.getBytes());
             return true;
         } catch (RocksDBException e) {
             e.printStackTrace();

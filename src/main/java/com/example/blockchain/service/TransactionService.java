@@ -3,8 +3,12 @@ package com.example.blockchain.service;
 import com.example.blockchain.model.*;
 import com.example.blockchain.repository.TransactionRepository;
 import com.example.blockchain.response.ApiException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -12,6 +16,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.util.*;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Service
 public class TransactionService{
@@ -25,6 +32,34 @@ public class TransactionService{
         this.walletService = walletService;
         this.utxoService = utxoService;
         this.nodeService = nodeService;
+
+        // resend pending transactions (in case the node was offline)
+        Map<String, Transaction> pendingTransactions = transactionRepository.getAllTransactions();
+        for(Transaction transaction : pendingTransactions.values()){
+            if(transaction.getStatus() == TransactionStatus.PENDING){
+                System.out.println("[TRANSACTION RESEND] " + transaction.getTransactionId());
+                if(!nodeService.sendTransaction(transaction)) {
+                    System.out.println("[TRANSACTION ERROR] Transaction was not accepted by the network");
+                    transaction.setStatus(TransactionStatus.REJECTED);
+                    transactionRepository.saveTransaction(transaction);
+
+                    for (String utxo : transaction.getInputs()){
+                        nodeService.unlockUTXO(utxo);
+                    }
+                }
+            }
+        }
+    }
+
+    // Tests here:
+    @EventListener(ApplicationReadyEvent.class)
+    public void test() {
+        //deleteTransaction("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+        /*createTransaction(
+                walletService.getPublicKey(),
+                new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05},
+                10
+        );*/
     }
 
     public void saveTransaction(Transaction transaction){
@@ -50,7 +85,7 @@ public class TransactionService{
     public boolean isTransactionValid(Transaction transaction) {
         // add check if the transaction is not expired
 
-        if(verifySignature(transaction)){
+        if(!verifySignature(transaction)){
             System.out.println("[INVALID TRANSACTION] Transaction signature is invalid");
             return false;
         }
@@ -58,53 +93,52 @@ public class TransactionService{
         // Inputs:
         // check if the inputs exist in the UTXO db, are not reserved
         long totalInput = 0;
-        for(String input : transaction.getInputs()){
+        for(String input : transaction.getInputs()) {
             //double spending check
-            if(nodeService.isUTXOAvailable(input)) {
+            if (nodeService.isUTXOAvailable(input)) {
                 System.out.println("[INVALID TRANSACTION] Input UTXO is reserved (" + input + ")");
                 return false;
             }
 
             String[] keyParts = input.split(":");
             UTXO utxo = utxoService.getUTXO(keyParts[0], keyParts[1], Integer.parseInt(keyParts[2]));
-            if(utxo == null) {
+            if (utxo == null) {
                 System.out.println("[INVALID TRANSACTION] Input UTXO does not exist (" + input + ")");
                 return false;
             }
-            if(utxo.getOwner() != transaction.getSenderPublicKey()) {
+            if (utxo.getOwner().equals(transaction.getSenderPublicKey())) {
                 System.out.println("[INVALID TRANSACTION] Input UTXO does not belong to the sender (" + input + ")");
                 return false;
             }
 
             totalInput += utxo.getAmount();
+        }
+        if(totalInput < transaction.getAmount()) {
+            System.out.println("[INVALID TRANSACTION] Not enough input UTXOs to cover the transaction amount");
+            return false;
+        }
 
-            // Outputs:
-            long totalRest = 0, totalOutput = 0;
-            for(UTXO output : transaction.getOutputs()){
-                if(output.getOwner() == transaction.getSenderPublicKey()){
-                    totalRest += output.getAmount();
-                }
-                else if(output.getOwner() == transaction.getReceiverPublicKey()){
-                    totalOutput += output.getAmount();
-                }
-                else{
-                    System.out.println("[INVALID TRANSACTION] Output UTXO does not belong to the sender or receiver (" + output.getKey() + ")");
-                    return false;
-                }
+        // Outputs:
+        long totalRest = 0, totalOutput = 0;
+        for(UTXO output : transaction.getOutputs()){
+            if(output.getOwner() == transaction.getSenderPublicKey()){
+                totalRest += output.getAmount();
             }
-
-            if(totalRest != transaction.getAmount() - totalInput){
-                System.out.println("[INVALID TRANSACTION] Incorrect change amount (" + totalRest + " != " + (transaction.getAmount() - totalInput) + ")");
-                return false;
+            else if(output.getOwner() == transaction.getReceiverPublicKey()){
+                totalOutput += output.getAmount();
             }
-            if(totalOutput != transaction.getAmount()){
-                System.out.println("[INVALID TRANSACTION] Output UTXO does not match the transaction amount (" + totalOutput + " != " + transaction.getAmount() + ")");
+            else{
+                System.out.println("[INVALID TRANSACTION] Output UTXO does not belong to the sender or receiver (" + output.getKey() + ")");
                 return false;
             }
         }
 
-        if(totalInput < transaction.getAmount()) {
-            System.out.println("[INVALID TRANSACTION] Not enough input UTXOs to cover the transaction amount");
+        if(totalRest != transaction.getAmount() - totalInput){
+            System.out.println("[INVALID TRANSACTION] Incorrect change amount (" + totalRest + " != " + (transaction.getAmount() - totalInput) + ")");
+            return false;
+        }
+        if(totalOutput != transaction.getAmount()){
+            System.out.println("[INVALID TRANSACTION] Output UTXO does not match the transaction amount (" + totalOutput + " != " + transaction.getAmount() + ")");
             return false;
         }
         return true;
@@ -116,7 +150,7 @@ public class TransactionService{
             PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(privateKeyBytes);
             PrivateKey privateKey = KeyFactory.getInstance("EC", "BC").generatePrivate(privateSpec);
 
-            Signature signature = Signature.getInstance("SHA256withECDSA");
+            Signature signature = Signature.getInstance("SHA256withECDSA", "BC");
             signature.initSign(privateKey);
             signature.update(transaction.getTransactionId().getBytes(StandardCharsets.UTF_8));
             transaction.setDigitalSignature(signature.sign());
@@ -152,7 +186,7 @@ public class TransactionService{
         }
     }
 
-    public void createTransaction(String senderPublicKey, String receiverPublicKey, double coinAmount) {
+    public void createTransaction(byte[] senderBytePublicKey, byte[] receiverBytePublicKey, double coinAmount) {
         // Required utxo are selected from the existing ones
         // We create output utxo for the receiver
         // Then we create the transaction and validate it (if input utxo exists and both input and output utxo are valid)
@@ -160,40 +194,62 @@ public class TransactionService{
         // all validation should be done in the node service class, here we just create the transaction
 
         // Create raw transaction
-        long amount = (long) (coinAmount * 100000000);
+        String senderPublicKey = Base64.getEncoder().encodeToString(senderBytePublicKey);
+        String receiverPublicKey = Base64.getEncoder().encodeToString(receiverBytePublicKey);
+        long amount = (long) (coinAmount * 100000000L);
         List<UTXO> ownerUTXO = utxoService.getUtxoByOwner(senderPublicKey);
         System.out.println("Owner UTXO: \n" + ownerUTXO);
         long selectedAmount = 0;
+        final short feeRate = getOptimalFeeRate();
+
+        Transaction transaction = new Transaction(
+                null,
+                null,
+                Instant.now().toEpochMilli(),
+                amount,
+                senderPublicKey,
+                receiverPublicKey,
+                TransactionStatus.PENDING,
+                0
+        );
+
+        long feeAmount = feeRate * transaction.getTransactionSize();
+        transaction.setTransactionFee(feeAmount);
+
         List<String> inputs = new ArrayList<>();
         for(UTXO utxo : ownerUTXO) {
-            if(utxo.getAmount() + selectedAmount >= amount) {
+            selectedAmount += utxo.getAmount();
+            feeAmount += feeRate * utxo.getKey().getBytes(StandardCharsets.UTF_8).length;
+            inputs.add(utxo.getKey());
+            if(selectedAmount >= amount + feeAmount) {
                 break;
             }
-            selectedAmount += utxo.getAmount();
-            inputs.add(utxo.getKey());
         }
         System.out.println("Selected UTXO: \n" + inputs);
-        if(selectedAmount < amount) {
-            System.out.println("[TRANSACTION ERROR] Not enough UTXO to create transaction");
+        if(selectedAmount < amount + feeAmount) {
+            System.out.println("[TRANSACTION ERROR] Not enough UTXO to create transaction (Try decreasing the fee)");
             return;
         }
 
-        Transaction transaction = new Transaction(inputs, null, Instant.now().toEpochMilli(), amount, senderPublicKey, receiverPublicKey, TransactionStatus.PENDING);
+        transaction.setInputs(inputs);
+
         List<UTXO> outputs = new ArrayList<>();
         if(selectedAmount > amount){
-            UTXO rest = new UTXO(transaction.calculateHash(), outputs.size(), senderPublicKey, selectedAmount - amount);
+            UTXO rest = new UTXO(transaction.calculateHash(), outputs.size(), senderPublicKey, selectedAmount - (amount + feeAmount));
             outputs.add(rest);
         }
         UTXO output = new UTXO(transaction.calculateHash(), outputs.size(), receiverPublicKey, amount);
         outputs.add(output);
 
         transaction.setOutputs(outputs);
+        transaction.setTransactionId(transaction.calculateHash());
         signTransaction(transaction);
 
         // Send transaction to neighbors (and wait for confirmation)
         boolean wasTransactionAccepted = nodeService.sendTransaction(transaction);
 
         if(wasTransactionAccepted){
+            System.out.println("[TRANSACTION ACCEPTED] " + transaction.getTransactionId());
             transactionRepository.saveTransaction(transaction);
             for(String utxoKey : inputs){
                 nodeService.reserveUTXO(utxoKey);
@@ -204,6 +260,10 @@ public class TransactionService{
             transaction.setStatus(TransactionStatus.REJECTED);
             transactionRepository.saveTransaction(transaction);
         }
+    }
+
+    public short getOptimalFeeRate() {
+        return (short) min(100, max(10, nodeService.getMemPool().size() / nodeService.getAvgMemPoolSize() * 100));
     }
 
 //    public String calculateHash(String... inputs){

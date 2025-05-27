@@ -24,4 +24,13 @@ public class ApiResponse {
     public long getTimestamp() {
         return timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "\n\tmessage='" + message + '\'' +
+                ", \n\tstatus=" + status +
+                ", \n\ttimestamp=" + timestamp +
+                "\n}";
+    }
 }

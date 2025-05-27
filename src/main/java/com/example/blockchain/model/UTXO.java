@@ -1,6 +1,7 @@
 package com.example.blockchain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -55,10 +56,11 @@ public class UTXO {
         return owner;
     }
 
-    public double getAmount() {
+    public long getAmount() {
         return amount;
     }
 
+    @JsonIgnore
     public String getKey() {
         return owner + ":" + txId + ":" + outputIndex;
     }

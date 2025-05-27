@@ -21,7 +21,8 @@ public class WalletService {
                 .map(entry -> new Wallet(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         this.currentWallet = walletList.isEmpty() ? null : walletList.getFirst();
-        createNewWallet();
+        //createNewWallet();
+        //System.out.println("WALLETS:" + walletList);
     }
 
     public void switchWallet(){

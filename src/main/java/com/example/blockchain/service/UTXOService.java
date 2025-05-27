@@ -16,7 +16,6 @@ public class UTXOService {
     public UTXOService(UTXORepository utxoRepository, NodeService nodeService) {
         this.utxoRepository = utxoRepository;
         this.nodeService = nodeService;
-        deleteUTXO("somePublicKe1","0", 0);
     }
 
     public boolean addUTXO(UTXO utxo) {

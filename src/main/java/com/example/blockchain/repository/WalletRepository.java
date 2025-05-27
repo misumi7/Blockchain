@@ -2,10 +2,7 @@ package com.example.blockchain.repository;
 
 import com.example.blockchain.model.UTXO;
 import com.example.blockchain.model.Wallet;
-import org.rocksdb.Options;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
@@ -17,30 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Repository
-public class WalletRepository {
-    // think about how should be stored private keys in db
-    private final static String NAME = "wallet-db";
-    File dbDir;
-    RocksDB db;
+public class WalletRepository{
+    private RocksDB db;
+    private ColumnFamilyHandle walletCF;
 
-    public WalletRepository() {
-        RocksDB.loadLibrary();
-        final Options options = new Options();
-        options.setCreateIfMissing(true);
-        dbDir = new File(System.getProperty("user.dir") + "src/main/java/com/example/blockchain/data/", NAME);
-        try {
-            Files.createDirectories(dbDir.getParentFile().toPath());
-            Files.createDirectories(dbDir.getAbsoluteFile().toPath());
-            this.db = RocksDB.open(options, dbDir.getAbsolutePath());
-        }
-        catch (RocksDBException | IOException e) {
-            e.printStackTrace();
-        }
+    public WalletRepository(BaseRepository baseRepository) {
+        this.db = baseRepository.getDb();
+        this.walletCF = baseRepository.getWalletCF();
     }
 
-    public boolean saveWallet(Wallet wallet){
+    public synchronized boolean saveWallet(Wallet wallet){
         try {
-            db.put(wallet.getPublicKeyObject().getEncoded(), wallet.getPrivateKeyObject().getEncoded());
+            db.put(walletCF, wallet.getPublicKeyObject().getEncoded(), wallet.getPrivateKeyObject().getEncoded());
             return true;
         }
         catch (RocksDBException e) {
@@ -49,9 +34,9 @@ public class WalletRepository {
         }
     }
 
-    public boolean deleteWallet(Wallet wallet){
+    public synchronized boolean deleteWallet(Wallet wallet){
         try {
-            db.delete(wallet.getPublicKeyObject().getEncoded());
+            db.delete(walletCF, wallet.getPublicKeyObject().getEncoded());
             return true;
         } catch (RocksDBException e) {
             e.printStackTrace();
@@ -59,9 +44,9 @@ public class WalletRepository {
         }
     }
 
-    public Map<byte[], byte[]> getAllWallets(){
+    public synchronized Map<byte[], byte[]> getAllWallets(){
         Map<byte[], byte[]> wallets = new HashMap<>();
-        RocksIterator it = db.newIterator();
+        RocksIterator it = db.newIterator(walletCF);
         for(it.seekToFirst(); it.isValid(); it.next()) {
             byte[] publicKeyBytes = it.key();
             byte[] privateKeyBytes = it.value();

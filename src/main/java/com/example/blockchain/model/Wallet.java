@@ -16,7 +16,7 @@ public class Wallet {
 
     public Wallet() {
         try {
-            Security.addProvider(new BouncyCastleProvider());
+            //Security.addProvider(new BouncyCastleProvider());
             // Use Elliptic Curves from Bouncy Castle
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC", "BC");
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256k1");
@@ -56,5 +56,13 @@ public class Wallet {
 
     public PrivateKey getPrivateKeyObject() {
         return privateKey;
+    }
+
+    @Override
+    public String toString() {
+        return "Wallet{" +
+                "\n\tpublicKey=||" + getPublicKey() +
+                "\n\tprivateKey=" + getPrivateKey() +
+                "\n}";
     }
 }

@@ -65,7 +65,7 @@ public class Block {
 
     public boolean validateBlock(){
                // TEMP!!!
-        return /*this.blockHash.equals(this.calculateHash()) &&*/ this.blockHash.startsWith("0000");
+        return this.blockHash.equals(this.calculateHash()) /*&& this.blockHash.startsWith("0000")*/;
     }
 
     public boolean mineBlock(){
@@ -89,6 +89,7 @@ public class Block {
 
     public static Block fromJson(String json){
         try{
+            //System.out.println("JSON: " + json);
             return new ObjectMapper().readValue(json, Block.class);
         }
         catch (IOException e){
@@ -132,4 +133,6 @@ public class Block {
     public void setNonce(long nonce) {
         this.nonce = nonce;
     }
+
+
 }

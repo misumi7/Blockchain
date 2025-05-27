@@ -6,6 +6,7 @@ import com.example.blockchain.model.Transaction;
 import com.example.blockchain.response.ApiException;
 import com.example.blockchain.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -13,30 +14,49 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class NodeService {
+    public static final int MINIMUM_PEERS = 20;
     private final Node node;
     private final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(15);
     private final RestTemplate restTemplate = new RestTemplate();
+    private final WalletService walletService;
 
     @Autowired
-    public NodeService(Node node) {
+    public NodeService(Node node, WalletService walletService) {
         this.node = node;
-        discoverPeers();
-        // resend pending transactions
+        this.walletService = walletService;
+    }
+
+    /*public void mineBlock(){
+        if(node.getMemPool().isEmpty()){
+            System.out.println("[MINING] No transactions in mempool to mine a block");
+            return;
+        }
+        Block minedBlock = new Block();
+    }*/
+
+    public ThreadPoolExecutor getExecutor() {
+        return executor;
+    }
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
     }
 
     public Set<String> getPeers() {
         return node.getPeers();
+    }
+
+    public PriorityQueue<Transaction> getMemPool() {
+        return node.getMemPool();
     }
 
     public Block getBlockFromPeers(String hash) {
@@ -76,26 +96,9 @@ public class NodeService {
     @Scheduled(fixedRate = 10 * 60 * 1000) // auto execute every 10 mins
     private void discoverPeers() {
         for(String peer : node.getPeers()) {
-            Runnable getPeersFromNode = () -> {
-                System.out.println("[PEER AUTO DISCOVERY] " + peer);
-                String url = peer + "/api/node/peers";
-                try {
-                    List<String> peersFromNode = restTemplate.getForObject(url, List.class);
-                    node.getPeers().addAll(peersFromNode);
-                }
-                catch (RestClientException e){
-                    System.out.println("[NO ANSWER] " + peer);
-                    if (!isPeerAlive(peer)){
-                        System.out.println("[PEER REMOVAL] " + peer);
-                        node.getPeers().remove(peer);
-                    }
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            };
-            executor.execute(getPeersFromNode);
+            discoverPeersFrom(peer);
         }
+        //System.out.println(this.getPeers());
     }
 
     @Scheduled(fixedRate = 5 * 60 * 1000)
@@ -103,12 +106,47 @@ public class NodeService {
         for(String peer : node.getPeers()){
             Runnable removeInactivePeers = () -> {
                 if (!isPeerAlive(peer)){
-                    System.out.println("[PEER REMOVAL] " + peer);
+                    System.out.println("[DEAD PEER REMOVAL] " + peer);
                     node.getPeers().remove(peer);
                 }
             };
             executor.execute(removeInactivePeers);
         }
+    }
+
+    public int getAvgMemPoolSize(){
+        // Save some statistics locally?
+        return 1000;
+    }
+
+    public void discoverPeersFrom(String peer){
+        Runnable getPeersFromNode = () -> {
+            System.out.println("[PEER AUTO DISCOVERY] " + peer);
+            String url = peer + "/api/nodes/peers";
+            try {
+                List<String> peersFromNode = restTemplate.getForObject(url, List.class);
+                //System.out.println(peersFromNode);
+                if(peersFromNode != null) {
+                    node.getPeers().addAll(peersFromNode);
+                    if (this.node.getPeers().size() < MINIMUM_PEERS) {
+                        for (String newPeer : peersFromNode) {
+                            discoverPeersFrom(newPeer);
+                        }
+                    }
+                }
+            }
+            catch (RestClientException e){
+                System.out.println("[NO ANSWER] " + peer);
+                if (!isPeerAlive(peer)){
+                    System.out.println("[PEER REMOVAL] " + peer);
+                    node.getPeers().remove(peer);
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        };
+        executor.execute(getPeersFromNode);
     }
 
     public boolean sendTransaction(Transaction transaction){
@@ -147,11 +185,13 @@ public class NodeService {
     }
 
     private boolean isPeerAlive(String peer){
-        String url = peer + "/api/node/ping";
+        String url = peer + "/api/nodes/ping";
         try{
-            String response = restTemplate.getForObject(url, String.class);
-            return response.equals("pong");
+            ApiResponse response = restTemplate.getForObject(url, ApiResponse.class);
+            //System.out.println(response);
+            return response != null && response.getStatus() == 200;
         } catch (Exception e){
+            //e.printStackTrace();
             return false;
         }
     }
@@ -170,5 +210,9 @@ public class NodeService {
 
     public void unlockUTXO(String key) {
         node.getReservedUTXOs().remove(key);
+    }
+
+    public void execute(Runnable task) {
+        executor.execute(task);
     }
 }
