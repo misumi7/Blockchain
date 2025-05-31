@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
@@ -42,8 +43,9 @@ public class BlockchainService {
         // this.utxoService = utxoService;
 
         // TEMP::
-        blockchainRepository.deleteAllBlocks();
-        utxoService.deleteAllUTXO();
+        //blockchainRepository.deleteAllBlocks();
+        transactionService.deleteAllTransactions();
+        //utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -180,6 +182,7 @@ public class BlockchainService {
 
     public Map<Set<Block>, Integer> getNewBlocksFromPeers(long latestBlockIndex){
         Map<Set<Block>, Integer> blockLists = new ConcurrentHashMap<>();
+        CountDownLatch latch = new CountDownLatch(nodeService.getPeers().size());
         for(String peer : nodeService.getPeers()){
             Runnable discoverNewBlocksFromPeer = () -> {
                 Set<Block> blocks = new HashSet<>();
@@ -189,10 +192,10 @@ public class BlockchainService {
                     Block latestBlock = nodeService.getRestTemplate().getForObject(url, Block.class);
                     if(latestBlock != null && latestBlock.getIndex() > latestBlockIndex) {
                         blocks.add(latestBlock);
-                        for(long i = latestBlock.getIndex(); latestBlock.getIndex() > latestBlockIndex; --i) {
+                        for(long i = latestBlock.getIndex() - 1; i > latestBlockIndex; --i) {
                             url = peer + "/api/blocks/" + latestBlock.getPreviousHash();
                             latestBlock = nodeService.getRestTemplate().getForObject(url, Block.class);
-                            if(latestBlock != null && latestBlock.getIndex() == i - 1) {
+                            if(latestBlock != null && latestBlock.getIndex() == i) {
                                 blocks.add(latestBlock);
                             }
                             else {
@@ -207,6 +210,10 @@ public class BlockchainService {
                             else {
                                 blockLists.put(blocks, 1);
                             }
+                            System.out.println("[BLOCK SEARCH] Found " + blocks.size() + " new blocks from " + peer);
+                        }
+                        else{
+                            System.out.println("[BLOCK SEARCH] Invalid chain from " + peer);
                         }
                     }
                 }
@@ -214,9 +221,18 @@ public class BlockchainService {
                     //System.out.println("[BLOCK SEARCH] Error: " + peer);
                     e.printStackTrace();
                 }
+                latch.countDown();
             };
-            nodeService.getExecutor().execute(discoverNewBlocksFromPeer);
+            nodeService.execute(discoverNewBlocksFromPeer);
         }
+
+        try{
+            latch.await();
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
         return blockLists;
     }
 

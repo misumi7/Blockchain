@@ -323,4 +323,8 @@ public class TransactionService{
         transactionRepository.saveTransaction(transaction);
         return true;
     }
+
+    public void deleteAllTransactions() {
+        transactionRepository.deleteAllTransactions();
+    }
 }
