@@ -1,8 +1,10 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Block;
+import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.BlockchainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -33,8 +35,12 @@ public class BlockchainController {
     }
 
     @PostMapping
-    public boolean addBlock(@RequestBody Block block) {
-        return blockchainService.addBlock(block);
+    public ResponseEntity<ApiResponse> addBlock(@RequestBody Block block) {
+        if(blockchainService.addBlock(block)){
+            return ResponseEntity.ok(new ApiResponse("Block added successfully", 200));
+        } else {
+            return ResponseEntity.status(400).body(new ApiResponse("Failed to add block", 400));
+        }
     }
 
     @DeleteMapping(value = "/{hash}")
@@ -45,5 +51,11 @@ public class BlockchainController {
     @DeleteMapping
     public boolean deleteAllBlocks() {
         return blockchainService.deleteAllBlocks();
+    }
+
+    // TEMP::
+    @GetMapping(value = "/mine")
+    public void mineBlock() {
+        blockchainService.mineBlock();
     }
 }

@@ -20,7 +20,8 @@ public class Node {
     private final Set<String> peers;
 
     // don't forget to reserve input utxos of transactions that get in the mempool
-    private final PriorityQueue<Transaction> memPool = new PriorityQueue<>();
+    private final PriorityQueue<Transaction> memPool = new PriorityQueue<>(Comparator.comparing(Transaction::getTransactionFee).reversed());
+    private final Set<String> memPoolHashes = ConcurrentHashMap.newKeySet();
     private final Map<String, Block> unlinkedBlocks = new HashMap<>();
 
     // test when create and validate transactions if their inputs are not reserved
@@ -29,7 +30,8 @@ public class Node {
 
 
 
-    public Node() { // String type,
+    public Node() {
+        // String type,
         this.peers = ConcurrentHashMap.newKeySet();
         this.peers.addAll(PUBLIC_NODES);
         //this.type = type; to be read from conf file
@@ -57,5 +59,9 @@ public class Node {
 
     public Map<String, Block> getUnlinkedBlocks() {
         return unlinkedBlocks;
+    }
+
+    public Set<String> getMemPoolHashes() {
+        return memPoolHashes;
     }
 }

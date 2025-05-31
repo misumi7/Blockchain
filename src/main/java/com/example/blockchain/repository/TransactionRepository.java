@@ -47,18 +47,34 @@ public class TransactionRepository{
     }
 
     public synchronized Transaction getTransaction(String transactionId){
-        Transaction value = null;
         try {
-            value = Transaction.fromJson(new String(db.get(transactionCF, transactionId.getBytes())));
+            byte[] transactionBytes = db.get(transactionCF, transactionId.getBytes());
+            if(transactionBytes != null){
+                return Transaction.fromJson(new String(transactionBytes, StandardCharsets.UTF_8));
+            }
         } catch (RocksDBException e) {
             e.printStackTrace();
         }
-        return value;
+        return null;
     }
 
     public synchronized boolean deleteTransaction(String transactionId) {
         try {
             db.delete(transactionCF, transactionId.getBytes());
+            return true;
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public synchronized boolean deleteAllTransactions() {
+        try (WriteBatch batch = new WriteBatch()) {
+            RocksIterator it = db.newIterator(transactionCF);
+            for (it.seekToFirst(); it.isValid(); it.next()) {
+                batch.delete(transactionCF, it.key());
+            }
+            db.write(new WriteOptions(), batch);
             return true;
         } catch (RocksDBException e) {
             e.printStackTrace();

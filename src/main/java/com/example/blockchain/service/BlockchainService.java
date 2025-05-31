@@ -7,41 +7,134 @@ import com.example.blockchain.model.UTXO;
 import com.example.blockchain.repository.BlockchainRepository;
 import com.example.blockchain.repository.TransactionRepository;
 import com.example.blockchain.repository.UTXORepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.security.PublicKey;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.max;
+
 @Service
 public class BlockchainService {
+    public static final int INITIAL_REWARD_COINS = 1000;
+    public static final int HALVING_STEP_BLOCKS = 1000;
     private final BlockchainRepository blockchainRepository;
     private final TransactionRepository transactionRepository;
-    private final UTXORepository utxoRepository;
+    private final UTXOService utxoService;
     private final NodeService nodeService;
     private final TransactionService transactionService;
+    private final WalletService walletService;
     // private final UTXOService utxoService;
     private static final int MAX_SEARCH_DEPTH = 100;
 
-    public BlockchainService(BlockchainRepository blockchainRepository, TransactionRepository transactionRepository, UTXORepository utxoRepository, NodeService nodeService, TransactionService transactionService) {
+    public BlockchainService(BlockchainRepository blockchainRepository, TransactionRepository transactionRepository, UTXORepository utxoRepository, NodeService nodeService, TransactionService transactionService, WalletService walletService, UTXOService utxoService) {
         this.blockchainRepository = blockchainRepository;
         this.transactionRepository = transactionRepository;
-        this.utxoRepository = utxoRepository;
-        // this.utxoService = utxoService;
+        this.utxoService = utxoService;
         this.transactionService = transactionService;
         this.nodeService = nodeService;
+        this.walletService = walletService;
+        // this.utxoService = utxoService;
 
         // TEMP::
-        /*blockchainRepository.deleteAllBlocks();
-        utxoRepository.deleteAllUTXO();*/
+        blockchainRepository.deleteAllBlocks();
+        utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
             addGenesisBlock();
         }
+    }
+
+    public void mineBlock(){
+        if(nodeService.getMemPool().isEmpty()){
+            System.out.println("[MINING] Not enough transactions in mempool to mine a block");
+            return;
+        }
+        // Choose transactions from mempool
+        int blockSize = 0;
+        long totalFee = 0;
+        List<Transaction> transactions = new ArrayList<>();
+        while(!nodeService.getMemPool().isEmpty() && transactions.size() < Block.MAX_BLOCK_SIZE_TRANSACTIONS){
+            Transaction transaction = nodeService.getMemPool().peek();
+            if(blockSize + transaction.getSize() > Block.MAX_BLOCK_SIZE_BYTES) {
+                break;
+            }
+            if(transactionService.isTransactionValid(transaction)) {
+                transaction.setStatus(TransactionStatus.CONFIRMED);
+                transactions.add(transaction);
+                nodeService.removeTransactionFromMemPool(transaction);
+                totalFee += transaction.getTransactionFee();
+                blockSize += transaction.getSize();
+            }
+            else {
+                System.out.println("[MINING] Invalid transaction found in mempool: " + transaction.getTransactionId());
+            }
+        }
+        // After transactions are chosen, create a transaction with fee and mining reward for the miner
+        String minerPublicKey = walletService.getCurrentWallet().getPublicKey();
+        long miningRewardAmount = getCurrentMiningReward();
+        Transaction rewardTransaction = new Transaction(
+                new ArrayList<>(),
+                null,
+                Instant.now().toEpochMilli(),
+                miningRewardAmount + totalFee,
+                null,
+                minerPublicKey,
+                TransactionStatus.CONFIRMED,
+                0
+        );
+        UTXO miningReward = new UTXO(
+                rewardTransaction.getTransactionId(),
+                0,
+                minerPublicKey,
+                miningRewardAmount
+        );
+        UTXO fees = new UTXO(
+                rewardTransaction.getTransactionId(),
+                1,
+                minerPublicKey,
+                totalFee
+        );
+        rewardTransaction.setOutputs(Arrays.asList(miningReward, fees));
+        rewardTransaction.recalculateTransactionId();
+        transactions.add(rewardTransaction);
+
+        Block minedBlock = new Block(
+                blockchainRepository.getLatestBlockIndex() + 1,
+                blockchainRepository.getLatestBlockHash(),
+                transactions,
+                Instant.now().toEpochMilli(),
+                0,
+                null
+        );
+        minedBlock.setBlockHash(minedBlock.calculateHash());
+
+        while(!minedBlock.checkProofOfWork()){
+            minedBlock.incrementNonce();
+            minedBlock.setBlockHash(minedBlock.calculateHash());
+            System.out.println("[MINING] Trying to mine block: " + minedBlock.getBlockHash() + " with nonce: " + minedBlock.getNonce());
+        }
+
+        minedBlock.setBlockHash(minedBlock.calculateHash());
+        System.out.println("[MINING] Mined a new block: " + minedBlock.getBlockHash() + " with " + transactions.size() + " transactions");
+        transactions.forEach(System.out::println);
+
+        if(nodeService.sendBlock(minedBlock)){
+            System.out.println("[MINING] Block was accepted by peers: " + minedBlock.getBlockHash());
+            if(!addBlock(minedBlock)){
+                System.out.println("[MINING] Error while adding the mined block to blockchain");
+            }
+        }
+    }
+
+    public long getCurrentMiningReward(){
+        return (INITIAL_REWARD_COINS / (2L * max(1, (int)(blockchainRepository.getLatestBlockIndex() / HALVING_STEP_BLOCKS)))) * 100_000_000L;
     }
 
     @Scheduled(fixedRate = 5 * 60 * 1000)
@@ -65,6 +158,7 @@ public class BlockchainService {
             if(!isValid(block)) {
                 System.out.println("[BLOCK SEARCH] Invalid block found: " + block.getBlockHash());
                 isChainValid = false;
+                break;
             }
         }
         if(isChainValid) {
@@ -117,7 +211,7 @@ public class BlockchainService {
                     }
                 }
                 catch (Exception e) {
-                    System.out.println("[BLOCK SEARCH] Error: " + peer);
+                    //System.out.println("[BLOCK SEARCH] Error: " + peer);
                     e.printStackTrace();
                 }
             };
@@ -132,7 +226,7 @@ public class BlockchainService {
                 new ArrayList<>(),
                 null,
                 0,
-                100 * 100000000L,
+                100 * 100_000_000L,
                 null,
                 GENESIS_PUBLIC_KEY,
                 TransactionStatus.CONFIRMED,
@@ -142,9 +236,10 @@ public class BlockchainService {
                 firstTransaction.getTransactionId(),
                 0,
                 GENESIS_PUBLIC_KEY,
-                100 * 100000000L
+                100 * 100_000_000L
         );
         firstTransaction.setOutputs(Arrays.asList(firstUTXO));
+
         Block genesisBlock = new Block(
                 0,
                 "GENESIS",
@@ -155,7 +250,7 @@ public class BlockchainService {
         );
         genesisBlock.setBlockHash(genesisBlock.calculateHash());
 
-        utxoRepository.saveUTXO(firstUTXO);
+        utxoService.addUTXO(firstUTXO);
         blockchainRepository.saveBlock(genesisBlock);
     }
 
@@ -186,18 +281,21 @@ public class BlockchainService {
                 // recursively add all unlinked blocks
                 addBlock(nodeService.getUnlinkedBlocks().get(block.getBlockHash()));
             }
-            // after block is saved, check for our node's pending transactions
+            // after block is saved, check for our node's pending transactions and mempool
             // if found, change status to "confirmed", delete inputs and add outputs to UTXO db
             for(Transaction transaction : block.getTransactions()) {
+                if(nodeService.memPoolContains(transaction)){
+                    nodeService.removeTransactionFromMemPool(transaction);
+                }
                 if(transactionRepository.getTransaction(transaction.getTransactionId()) != null){
                     transactionService.changeTransactionStatus(transaction.getTransactionId(), TransactionStatus.CONFIRMED);
                     for(String input : transaction.getInputs()) {
                         String[] keyParts = input.split(":");
-                        utxoRepository.deleteUTXO(keyParts[0], keyParts[1], Integer.parseInt(keyParts[2]));
+                        utxoService.deleteUTXO(keyParts[0], keyParts[1], Integer.parseInt(keyParts[2]));
                         nodeService.unlockUTXO(input);
                     }
                     for(UTXO output : transaction.getOutputs()) {
-                        utxoRepository.saveUTXO(output);
+                        utxoService.addUTXO(output);
                     }
                 }
             }
@@ -237,7 +335,7 @@ public class BlockchainService {
                         break;
                 }
             }
-            for(Iterator descItr = previousBlocks.descendingIterator(); descItr.hasNext();) {
+            for(Iterator<Block> descItr = previousBlocks.descendingIterator(); descItr.hasNext();) {
                 Block blockToAdd = (Block)descItr.next();
                 addBlock(blockToAdd);
             }
@@ -247,7 +345,8 @@ public class BlockchainService {
 
         // !! For testing previousBlock.calculateHash() => previousBlock.getBlockHash() as previousBlock is hardcoded
         if(!Objects.equals(previousBlock.calculateHash(), block.getPreviousHash())){
-            System.out.println("[BLOCK NOT VALID] Previous hash didn't match (" + block.getBlockHash() + ")");
+            System.out.println("[BLOCK NOT VALID] Previous hash didn't match (\n\t" + previousBlock.calculateHash() + "\n\t" + block.getPreviousHash() + "\n)");
+            System.out.println(previousBlock);
             return false;
         }
         return true;

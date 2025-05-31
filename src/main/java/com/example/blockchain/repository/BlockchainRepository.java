@@ -113,13 +113,22 @@ public class BlockchainRepository {
     public long getLatestBlockIndex() {
         try(RocksIterator it = db.newIterator(blockIndexCF)) {
             it.seekToLast();
-            if (it.isValid()) {
-                return ByteBuffer.wrap(it.key()).getLong();
-            }
+            return it.isValid() ? ByteBuffer.wrap(it.key()).getLong() : 0;
         }
         catch (Exception e) {
             e.printStackTrace();
+            return 0;
         }
-        return 0;
+    }
+
+    public String getLatestBlockHash() {
+        try(RocksIterator it = db.newIterator(blockIndexCF)) {
+            it.seekToLast();
+            return it.isValid() ? new String(it.value(), StandardCharsets.UTF_8) : null;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -6,6 +6,8 @@ import com.example.blockchain.model.Transaction;
 import com.example.blockchain.response.ApiException;
 import com.example.blockchain.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -35,14 +37,6 @@ public class NodeService {
         this.walletService = walletService;
     }
 
-    /*public void mineBlock(){
-        if(node.getMemPool().isEmpty()){
-            System.out.println("[MINING] No transactions in mempool to mine a block");
-            return;
-        }
-        Block minedBlock = new Block();
-    }*/
-
     public ThreadPoolExecutor getExecutor() {
         return executor;
     }
@@ -57,6 +51,23 @@ public class NodeService {
 
     public PriorityQueue<Transaction> getMemPool() {
         return node.getMemPool();
+    }
+
+    public void addTransactionToMemPool(Transaction transaction) {
+        if (node.getMemPoolHashes().contains(transaction.getTransactionId())) {
+            throw new ApiException("Transaction already exists in mempool", 400);
+        }
+        node.getMemPool().add(transaction);
+        node.getMemPoolHashes().add(transaction.getTransactionId());
+    }
+
+    public void removeTransactionFromMemPool(Transaction transaction) {
+        node.getMemPool().removeIf((e) -> e.getTransactionId().equals(transaction.getTransactionId()));
+        node.getMemPoolHashes().remove(transaction.getTransactionId());
+    }
+
+    public boolean memPoolContains(Transaction transaction){
+        return node.getMemPoolHashes().contains(transaction.getTransactionId());
     }
 
     public Block getBlockFromPeers(String hash) {
@@ -149,6 +160,51 @@ public class NodeService {
         executor.execute(getPeersFromNode);
     }
 
+    public boolean containsReservedUTXO(Transaction transaction) {
+        for(String input : transaction.getInputs()) {
+            if(isUTXOReserved(input)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean sendBlock(Block block){
+        CountDownLatch latch = new CountDownLatch(node.getPeers().size());
+        AtomicInteger successCount = new AtomicInteger(0);
+        for(String peer : node.getPeers()){
+            Runnable sendTransactionToPeer = () -> {
+                try {
+                    String url = peer + "/api/blocks";
+                    ApiResponse response = restTemplate.postForObject(url, block, ApiResponse.class);
+                    if (response.getStatus() == 200) {
+                        successCount.incrementAndGet();
+                    }
+                } catch (Exception e) {
+                    if (!isPeerAlive(peer)) {
+                        System.out.println("[BLOCK ERROR] Peer didn't answer " + peer);
+                    }
+                    else {
+                        System.out.println("[BLOCK ERROR] Block wasn't accepted by " + peer);
+                    }
+                    e.printStackTrace();
+                }
+                latch.countDown();
+            };
+            executor.execute(sendTransactionToPeer);
+        }
+
+        // Wait for all threads to finish
+        try{
+            latch.await();
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+        return successCount.get() >= (node.getPeers().size() + 1) / 2;
+    }
+
     public boolean sendTransaction(Transaction transaction){
         CountDownLatch latch = new CountDownLatch(node.getPeers().size());
         AtomicInteger successCount = new AtomicInteger(0);
@@ -161,7 +217,7 @@ public class NodeService {
                         successCount.incrementAndGet();
                     }
                 } catch (Exception e) {
-                    if (isPeerAlive(peer)) {
+                    if (!isPeerAlive(peer)) {
                         System.out.println("[TRANSACTION ERROR] Peer didn't answer " + peer);
                     } else {
                         System.out.println("[TRANSACTION ERROR] Transaction wasn't accepted by " + peer);
@@ -181,7 +237,7 @@ public class NodeService {
             e.printStackTrace();
         }
 
-        return successCount.get() >= node.getPeers().size() / 2;
+        return successCount.get() >= (node.getPeers().size() + 1) / 2;
     }
 
     private boolean isPeerAlive(String peer){
@@ -200,7 +256,7 @@ public class NodeService {
         return node.getUnlinkedBlocks();
     }
 
-    public boolean isUTXOAvailable(String key) {
+    public boolean isUTXOReserved(String key) {
         return node.getReservedUTXOs().contains(key);
     }
 

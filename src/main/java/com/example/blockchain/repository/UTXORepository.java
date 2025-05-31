@@ -2,6 +2,7 @@ package com.example.blockchain.repository;
 
 
 import com.example.blockchain.model.Block;
+import com.example.blockchain.model.Transaction;
 import com.example.blockchain.model.UTXO;
 import org.rocksdb.*;
 import org.springframework.stereotype.Repository;
@@ -46,13 +47,16 @@ public class UTXORepository{
     }
 
     public synchronized UTXO getUTXO(String ownerPublicKey, String txId, int outputIndex) {
-        UTXO value = null;
         try {
-            value = UTXO.fromJson(new String(db.get(utxoCF, (ownerPublicKey + ":" + txId + ":" + outputIndex).getBytes())));
-        } catch (RocksDBException e) {
+            byte[] UTXOBytes = db.get(utxoCF, (ownerPublicKey + ":" + txId + ":" + outputIndex).getBytes());
+            if(UTXOBytes != null){
+                return UTXO.fromJson(new String(UTXOBytes, StandardCharsets.UTF_8));
+            }
+        }
+        catch (RocksDBException e) {
             e.printStackTrace();
         }
-        return value;
+        return null;
     }
 
     public synchronized List<UTXO> getUtxoByOwner(String publicKey) {

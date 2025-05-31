@@ -3,12 +3,9 @@ package com.example.blockchain.service;
 import com.example.blockchain.model.*;
 import com.example.blockchain.repository.TransactionRepository;
 import com.example.blockchain.response.ApiException;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -37,9 +34,9 @@ public class TransactionService{
         Map<String, Transaction> pendingTransactions = transactionRepository.getAllTransactions();
         for(Transaction transaction : pendingTransactions.values()){
             if(transaction.getStatus() == TransactionStatus.PENDING){
-                System.out.println("[TRANSACTION RESEND] " + transaction.getTransactionId());
+                nodeService.addTransactionToMemPool(transaction);
                 if(!nodeService.sendTransaction(transaction)) {
-                    System.out.println("[TRANSACTION ERROR] Transaction was not accepted by the network");
+                    System.out.println("[TRANSACTION RESEND] Transaction was not accepted by the network: " + transaction.getTransactionId());
                     transaction.setStatus(TransactionStatus.REJECTED);
                     transactionRepository.saveTransaction(transaction);
 
@@ -47,24 +44,43 @@ public class TransactionService{
                         nodeService.unlockUTXO(utxo);
                     }
                 }
+                else{
+                    System.out.println("[TRANSACTION RESEND] Transaction accepted: " + transaction.getTransactionId());
+                }
             }
         }
+
+        //transactionRepository.deleteAllTransactions();
     }
 
     // Tests here:
     @EventListener(ApplicationReadyEvent.class)
     public void test() {
-        //deleteTransaction("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-        /*createTransaction(
+        createTransaction(
                 walletService.getPublicKey(),
                 new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05},
                 10
-        );*/
+        );
     }
 
-    public void saveTransaction(Transaction transaction){
-        if(!transactionRepository.saveTransaction(transaction)){
-            throw new ApiException("Transaction could not be saved", 400);
+    public void saveTransactionToMemPool(Transaction transaction){
+        if(!isTransactionValid(transaction)) {
+            System.out.println("[TRANSACTION SAVE] Transaction is not valid: " + transaction.getTransactionId());
+            throw new ApiException("Transaction is not valid", 400);
+        }
+        if(nodeService.memPoolContains(transaction)) {
+            System.out.println("[TRANSACTION SAVE] Transaction already exists in mempool: " + transaction.getTransactionId());
+            return;
+        } // !memPoolContains && transactionContainsReservedUTXO:
+        else if(nodeService.containsReservedUTXO(transaction)){
+            System.out.println("[TRANSACTION SAVE] Transaction contains reserved UTXO: " + transaction.getTransactionId());
+            throw new ApiException("Transaction contains UTXO that are reserved by another pending transaction", 400);
+        }
+
+        nodeService.addTransactionToMemPool(transaction);
+        System.out.println("[TRANSACTION SAVE] Transaction saved to mempool: " + transaction.getTransactionId());
+        for (String input : transaction.getInputs()) {
+            nodeService.reserveUTXO(input);
         }
     }
 
@@ -95,10 +111,10 @@ public class TransactionService{
         long totalInput = 0;
         for(String input : transaction.getInputs()) {
             //double spending check
-            if (nodeService.isUTXOAvailable(input)) {
+            /*if (nodeService.isUTXOReserved(input)) {
                 System.out.println("[INVALID TRANSACTION] Input UTXO is reserved (" + input + ")");
                 return false;
-            }
+            }*/
 
             String[] keyParts = input.split(":");
             UTXO utxo = utxoService.getUTXO(keyParts[0], keyParts[1], Integer.parseInt(keyParts[2]));
@@ -106,8 +122,8 @@ public class TransactionService{
                 System.out.println("[INVALID TRANSACTION] Input UTXO does not exist (" + input + ")");
                 return false;
             }
-            if (utxo.getOwner().equals(transaction.getSenderPublicKey())) {
-                System.out.println("[INVALID TRANSACTION] Input UTXO does not belong to the sender (" + input + ")");
+            if (!utxo.getOwner().equals(transaction.getSenderPublicKey())) {
+                System.out.println("[INVALID TRANSACTION] Input UTXO does not belong to the sender (\n\tUTXO owner:" + utxo.getOwner() + "\n\tTransaction sender" + transaction.getSenderPublicKey() + "\n)");
                 return false;
             }
 
@@ -121,10 +137,10 @@ public class TransactionService{
         // Outputs:
         long totalRest = 0, totalOutput = 0;
         for(UTXO output : transaction.getOutputs()){
-            if(output.getOwner() == transaction.getSenderPublicKey()){
+            if(output.getOwner().equals(transaction.getSenderPublicKey())){
                 totalRest += output.getAmount();
             }
-            else if(output.getOwner() == transaction.getReceiverPublicKey()){
+            else if(output.getOwner().equals(transaction.getReceiverPublicKey())){
                 totalOutput += output.getAmount();
             }
             else{
@@ -133,8 +149,8 @@ public class TransactionService{
             }
         }
 
-        if(totalRest != transaction.getAmount() - totalInput){
-            System.out.println("[INVALID TRANSACTION] Incorrect change amount (" + totalRest + " != " + (transaction.getAmount() - totalInput) + ")");
+        if(totalRest != totalInput - (transaction.getAmount() + transaction.getTransactionFee())){
+            System.out.println("[INVALID TRANSACTION] Incorrect change amount (" + totalRest + " != " + (totalInput - (transaction.getAmount() + transaction.getTransactionFee())) + ")");
             return false;
         }
         if(totalOutput != transaction.getAmount()){
@@ -213,18 +229,21 @@ public class TransactionService{
                 0
         );
 
-        long feeAmount = feeRate * transaction.getTransactionSize();
-        transaction.setTransactionFee(feeAmount);
+        long feeAmount = (long) feeRate * transaction.getSize();
+        //transaction.setTransactionFee(feeAmount);
 
         List<String> inputs = new ArrayList<>();
         for(UTXO utxo : ownerUTXO) {
-            selectedAmount += utxo.getAmount();
-            feeAmount += feeRate * utxo.getKey().getBytes(StandardCharsets.UTF_8).length;
-            inputs.add(utxo.getKey());
-            if(selectedAmount >= amount + feeAmount) {
-                break;
+            if(!nodeService.isUTXOReserved(utxo.getKey())) {
+                selectedAmount += utxo.getAmount();
+                feeAmount += (long) feeRate * utxo.getKey().getBytes(StandardCharsets.UTF_8).length;
+                inputs.add(utxo.getKey());
+                if (selectedAmount >= amount + feeAmount) {
+                    break;
+                }
             }
         }
+        transaction.setTransactionFee(feeAmount);
         System.out.println("Selected UTXO: \n" + inputs);
         if(selectedAmount < amount + feeAmount) {
             System.out.println("[TRANSACTION ERROR] Not enough UTXO to create transaction (Try decreasing the fee)");
@@ -254,6 +273,7 @@ public class TransactionService{
             for(String utxoKey : inputs){
                 nodeService.reserveUTXO(utxoKey);
             }
+            nodeService.addTransactionToMemPool(transaction);
         }
         else{
             System.out.println("[TRANSACTION ERROR] Transaction was not accepted by the network");
@@ -266,33 +286,33 @@ public class TransactionService{
         return (short) min(100, max(10, nodeService.getMemPool().size() / nodeService.getAvgMemPoolSize() * 100));
     }
 
-//    public String calculateHash(String... inputs){
-//        StringBuilder stringToHash = new StringBuilder();
-//        for(String input : inputs){
-//            stringToHash.append(input);
-//        }
-//        try{
-//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//            byte[] hash = digest.digest(stringToHash.toString().getBytes(StandardCharsets.UTF_8));
-//
-//            StringBuilder hexString = new StringBuilder();
-//            for (byte b : hash) {
-//                // 0xff = 11111111
-//                // 0xff & b for b to be treated as an unsigned 8-bit value
-//                String hex = Integer.toHexString(0xff & b);
-//                // 2 digits, if 1 then append 0
-//                if (hex.length() == 1) {
-//                    hexString.append('0');
-//                }
-//                hexString.append(hex);
-//            }
-//            return hexString.toString();
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    /*public String calculateHash(String... inputs){
+        StringBuilder stringToHash = new StringBuilder();
+        for(String input : inputs){
+            stringToHash.append(input);
+        }
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(stringToHash.toString().getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                // 0xff = 11111111
+                // 0xff & b for b to be treated as an unsigned 8-bit value
+                String hex = Integer.toHexString(0xff & b);
+                // 2 digits, if 1 then append 0
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }*/
 
     public boolean changeTransactionStatus(String txId, TransactionStatus status) {
         Transaction transaction = transactionRepository.getTransaction(txId);

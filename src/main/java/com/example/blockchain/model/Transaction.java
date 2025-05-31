@@ -6,14 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static java.lang.Math.min;
 
@@ -103,8 +100,8 @@ public class Transaction {
     }
 
     @JsonIgnore
-    public int getTransactionSize(){
-        System.out.println("TRANSACTION SIZE: " + Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length);
+    public int getSize(){
+        //System.out.println("TRANSACTION SIZE: " + Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length);
         return Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length;
     }
 
@@ -144,7 +141,7 @@ public class Transaction {
         return digitalSignature;
     }
 
-    public double getAmount() {
+    public long getAmount() {
         return amount;
     }
 
@@ -170,4 +167,37 @@ public class Transaction {
     public void setTransactionFee(long transactionFee) {
         this.transactionFee = transactionFee;
     }
+
+    public long getTransactionFee() {
+        return transactionFee;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId='" + transactionId + '\'' +
+                ", senderPublicKey='" + senderPublicKey + '\'' +
+                ", receiverPublicKey='" + receiverPublicKey + '\'' +
+                ", inputs=" + inputs +
+                ", outputs=" + outputs +
+                ", timeStamp=" + timeStamp +
+                ", amount=" + amount +
+                ", transactionFee=" + transactionFee +
+                ", status=" + status +
+                ", digitalSignature=" + Arrays.toString(digitalSignature) +
+                '}';
+    }
+
+    /*@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(transactionId, that.transactionId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionId);
+    }*/
 }

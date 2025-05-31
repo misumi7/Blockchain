@@ -64,4 +64,14 @@ public class UTXO {
     public String getKey() {
         return owner + ":" + txId + ":" + outputIndex;
     }
+
+    @Override
+    public String toString() {
+        return "UTXO{" +
+                "txId='" + txId + '\'' +
+                ", outputIndex=" + outputIndex +
+                ", owner='" + owner + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

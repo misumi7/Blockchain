@@ -38,4 +38,7 @@ public class UTXOService {
         return utxoRepository.deleteUTXO(publicKey, txId, outputIndex);
     }
 
+    public void deleteAllUTXO() {
+        utxoRepository.deleteAllUTXO();
+    }
 }

@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Block {
+    public static final int MAX_BLOCK_SIZE_BYTES = 1_000_000; // 1 mb
+    public static final int MAX_BLOCK_SIZE_TRANSACTIONS = 5000;
+
+
     private final List<Transaction> TRANSACTIONS;
     private final String PREVIOUS_HASH;
     private final long timeStamp;
@@ -64,18 +68,21 @@ public class Block {
     }
 
     public boolean validateBlock(){
-               // TEMP!!!
-        return this.blockHash.equals(this.calculateHash()) /*&& this.blockHash.startsWith("0000")*/;
+        return this.blockHash.equals(this.calculateHash()) && checkProofOfWork();
     }
 
-    public boolean mineBlock(){
+    public boolean checkProofOfWork(){
+        return this.blockHash.startsWith("0000");
+    }
+
+    /*public boolean mineBlock(){
         while(!this.blockHash.startsWith("0000")){
             this.nonce++;
             this.blockHash = this.calculateHash();
             //System.out.println("Mining: " + this.blockHash + " with nonce: " + this.nonce);
         }
         return true;
-    }
+    }*/
 
     public static String toJson(Block block){
         try{
@@ -96,6 +103,10 @@ public class Block {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void incrementNonce() {
+        this.nonce++;
     }
 
     public List<Transaction> getTransactions() {
@@ -134,5 +145,15 @@ public class Block {
         this.nonce = nonce;
     }
 
-
+    @Override
+    public String toString() {
+        return "Block{" +
+                "TRANSACTIONS=" + TRANSACTIONS +
+                ", PREVIOUS_HASH='" + PREVIOUS_HASH + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", blockHash='" + blockHash + '\'' +
+                ", index=" + index +
+                ", nonce=" + nonce +
+                '}';
+    }
 }

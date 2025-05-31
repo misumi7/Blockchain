@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.PriorityQueue;
 
 @RestController
 @RequestMapping(path = "api/transactions")
@@ -22,7 +23,7 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<ApiResponse> addTransaction(@RequestBody Transaction transaction) {
-        transactionService.saveTransaction(transaction);
+        transactionService.saveTransactionToMemPool(transaction);
         return ResponseEntity.ok(new ApiResponse("Transaction added successfully", 200));
     }
 
@@ -35,5 +36,4 @@ public class TransactionController {
     public Transaction getTransaction(@PathVariable("transactionId") String transactionId) {
         return transactionService.getTransaction(transactionId);
     }
-
 }
