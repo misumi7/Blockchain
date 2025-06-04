@@ -1,0 +1,16 @@
+.mainContent {
+      width: 70vw;
+      height: 100vh;
+      
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+
+.panel {
+      width: 68vw;
+      height: 100vh;
+      background-color: var(--background-color-2);
+      box-shadow: 0 0 1vw rgba(0, 0, 0, 0.247);
+      
+}

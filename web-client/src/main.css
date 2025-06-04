@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+
+:root {
+      --background-color-1: #fbfbfb;
+      --background-color-2: #f1f1f1;
+      --background-color-3: #f6ce2f;
+      --button-color: #e7e7e7;
+      --font-color: #000000;
+      --secondary-font-color: #6B7280;
+      --shadow-color: #00000041;
+      --hover-color: #ececec;
+
+      --font: 'Inter', sans-serif;
+      --system-info-font: "Inconsolata", monospace;
+}
+
+body {
+      background-color: var(--background-color-3);
+      color: var(--font-color);
+      font-family: var(--font);
+
+      margin: 0;
+      padding: 0;
+      display: flex;
+}
+
+.mainScreen {
+      height: 100vh;
+      
+      display: flex;
+      flex-direction: row;
+}

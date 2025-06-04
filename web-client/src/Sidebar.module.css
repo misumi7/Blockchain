@@ -1,0 +1,28 @@
+.sidebar {
+      width: 30vw;
+      height: 100vh;
+      background-color: var(--background-color);
+
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+}
+
+.sidebarComponents {
+      display: flex;
+      flex-direction: column;
+      justify-content: baseline;
+      align-items: center;
+
+      background-color: var(--background-color-2);
+      border-bottom-left-radius: 5vh;
+      border-bottom-right-radius: 5vh;
+      height: 98.5%;
+      width: 94%;
+      box-shadow: 0 0 1vw rgba(0, 0, 0, 0.247);
+      overflow-y: scroll;
+}
+
+.sidebarComponents::-webkit-scrollbar {
+  display: none;
+}

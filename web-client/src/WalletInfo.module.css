@@ -1,0 +1,65 @@
+.walletInfo {
+     margin-left: 3vw; 
+     display: flex;
+     flex-direction: column;
+}
+
+.walletInfo input {
+      outline: none;
+}
+
+.walletInfo label {
+      padding-top: 1.5vh;
+      padding-left: .45vw;
+}
+
+.walletTitle {
+      font: var(--font);
+      font-size: 2.5rem;
+      font-weight: 600;
+      /*text-indent: 3vw;*/
+      margin-top: 2.5vh;
+}
+
+.publicKeyBlock {
+      display: flex;
+      align-items: center;
+}
+
+.copiedMessage {
+      opacity: 0;
+      padding: .7vh .5vw .7vh .1vw;
+      margin-left: .5vw;
+      box-shadow: 0 0 .1vw black;
+      border-radius: .8vw;
+      transition: opacity 0.2s ease;
+      font-family: var(--system-info-font);
+      font-size: 1.15rem;
+      font-weight: 400;
+      background-color: var(--background-color-1);
+
+      display: flex;
+      align-items: center;
+}
+
+.copiedMessage img {
+      width: .4vw;
+      padding-left: .5vw;
+      padding-right: .2vw;
+}
+
+.showMessage {
+      opacity: 0.7;
+}
+
+.publicKeyBox {
+      width: 70%;
+      height: 2.5rem;
+      font-size: 1.24rem;
+      border-radius: .35vw;
+      margin-top: .44vh;
+      border: .15vw solid rgb(218, 218, 218);
+      background-color: var(--background-color-1);
+
+      padding-left: .8vw;
+}
