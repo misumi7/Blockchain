@@ -1,0 +1,21 @@
+.button {
+      cursor: pointer;
+      user-select: none;
+
+      padding: .5rem .7rem .5rem .7rem;
+      background: var(--button-gradient);
+      border-radius: 1vw;
+      /*border: .5vh solid var(--sec-button-color);*/
+      width: fit-content;
+      height: fit-content;
+      
+      font-family: var(--font);
+      font-weight: 400;
+
+      display: flex;
+      align-items: center;
+}
+
+.buttonIcon {
+      height: 1.6rem;
+}

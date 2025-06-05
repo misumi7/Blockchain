@@ -56,11 +56,11 @@ public class TransactionService{
     // Tests here:
     @EventListener(ApplicationReadyEvent.class)
     public void test() {
-        createTransaction(
+        /*createTransaction(
                 walletService.getPublicKey(),
                 new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05},
                 10
-        );
+        );*/
     }
 
     public void saveTransactionToMemPool(Transaction transaction){

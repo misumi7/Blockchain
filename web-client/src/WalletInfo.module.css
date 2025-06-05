@@ -1,24 +1,39 @@
 .walletInfo {
-     margin-left: 3vw; 
      display: flex;
      flex-direction: column;
 }
 
+.block {
+      background-color: var(--background-color-2);
+      margin-right: 3vw;
+      margin-left: 3vw; 
+      border-radius: .6vw;
+      box-shadow: 0 0 .2vw rgba(178, 178, 178, 0.756);
+
+      padding: 3vh 1.55vw 3vh 1.55vw;
+      
+      margin-bottom: 4vh; 
+}
+
 .walletInfo input {
       outline: none;
+      width: 45vw;
 }
 
 .walletInfo label {
-      padding-top: 1.5vh;
+      padding-top: 2.5vh;
       padding-left: .45vw;
 }
 
-.walletTitle {
+.walletName {
       font: var(--font);
       font-size: 2.5rem;
       font-weight: 600;
       /*text-indent: 3vw;*/
+
       margin-top: 2.5vh;
+      margin-left: 3.45vw;
+      margin-bottom: 2.1vh; 
 }
 
 .publicKeyBlock {
@@ -31,7 +46,7 @@
       padding: .7vh .5vw .7vh .1vw;
       margin-left: .5vw;
       box-shadow: 0 0 .1vw black;
-      border-radius: .8vw;
+      border-radius: .1vw;
       transition: opacity 0.2s ease;
       font-family: var(--system-info-font);
       font-size: 1.15rem;
@@ -60,6 +75,76 @@
       margin-top: .44vh;
       border: .15vw solid rgb(218, 218, 218);
       background-color: var(--background-color-1);
+      color: rgb(32, 32, 32);
 
       padding-left: .8vw;
+}
+
+.balanceBox {
+      padding-top: 3.5vh;
+      padding-left: .45vw;
+}
+
+.balanceInfo {
+      display: grid;
+      grid-template-columns: 1fr 1fr .7fr;
+      align-items: end;
+      
+}
+
+.balanceInfo .button {
+      margin-bottom: .7vh;
+}
+
+.balance {
+      margin-top: 1vh;
+      font-size: 1.3rem;
+      font-weight: 600;
+
+      display: flex;
+      align-items: center;
+}
+
+.icon {
+      width: 1.9vw;
+      padding-right: .15vw;
+}
+
+.blockTitle { 
+      font-family: var(--font);
+      font-size: 1.7rem;
+      font-weight: 600;
+
+      margin-bottom: 50vh;
+}
+
+.walletTransactions table{
+      margin-top: 1.5vh;
+      width: 100%; /*!!!*/
+
+      table-layout: auto;
+}
+
+.walletTransactions tr:first-child th {
+      border-top: .02vh solid rgb(216, 216, 216);
+      border-bottom: .02vh solid rgb(216, 216, 216);
+      padding: 1vh 2.5vw 1vh 2.5vw;
+      text-align: center;
+      width: min-content;
+}
+
+.walletTransactions tr td:not(:nth-child(4)) {
+      white-space: nowrap;
+}
+
+.walletTransactions tr td {
+      text-align: center;
+      padding-top: 1.2vh;
+}
+
+.walletTransactions tr td:nth-child(4) a {
+      text-decoration: none;
+
+      word-wrap: break-word;
+      word-break: break-all;
 }

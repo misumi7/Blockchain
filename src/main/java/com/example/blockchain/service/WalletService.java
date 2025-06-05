@@ -51,6 +51,12 @@ public class WalletService {
         return currentWallet.getPrivateKeyObject().getEncoded();
     }
 
+    public List<String> getWallets() {
+        return walletList.stream()
+                .map(Wallet::getPublicKey)
+                .collect(Collectors.toList());
+    }
+
     public byte[] getPublicKey() {
         return currentWallet.getPublicKeyObject().getEncoded();
     }

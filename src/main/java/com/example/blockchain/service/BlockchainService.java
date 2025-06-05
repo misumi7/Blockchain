@@ -43,9 +43,9 @@ public class BlockchainService {
         // this.utxoService = utxoService;
 
         // TEMP::
-        //blockchainRepository.deleteAllBlocks();
+        blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        //utxoService.deleteAllUTXO();
+        utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
