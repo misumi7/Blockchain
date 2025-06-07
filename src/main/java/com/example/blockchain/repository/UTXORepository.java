@@ -21,6 +21,8 @@ public class UTXORepository{
     public UTXORepository(BaseRepository baseRepository) {
         this.db = baseRepository.getDb();
         this.utxoCF = baseRepository.getUtxoCF();
+
+        //System.out.println(saveUTXO(new UTXO("TO DELETE", 0, "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAErfbjmzUy2nrRNC1vrfWh0wlYfwvMieoP5v72Ebsn8Jl9pa4s9Q65iqgsSgRlhSUBwm2zWD+ScCxKXSOu1eupDQ==", 18042013L))); // Example UTXO for testing
     }
 
     public synchronized boolean saveUTXO(UTXO utxo){

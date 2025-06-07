@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -80,5 +82,19 @@ public class TransactionRepository{
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
+        List<Transaction> transactions = new ArrayList<>();
+        RocksIterator it = db.newIterator(transactionCF);
+        for(it.seekToFirst(); it.isValid(); it.next()) {
+            Transaction transaction = Transaction.fromJson(new String(it.value(), StandardCharsets.UTF_8));
+            if(transaction != null && (transaction.getSenderPublicKey().equals(walletPublicKey) ||
+               transaction.getReceiverPublicKey().equals(walletPublicKey))) {
+                transactions.add(transaction);
+            }
+        }
+        it.close();
+        return transactions;
     }
 }

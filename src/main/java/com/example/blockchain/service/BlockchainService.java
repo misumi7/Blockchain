@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -45,7 +47,7 @@ public class BlockchainService {
         // TEMP::
         blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        utxoService.deleteAllUTXO();
+        //utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -241,9 +243,9 @@ public class BlockchainService {
         Transaction firstTransaction = new Transaction(
                 new ArrayList<>(),
                 null,
-                0,
+                LocalDateTime.of(2025, 1, 4, 12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
                 100 * 100_000_000L,
-                null,
+                "",
                 GENESIS_PUBLIC_KEY,
                 TransactionStatus.CONFIRMED,
                 0
@@ -268,6 +270,12 @@ public class BlockchainService {
 
         utxoService.addUTXO(firstUTXO);
         blockchainRepository.saveBlock(genesisBlock);
+
+        Map<String, String> wallets = walletService.getWallets();
+        if(genesisBlock.getTransactions().stream().map(Transaction::getSenderPublicKey).anyMatch(wallets::containsKey) ||
+           genesisBlock.getTransactions().stream().map(Transaction::getReceiverPublicKey).anyMatch(wallets::containsKey)){
+            transactionRepository.saveTransaction(firstTransaction);
+        }
     }
 
     public Map<String, Block> getAllBlocks() {

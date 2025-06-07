@@ -8,13 +8,24 @@
       /*border: .5vh solid var(--sec-button-color);*/
       width: fit-content;
       height: fit-content;
-      
+      transition-duration: .2s;
+
       font-family: var(--font);
       font-weight: 400;
+      text-align: center;
 
       display: flex;
       align-items: center;
 }
+
+.button:hover {
+      opacity: .85;
+}
+
+/* .button:active {
+      transition-duration: .1s;
+      box-shadow: 0 0 .15vw black;
+} */
 
 .buttonIcon {
       height: 1.6rem;

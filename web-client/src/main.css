@@ -16,6 +16,8 @@
 
       --font: 'Inter', sans-serif;
       --system-info-font: "Inconsolata", monospace;
+
+      --max-priority: 100;
 }
 
 body {

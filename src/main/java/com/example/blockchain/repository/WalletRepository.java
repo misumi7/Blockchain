@@ -17,15 +17,19 @@ import java.util.Map;
 public class WalletRepository{
     private RocksDB db;
     private ColumnFamilyHandle walletCF;
+    private ColumnFamilyHandle walletNameCF;
 
     public WalletRepository(BaseRepository baseRepository) {
         this.db = baseRepository.getDb();
         this.walletCF = baseRepository.getWalletCF();
+        this.walletNameCF = baseRepository.getWalletNameCF();
     }
 
-    public synchronized boolean saveWallet(Wallet wallet){
-        try {
-            db.put(walletCF, wallet.getPublicKeyObject().getEncoded(), wallet.getPrivateKeyObject().getEncoded());
+    public synchronized boolean saveWallet(Wallet wallet, String walletName){
+        try(WriteBatch batch = new WriteBatch()) {
+            batch.put(walletCF, wallet.getPublicKeyBytes(), wallet.getPrivateKeyBytes());
+            batch.put(walletNameCF, wallet.getPublicKeyBytes(), walletName.getBytes());
+            db.write(new WriteOptions(), batch);
             return true;
         }
         catch (RocksDBException e) {
@@ -35,8 +39,10 @@ public class WalletRepository{
     }
 
     public synchronized boolean deleteWallet(Wallet wallet){
-        try {
-            db.delete(walletCF, wallet.getPublicKeyObject().getEncoded());
+        try(WriteBatch batch = new WriteBatch()) {
+            batch.delete(walletCF, wallet.getPublicKeyBytes());
+            batch.delete(walletNameCF, wallet.getPublicKeyBytes());
+            db.write(new WriteOptions(), batch);
             return true;
         } catch (RocksDBException e) {
             e.printStackTrace();
@@ -54,5 +60,30 @@ public class WalletRepository{
         }
         it.close();
         return wallets;
+    }
+
+    public String getWalletName(byte[] publicKey) {
+        try {
+            byte[] walletName = db.get(walletNameCF, publicKey);
+            if (walletName != null) {
+                return new String(walletName, StandardCharsets.UTF_8);
+            }
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getWalletName(String walletPublicKey) {
+        try {
+            byte[] walletPublicKeyBytes = Base64.getDecoder().decode(walletPublicKey);
+            byte[] walletName = db.get(walletNameCF, walletPublicKeyBytes);
+            if (walletName != null) {
+                return new String(walletName, StandardCharsets.UTF_8);
+            }
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

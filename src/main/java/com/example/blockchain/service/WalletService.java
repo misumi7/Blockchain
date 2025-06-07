@@ -4,6 +4,7 @@ import com.example.blockchain.model.Wallet;
 import com.example.blockchain.repository.WalletRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,8 +22,13 @@ public class WalletService {
                 .map(entry -> new Wallet(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         this.currentWallet = walletList.isEmpty() ? null : walletList.getFirst();
+
         //createNewWallet();
         //System.out.println("WALLETS:" + walletList);
+    }
+
+    public int getWalletCount() {
+        return walletList.size();
     }
 
     public void switchWallet(){
@@ -32,7 +38,7 @@ public class WalletService {
 
     public void createNewWallet(){
         Wallet newWallet = new Wallet();
-        walletRepository.saveWallet(newWallet);
+        walletRepository.saveWallet(newWallet, "Wallet " + (walletList.size() + 1));
         if(currentWallet == null){
             currentWallet = newWallet;
         }
@@ -51,10 +57,12 @@ public class WalletService {
         return currentWallet.getPrivateKeyObject().getEncoded();
     }
 
-    public List<String> getWallets() {
-        return walletList.stream()
-                .map(Wallet::getPublicKey)
-                .collect(Collectors.toList());
+    public Map<String, String> getWallets() {
+        Map<String, String> wallets = new HashMap<>();
+        for (Wallet wallet : walletList) {
+            wallets.put(wallet.getPublicKey(), walletRepository.getWalletName(wallet.getPublicKeyBytes()));
+        }
+        return wallets;
     }
 
     public byte[] getPublicKey() {
@@ -63,5 +71,30 @@ public class WalletService {
 
     public Wallet getCurrentWallet() {
         return currentWallet;
+    }
+
+    public void addWallet(Wallet wallet) {
+        walletRepository.saveWallet(wallet, "Wallet " + (walletList.size() + 1));
+        walletList.add(wallet);
+        if(currentWallet == null){
+            currentWallet = wallet;
+        }
+    }
+
+    public void setWalletName(String name, String walletPublicKey) {
+        for (Wallet wallet : walletList) {
+            if (wallet.getPublicKey().equals(walletPublicKey)) {
+                walletRepository.saveWallet(wallet, name);
+                break;
+            }
+        }
+    }
+
+    public List<Wallet> getUserWallets() {
+        return walletList;
+    }
+
+    public String getWalletName(String walletPublicKey) {
+        return walletRepository.getWalletName(walletPublicKey);
     }
 }

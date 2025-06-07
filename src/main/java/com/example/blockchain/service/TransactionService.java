@@ -327,4 +327,8 @@ public class TransactionService{
     public void deleteAllTransactions() {
         transactionRepository.deleteAllTransactions();
     }
+
+    public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
+        return transactionRepository.getTransactionsByWallet(walletPublicKey);
+    }
 }

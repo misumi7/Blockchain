@@ -40,4 +40,14 @@ public class UTXOController {
     public List<UTXO> getUtxoByOwner(@PathVariable("publicKey") String publicKey) {
         return utxoService.getUtxoByOwner(publicKey);
     }
+
+    @GetMapping("/{walletPublicKey}/balance")
+    public double getWalletBalance(@PathVariable("walletPublicKey") String walletPublicKey) {
+        return utxoService.getWalletBalance(walletPublicKey);
+    }
+
+    @GetMapping("/balance/total")
+    public double getWalletBalance() {
+        return utxoService.getTotalBalance();
+    }
 }

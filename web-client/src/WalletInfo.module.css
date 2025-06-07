@@ -1,6 +1,15 @@
 .walletInfo {
-     display: flex;
-     flex-direction: column;
+      display: flex;
+      flex-direction: column;
+
+      min-height: 100vh;
+      background-color: var(--background-color-2);
+      box-shadow: 0 0 1vw rgba(0, 0, 0, 0.247);
+      overflow: scroll;
+}
+
+.walletInfo::-webkit-scrollbar {
+      display: none;
 }
 
 .block {
@@ -13,11 +22,6 @@
       padding: 3vh 1.55vw 3vh 1.55vw;
       
       margin-bottom: 4vh; 
-}
-
-.walletInfo input {
-      outline: none;
-      width: 45vw;
 }
 
 .walletInfo label {
@@ -58,8 +62,8 @@
 }
 
 .copiedMessage img {
-      width: .4vw;
-      padding-left: .5vw;
+      width: 1.5rem;
+      padding-left: .22vw;
       padding-right: .2vw;
 }
 
@@ -67,17 +71,53 @@
       opacity: 0.7;
 }
 
-.publicKeyBox {
-      width: 70%;
-      height: 2.5rem;
-      font-size: 1.24rem;
+.publicKey {
+      margin-top: .9vh;
+      height: 2.6rem;
       border-radius: .35vw;
-      margin-top: .44vh;
       border: .15vw solid rgb(218, 218, 218);
+      /* background-color: var(--background-color-1); */
+
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+}
+
+.publicKeyBox {
+      height: 100%;
+      width: 44vw;
       background-color: var(--background-color-1);
       color: rgb(32, 32, 32);
+      outline: none;
+      
+      border: none;
+      border-top-left-radius: .35vw;
+      border-bottom-left-radius: .35vw;
+      border-right: .15vw solid rgb(218, 218, 218);
+
+      font-size: 1rem;
+      text-overflow: ellipsis;
 
       padding-left: .8vw;
+      padding-right: .43vw;
+}
+
+.copyIcon {
+      cursor: pointer;
+      width: 2.5rem;
+      height: 2.6rem;
+      background-color: var(--background-color-1);
+
+      border: none;
+      border-top-right-radius: .35vw;
+      border-bottom-right-radius: .35vw;
+
+      transition-duration: 0.3s;
+      opacity: .5;
+}
+
+.copyIcon:hover {
+      opacity: .4;
 }
 
 .balanceBox {
@@ -106,7 +146,7 @@
 }
 
 .icon {
-      width: 1.9vw;
+      width: 1.82rem;
       padding-right: .15vw;
 }
 

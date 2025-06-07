@@ -1,35 +1,90 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './WalletInfo.module.css'
 
 import infoIcon from './assets/icons/info_icon.png';
 import coinIcon from './assets/icons/coin_icon.png';
+import copyIcon from './assets/icons/copy_icon.png';
 import { Button } from './Button';
 
-export const WalletInfo = () => {
-      const [wasCopied, setCopied] = useState(false);
+import axios from 'axios';
+import { ModalPage } from './ModalPage'
 
-      const copyPublicKey = (e: React.MouseEvent<HTMLInputElement>) => {
-            e.currentTarget.select();
-            navigator.clipboard.writeText(e.currentTarget.value).then(() => {
-                  setCopied(true);
-                  setTimeout(() => {
-                        setCopied(false);
-                  }, 1000);
-            });
+interface WalletInfoProps {
+      walletPublicKey : string;
+}
+
+export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
+      const [wasCopied, setCopied] = useState(false);
+      const pkInputRef = useRef<HTMLInputElement>(null);
+      const copyPublicKey = () => {
+            if(pkInputRef.current){
+                  pkInputRef.current.select();
+                  navigator.clipboard.writeText(pkInputRef.current.value).then(() => {
+                        setCopied(true);
+                        setTimeout(() => {
+                              setCopied(false);
+                        }, 1000);
+                  });
+            }
       }
 
+      const [showModalPage, setShowModalPage] = useState(false);
+
+      const [walletName, setWalletName] = useState<string>();
+      useEffect(() => {
+                  const fetchData = async () => {
+                        const name = await axios.get<string>(`/api/wallets/${walletPublicKey}/name`);
+                        setWalletName(name.data);
+                  }
+                  fetchData();
+            }
+      , [walletPublicKey]);
+
+      const [walletBalance, setWalletBalance] = useState<string>();
+      useEffect(() => {
+            const fetchData = async () => {
+                  const balance = await axios.get<string>(`/api/utxo/${walletPublicKey}/balance`);
+                  setWalletBalance(balance.data);
+            }
+            fetchData();
+      }, [walletPublicKey]);
+
+      const [totalBalance, setTotalBalance] = useState<string>();
+      useEffect(() => {
+            const fetchData = async () => {
+                  const balance = await axios.get<string>(`/api/utxo/balance/total`);
+                  setTotalBalance(balance.data);
+            }
+            fetchData();
+      }, [walletPublicKey]);
+
+      const [transactions, setTransactions] = useState<Map<string, string>>();
+      useEffect(() => {
+            const fetchData = async () => {
+                  const transactions = await axios.get<Map<string, string>>(`/api/wallets/${walletPublicKey}/transactions`);
+                  setTransactions(transactions.data);
+            }
+            fetchData();
+      }, [walletPublicKey]);
+      
       return (
             <div className={styles.walletInfo}>
-                  <div className={styles.walletName}>Wallet 2</div>
+                  {showModalPage && 
+                        <ModalPage title='Transaction #a6w8...rd68' onClose={() => {setShowModalPage(false);}}/>}
+                  
+                  <div className={styles.walletName}>{walletName ?? "Undefined Wallet"}</div>
                   <div className={styles.block}>
                         <label htmlFor="publicKey">Address</label>
                         <div className={styles.publicKeyBlock}>
-                              <input name="publicKey" 
-                                    className={styles.publicKeyBox} 
-                                    value="5c82ce5b5fcdfbd54138d595fcfed1071705a99ea7985b1df38cc69ec320dace" 
-                                    onClick={copyPublicKey} 
-                                    readOnly>
-                              </input>
+                              <div className={styles.publicKey} onClick={copyPublicKey} >
+                                    <input name="publicKey" 
+                                          className={styles.publicKeyBox} 
+                                          value={walletPublicKey} 
+                                          ref={pkInputRef}
+                                          readOnly>
+                                    </input>
+                                    <img src={copyIcon} className={styles.copyIcon}></img>
+                              </div>
                               <div className={`${styles.copiedMessage} ${wasCopied ? styles.showMessage : ''}`}>
                                     <img src={infoIcon}></img>
                                     Copied
@@ -40,14 +95,14 @@ export const WalletInfo = () => {
                                     <span className={styles.balanceLabel}>Wallet balance</span>
                                     <div className={styles.balance}>
                                           <img className={styles.icon} src={coinIcon}></img>
-                                          2.132 coins
+                                          {walletBalance} coins
                                     </div>
                               </div>
                               <div className={styles.balanceBox}>
                                     <span className={styles.balanceLabel}>Total balance</span>
                                     <div className={styles.balance}>
                                           <img className={styles.icon} src={coinIcon}></img>
-                                          2.132 coins
+                                          {totalBalance} coins
                                     </div>
                               </div>
                               <Button text='Send' icon={coinIcon} className={styles.button}/>
@@ -56,37 +111,31 @@ export const WalletInfo = () => {
                   <div className={`${styles.block} ${styles.walletTransactions}`}>
                         <span className={styles.blockTitle}>Transactions</span>
                         <table>
-                              <tr>
-                                    <th>Date</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Transaction ID</th>
-                              </tr>
-
-                              <tr>
-                                    <td>02.06.2025 14:20</td>
-                                    <td>1.120</td>
-                                    <td>Pending</td>
-                                    <td><a href="#">fe6c9003ffe1f5120ccfe5db03b23b21d17964b2e05f36ce17ca5af82d75df11</a></td>
-                              </tr>
-                              <tr>
-                                    <td>01.10.2023 18:01</td>
-                                    <td>10.782</td>
-                                    <td>Confirmed</td>
-                                    <td><a href="#">5757153b028c4322c817552dacd608a4255ccce12836314699e0b3d4a273895d</a></td>
-                              </tr>
-                              <tr>
-                                    <td>18.04.2013 08:23</td>
-                                    <td>2.132</td>
-                                    <td>Confirmed</td>
-                                    <td><a href="#">72fd3d8f8cc2a3cb343bc9548b5a4c9c5200f3b0686cfb8e99bdf2a07d504031</a></td>
-                              </tr>
-                              <tr>
-                                    <td>17.03.2011 18:57</td>
-                                    <td>0.517</td>
-                                    <td>Confirmed</td>
-                                    <td><a href="#">f2f27cc408748cc55a38f515146bf771deaeda090aeabeec41a82877183c9b7d</a></td>
-                              </tr>
+                              <thead>
+                                    <tr>
+                                          <th>Date</th>
+                                          <th>Amount</th>
+                                          <th>Status</th>
+                                          <th>Transaction ID</th>
+                                    </tr>
+                              </thead>
+                              <tbody>
+                                    {
+                                    transactions && Object.entries(transactions).map(([key, value]) => (
+                                          <tr key={key}>
+                                                <td>{new Date(value['timeStamp']).toLocaleString()}</td>
+                                                <td style={{color: (value['senderPublicKey'] == walletPublicKey ? "#FF0000" : "#008000")}}>
+                                                      {value['senderPublicKey'] == walletPublicKey ? '-' : "+"}{value['amount'] / 100_000_000}
+                                                </td>
+                                                <td>{typeof value['status'] === 'string' && value['status'].length > 0 ? value['status'][0] + (value['status'] as string).substring(1).toLowerCase() : "ERROR"}</td>
+                                                <td>
+                                                      <a href="#" onClick={() => setShowModalPage(true)}>
+                                                            {value['transactionId']}
+                                                      </a>
+                                                </td>
+                                          </tr>))
+                                    }
+                              </tbody>
                         </table>
                   </div>
             </div>

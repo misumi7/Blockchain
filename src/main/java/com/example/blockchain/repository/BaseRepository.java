@@ -17,6 +17,7 @@ public class BaseRepository {
     private ColumnFamilyHandle utxoCF;
     private ColumnFamilyHandle transactionCF;
     private ColumnFamilyHandle walletCF;
+    private ColumnFamilyHandle walletNameCF;
     private RocksDB db;
 
     public BaseRepository(){
@@ -31,7 +32,8 @@ public class BaseRepository {
                     new ColumnFamilyDescriptor("blockIndex".getBytes()),
                     new ColumnFamilyDescriptor("utxo".getBytes()),
                     new ColumnFamilyDescriptor("transaction".getBytes()),
-                    new ColumnFamilyDescriptor("wallet".getBytes())
+                    new ColumnFamilyDescriptor("wallet".getBytes()),
+                    new ColumnFamilyDescriptor("walletName".getBytes())
             );
             List<ColumnFamilyHandle> cfHandles = new ArrayList<>();
             this.db = RocksDB.open(dbOptions, dbDir.getAbsolutePath(), cfDescriptors, cfHandles);
@@ -41,6 +43,7 @@ public class BaseRepository {
             this.utxoCF = cfHandles.get(3);
             this.transactionCF = cfHandles.get(4);
             this.walletCF = cfHandles.get(5);
+            this.walletNameCF = cfHandles.get(6);
         }
         catch (RocksDBException e) {
             e.printStackTrace();
@@ -65,6 +68,10 @@ public class BaseRepository {
 
     public ColumnFamilyHandle getWalletCF() {
         return walletCF;
+    }
+
+    public ColumnFamilyHandle getWalletNameCF() {
+        return walletNameCF;
     }
 
     public RocksDB getDb() {

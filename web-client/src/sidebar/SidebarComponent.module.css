@@ -12,8 +12,16 @@
       margin-left: .4vw;
 }
 
-.sidebarComponentTitle span, .sidebarElement span{
+.sidebarComponentTitle span, .sidebarElement .sidebarElementOption{
       margin-top: 2px;
+}
+
+.sidebarElementOption {
+      cursor: pointer;
+}
+
+.nameEditButton {
+      width: 2rem;
 }
 
 .sidebarComponent {
@@ -33,23 +41,55 @@
       padding: 4.55% 0 4.55% 0;
       text-wrap: nowrap;
 
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       /*width: 90%;
       margin-left: auto;
       margin-right: auto;*/  
 } 
 
-.sidebarElement:not(.selectedElement) span {
-      margin-left: 12%;
+.sidebarElement:hover .nameEditButton{
+      opacity: .7;
+      margin-right: 2vw;
+}
+
+
+.nameEditButton {
+      opacity: 0;
+      transition-duration: .18s;
+      transition-timing-function: linear;
+      margin-right: 2.3vw;
+      
+      justify-self: end;
+      align-self: center;
+
+      pointer-events: auto;
+}
+
+.sidebarElement:has(.nameEditButton:hover) .nameEditButton {
+      opacity: .35;
+}
+
+.sidebarElement .sidebarElementOption {
+      background-color: transparent;
+      font-family: var(--font);
+      font-size: 1rem;
+
+      border: none;
+      outline: none;
+}
+
+.sidebarElement:not(.selectedElement) .sidebarElementOption {
+      margin-left: 20%;
+}
+
+
+.sidebarElement:not(.selectedElement):hover, .sidebarComponentTitle:hover {
+      background-color: var(--hover-color);
 }
 
 .selectedElement span{
       margin-left: 1.5%;
-}
-
-.sidebarElement:not(.selectedElement):hover, .sidebarComponentTitle:hover {
-      background-color: var(--hover-color);
 }
 
 .selectedElement {
@@ -59,7 +99,7 @@
 }
 
 .sidebarComponent .icon {
-      width: 7.5%;
+      width: 2.59rem;
       padding-left: 3%;
       opacity: 80%;
       /*filter: invert(94%) sepia(92%) saturate(1554%) hue-rotate(329deg) brightness(100%) contrast(94%); /* filtergenerator */
