@@ -163,6 +163,7 @@ public class TransactionService{
     public void signTransaction(Transaction transaction){
         try{
             byte[] privateKeyBytes = walletService.getPrivateKey();
+
             PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(privateKeyBytes);
             PrivateKey privateKey = KeyFactory.getInstance("EC", "BC").generatePrivate(privateSpec);
 

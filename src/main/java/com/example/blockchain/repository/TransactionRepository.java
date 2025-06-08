@@ -85,6 +85,7 @@ public class TransactionRepository{
     }
 
     public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
+        // System.out.println("Wallet public key:" + walletPublicKey);
         List<Transaction> transactions = new ArrayList<>();
         RocksIterator it = db.newIterator(transactionCF);
         for(it.seekToFirst(); it.isValid(); it.next()) {

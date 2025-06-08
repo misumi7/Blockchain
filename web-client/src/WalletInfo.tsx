@@ -4,6 +4,7 @@ import styles from './WalletInfo.module.css'
 import infoIcon from './assets/icons/info_icon.png';
 import coinIcon from './assets/icons/coin_icon.png';
 import copyIcon from './assets/icons/copy_icon.png';
+import noTransactionsIcon from './assets/icons/no_transactions_icon.png';
 import { Button } from './Button';
 
 import axios from 'axios';
@@ -28,12 +29,14 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
             }
       }
 
-      const [showModalPage, setShowModalPage] = useState(false);
+      const [modalPageData, setShowModalPage] = useState<string>();
 
       const [walletName, setWalletName] = useState<string>();
       useEffect(() => {
                   const fetchData = async () => {
-                        const name = await axios.get<string>(`/api/wallets/${walletPublicKey}/name`);
+                        const name = await axios.get<string>(`/api/wallets/name`, {
+                              params: {walletPublicKey}
+                        });
                         setWalletName(name.data);
                   }
                   fetchData();
@@ -43,7 +46,9 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
       const [walletBalance, setWalletBalance] = useState<string>();
       useEffect(() => {
             const fetchData = async () => {
-                  const balance = await axios.get<string>(`/api/utxo/${walletPublicKey}/balance`);
+                  const balance = await axios.get<string>(`/api/utxo/balance`, {
+                              params: {walletPublicKey}
+                        });
                   setWalletBalance(balance.data);
             }
             fetchData();
@@ -61,7 +66,9 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
       const [transactions, setTransactions] = useState<Map<string, string>>();
       useEffect(() => {
             const fetchData = async () => {
-                  const transactions = await axios.get<Map<string, string>>(`/api/wallets/${walletPublicKey}/transactions`);
+                  const transactions = await axios.get<Map<string, string>>(`/api/wallets/transactions`, {
+                              params: {walletPublicKey}
+                        });
                   setTransactions(transactions.data);
             }
             fetchData();
@@ -69,8 +76,8 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
       
       return (
             <div className={styles.walletInfo}>
-                  {showModalPage && 
-                        <ModalPage title='Transaction #a6w8...rd68' onClose={() => {setShowModalPage(false);}}/>}
+                  {modalPageData && 
+                        <ModalPage transaction={modalPageData} onClose={() => {setShowModalPage(undefined);}}/>}
                   
                   <div className={styles.walletName}>{walletName ?? "Undefined Wallet"}</div>
                   <div className={styles.block}>
@@ -120,8 +127,7 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                                     </tr>
                               </thead>
                               <tbody>
-                                    {
-                                    transactions && Object.entries(transactions).map(([key, value]) => (
+                                    {transactions && Object.keys(transactions).length > 0 && Object.entries(transactions).map(([key, value]) => (
                                           <tr key={key}>
                                                 <td>{new Date(value['timeStamp']).toLocaleString()}</td>
                                                 <td style={{color: (value['senderPublicKey'] == walletPublicKey ? "#FF0000" : "#008000")}}>
@@ -129,7 +135,7 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                                                 </td>
                                                 <td>{typeof value['status'] === 'string' && value['status'].length > 0 ? value['status'][0] + (value['status'] as string).substring(1).toLowerCase() : "ERROR"}</td>
                                                 <td>
-                                                      <a href="#" onClick={() => setShowModalPage(true)}>
+                                                      <a href="#" onClick={() => setShowModalPage(value)}>
                                                             {value['transactionId']}
                                                       </a>
                                                 </td>
@@ -137,6 +143,12 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                                     }
                               </tbody>
                         </table>
+                        {(!transactions || Object.keys(transactions).length == 0) && (
+                              <div className={styles.noTransactionsMessage}>
+                                    <span>No transactions found</span>
+                                    <img src={noTransactionsIcon}></img>
+                              </div>
+                        )}
                   </div>
             </div>
       );

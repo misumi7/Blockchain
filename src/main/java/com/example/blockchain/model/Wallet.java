@@ -14,8 +14,8 @@ import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.ECNamedCurveTable;
 
 public class Wallet {
-    private byte[] publicKey;
-    private byte[] privateKey;
+    private String publicKey;
+    private String privateKey;
 
     public Wallet() {
         try {
@@ -24,41 +24,56 @@ public class Wallet {
             keyGen.initialize(ecSpec, new SecureRandom());
             KeyPair keyPair = keyGen.generateKeyPair();
 
-            this.privateKey = keyPair.getPrivate().getEncoded();
-            this.publicKey = keyPair.getPublic().getEncoded();
+            this.privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
+            this.publicKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public Wallet(byte[] publicKeyBytes, byte[] privateKeyBytes) {
+    /*public Wallet(byte[] publicKeyBytes, byte[] privateKeyBytes) {
         try {
+            // Validation by generating keys from byte arrays
+            PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+            X509EncodedKeySpec publicSpec = new X509EncodedKeySpec(publicKeyBytes);
+            KeyFactory.getInstance("EC", "BC").generatePrivate(privateSpec);
+            KeyFactory.getInstance("EC", "BC").generatePublic(publicSpec);
+
             this.publicKey = publicKeyBytes;
             this.privateKey = privateKeyBytes;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    public Wallet(String publicKey, String privateKey) {
+        try {
+            this.publicKey = publicKey;
+            this.privateKey = privateKey;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public String getPublicKey() {
-        return Base64.getEncoder().encodeToString(publicKey);
-    }
-
-    public byte[] getPublicKeyBytes() {
         return publicKey;
     }
 
+    public byte[] getPublicKeyBytes() {
+        return Base64.getDecoder().decode(publicKey);
+    }
+
     public byte[] getPrivateKeyBytes() {
-        return privateKey;
+        return Base64.getDecoder().decode(privateKey);
     }
 
     public String getPrivateKey() {
-        return Base64.getEncoder().encodeToString(privateKey);
+        return privateKey;
     }
 
     public PublicKey getPublicKeyObject() {
         try {
-            X509EncodedKeySpec publicSpec = new X509EncodedKeySpec(this.publicKey);
+            X509EncodedKeySpec publicSpec = new X509EncodedKeySpec(getPublicKeyBytes());
             return KeyFactory.getInstance("EC", "BC").generatePublic(publicSpec);
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +84,7 @@ public class Wallet {
 
     public PrivateKey getPrivateKeyObject() {
         try {
-            PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(this.privateKey);
+            PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(getPrivateKeyBytes());
             return KeyFactory.getInstance("EC", "BC").generatePrivate(privateSpec);
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,6 +119,4 @@ public class Wallet {
                 "\n\tprivateKey=" + getPrivateKey() +
                 "\n}";
     }
-
-
 }

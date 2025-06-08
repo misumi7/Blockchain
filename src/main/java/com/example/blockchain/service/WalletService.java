@@ -2,8 +2,11 @@ package com.example.blockchain.service;
 
 import com.example.blockchain.model.Wallet;
 import com.example.blockchain.repository.WalletRepository;
+import com.example.blockchain.response.ApiException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +20,22 @@ public class WalletService {
 
     public WalletService(WalletRepository walletRepository) {
         this.walletRepository = walletRepository;
-        Map<byte[], byte[]> wallets = walletRepository.getAllWallets();
+        Map<String, String> wallets = walletRepository.getAllWallets();
         this.walletList = wallets.entrySet().stream()
-                .map(entry -> new Wallet(entry.getKey(), entry.getValue()))
+                .map(e -> new Wallet(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
-        this.currentWallet = walletList.isEmpty() ? null : walletList.getFirst();
+        this.currentWallet = walletList.isEmpty() ? null : walletList.getLast();
 
-        //createNewWallet();
-        //System.out.println("WALLETS:" + walletList);
+    }
+
+    @PostConstruct
+    public void init() {
+        if(walletList.isEmpty()) {
+            createNewWallet();
+        }
+        //setWalletName("Wallet #1", currentWallet.getPublicKey());
+        /*createNewWallet();*/
+        /*System.out.println("WALLETS:" + walletList);*/
     }
 
     public int getWalletCount() {
@@ -38,7 +49,7 @@ public class WalletService {
 
     public void createNewWallet(){
         Wallet newWallet = new Wallet();
-        walletRepository.saveWallet(newWallet, "Wallet " + (walletList.size() + 1));
+        walletRepository.saveWallet(newWallet, "Wallet #" + (walletList.size() + 1));
         if(currentWallet == null){
             currentWallet = newWallet;
         }
@@ -54,7 +65,7 @@ public class WalletService {
     }
 
     public byte[] getPrivateKey() {
-        return currentWallet.getPrivateKeyObject().getEncoded();
+        return currentWallet.getPrivateKeyBytes();
     }
 
     public Map<String, String> getWallets() {
@@ -66,7 +77,7 @@ public class WalletService {
     }
 
     public byte[] getPublicKey() {
-        return currentWallet.getPublicKeyObject().getEncoded();
+        return currentWallet.getPublicKeyBytes();
     }
 
     public Wallet getCurrentWallet() {
@@ -74,7 +85,7 @@ public class WalletService {
     }
 
     public void addWallet(Wallet wallet) {
-        walletRepository.saveWallet(wallet, "Wallet " + (walletList.size() + 1));
+        walletRepository.saveWallet(wallet, "Wallet #" + (walletList.size() + 1));
         walletList.add(wallet);
         if(currentWallet == null){
             currentWallet = wallet;
@@ -95,6 +106,10 @@ public class WalletService {
     }
 
     public String getWalletName(String walletPublicKey) {
-        return walletRepository.getWalletName(walletPublicKey);
+        String walletName = walletRepository.getWalletName(walletPublicKey);
+        if(walletName != null) {
+            return walletName;
+        }
+        throw new ApiException("Wallet name not found", 400);
     }
 }

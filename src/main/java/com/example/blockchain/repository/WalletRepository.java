@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class WalletRepository{
     public synchronized boolean saveWallet(Wallet wallet, String walletName){
         try(WriteBatch batch = new WriteBatch()) {
             batch.put(walletCF, wallet.getPublicKeyBytes(), wallet.getPrivateKeyBytes());
-            batch.put(walletNameCF, wallet.getPublicKeyBytes(), walletName.getBytes());
+            batch.put(walletNameCF, wallet.getPublicKeyBytes(), walletName.getBytes(StandardCharsets.UTF_8));
             db.write(new WriteOptions(), batch);
             return true;
         }
@@ -50,13 +51,13 @@ public class WalletRepository{
         }
     }
 
-    public synchronized Map<byte[], byte[]> getAllWallets(){
-        Map<byte[], byte[]> wallets = new HashMap<>();
+    public synchronized Map<String, String> getAllWallets(){
+        Map<String, String> wallets = new HashMap<>();
         RocksIterator it = db.newIterator(walletCF);
         for(it.seekToFirst(); it.isValid(); it.next()) {
-            byte[] publicKeyBytes = it.key();
-            byte[] privateKeyBytes = it.value();
-            wallets.put(publicKeyBytes, privateKeyBytes);
+            String publicKey = Base64.getEncoder().encodeToString(it.key());
+            String privateKey = Base64.getEncoder().encodeToString(it.value());
+            wallets.put(publicKey, privateKey);
         }
         it.close();
         return wallets;

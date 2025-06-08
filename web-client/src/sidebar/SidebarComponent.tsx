@@ -8,16 +8,16 @@ import { SidebarComponentType } from './SidebarComponentType';
 
 interface SidebarComponentProps {
       type : SidebarComponentType;
+      isSelected : boolean;
       icon : string;
       onSelected : (option : string) => void;
 }
 
-export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> = ({ type, icon, onSelected }) => {
+export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> = ({ type, isSelected, icon, onSelected }) => {
       const [isActive, setIsActive] = useState(false);
       const componentContentRef = useRef<HTMLDivElement>(null);
       const [height, setHeight] = useState('0px');
 
-      
       const handleClick = () => {
             setIsActive(!isActive);
       }
@@ -25,7 +25,9 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
       useEffect(() => {
             isActive && componentContentRef.current ? setHeight(`${componentContentRef.current.scrollHeight}px`) : setHeight('0px');
       }, [isActive]);
-      
+
+      const [selectedElement, setSelectedElement] = useState<string>();
+
       const [componentContent, setComponentContent] = useState<any>();
       useEffect(() => {
             const fetchData = async () => {
@@ -67,9 +69,10 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                         <img className={styles.icon} src={icon}></img>
                         <span>{type}</span>
                   </div>
-                  <div className={styles.sidebarElements} ref={componentContentRef} style={{maxHeight: height}}>
+                  <div className={`${styles.sidebarElements}`} ref={componentContentRef} style={{maxHeight: height}}>
                         {componentContent && Object.entries(componentContent).map(([key, name]) => (
-                              <div className={styles.sidebarElement} key={key} onClick={() => {onSelected(key);}}>
+                              <div className={`${styles.sidebarElement} ${(isSelected && selectedElement == key) ? styles.selectedElement : ''}`} key={key} onClick={() => {onSelected(key); setSelectedElement(key);}}>
+                                    {isSelected && selectedElement == key && <img className={styles.icon} src={selectedIcon}></img>}
                                     <input className={styles.sidebarElementOption} value={String(name)} readOnly={!editableOptions[key]}></input>
                                     {type == SidebarComponentType.WALLETS && (<img className={styles.nameEditButton} src={editIcon} onClick={(e) => {e.stopPropagation(); handleEditClick(key);}}></img>)}    
                               </div>

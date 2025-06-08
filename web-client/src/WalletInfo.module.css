@@ -85,7 +85,7 @@
 
 .publicKeyBox {
       height: 100%;
-      width: 44vw;
+      width: 42.3vw;
       background-color: var(--background-color-1);
       color: rgb(32, 32, 32);
       outline: none;
@@ -187,4 +187,24 @@
 
       word-wrap: break-word;
       word-break: break-all;
+}
+
+.noTransactionsMessage {
+      width: 100%;
+      margin-top: 2.95%;
+      margin-bottom: 1%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center
+}
+
+.noTransactionsMessage span {
+      font-family: var(--font);
+      font-size: 1.55rem;
+}
+
+.noTransactionsMessage img {
+      user-select: none;
+      opacity: .73;
 }

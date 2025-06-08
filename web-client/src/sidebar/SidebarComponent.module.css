@@ -38,9 +38,10 @@
 
 .sidebarElement {
       user-select: none;
-      padding: 4.55% 0 4.55% 0;
+      /* padding: 2.5vh 0 2.5vh 0; */
       text-wrap: nowrap;
 
+      height: 9.7vh;
       display: grid;
       grid-template-columns: 1fr 1fr;
       /*width: 90%;
@@ -70,17 +71,23 @@
       opacity: .35;
 }
 
+.sidebarElement:has(.nameEditButton:active) .nameEditButton {
+      opacity: 0.2;
+      transition-duration: .1s;
+}
+
 .sidebarElement .sidebarElementOption {
       background-color: transparent;
       font-family: var(--font);
       font-size: 1rem;
 
+      padding-left: .7vw;
       border: none;
       outline: none;
 }
 
 .sidebarElement:not(.selectedElement) .sidebarElementOption {
-      margin-left: 20%;
+      margin-left: calc(1.8vw + 2.59rem);
 }
 
 
@@ -88,19 +95,21 @@
       background-color: var(--hover-color);
 }
 
-.selectedElement span{
-      margin-left: 1.5%;
-}
-
 .selectedElement {
+      display: grid;
+      grid-template-columns: 0.25fr 1fr 1fr;
       background-color: var(--sec-button-color);
-      /*border-radius: 1.1vw;*/
-      box-shadow: inset 0 0 0.01vw var(--shadow-color);
+
+      align-items: center;
 }
 
-.sidebarComponent .icon {
+.sidebarComponent .icon{
       width: 2.59rem;
-      padding-left: 3%;
       opacity: 80%;
+      padding-left: 2.1%;
+}
+
+.sidebarElements .icon {
+      padding-left: 1.8vw;
       /*filter: invert(94%) sepia(92%) saturate(1554%) hue-rotate(329deg) brightness(100%) contrast(94%); /* filtergenerator */
 }

@@ -47,7 +47,7 @@ public class BlockchainService {
         // TEMP::
         blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        //utxoService.deleteAllUTXO();
+        utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -239,7 +239,7 @@ public class BlockchainService {
     }
 
     public void addGenesisBlock(){
-        final String GENESIS_PUBLIC_KEY = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEIuNKcF1LZJ4geWnLrUDuDkFwjT4XGl7h+Wyi+yEdUhNsI0vrFMjoXyBz0SU7zUrykJafHjsdNlASHXOoIFxfgg==";
+        final String GENESIS_PUBLIC_KEY = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEi3vx10+2C6ZWWV2ET/rwxiVqpOzgHO2yR9KGSG59WiOuB5GBBia6S1nwK0+tz1SSIA/NzBwD4+0kRmBIf1Z9Ug==";
         Transaction firstTransaction = new Transaction(
                 new ArrayList<>(),
                 null,

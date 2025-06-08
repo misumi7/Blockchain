@@ -26,13 +26,13 @@ public class WalletController {
         return walletService.getWallets();
     }
 
-    @GetMapping("/{walletPublicKey}/name")
-    public String getWalletName(@PathVariable("walletPublicKey") String walletPublicKey) {
+    @GetMapping(value = "/name", params = {"walletPublicKey"})
+    public String getWalletName(@RequestParam("walletPublicKey") String walletPublicKey) {
         return walletService.getWalletName(walletPublicKey);
     }
 
-    @GetMapping(value = "/{walletPublicKey}/transactions")
-    public List<Transaction> getTransactionsByWallet(@PathVariable("walletPublicKey") String walletPublicKey) {
+    @GetMapping(value = "/transactions", params = {"walletPublicKey"})
+    public List<Transaction> getTransactionsByWallet(@RequestParam("walletPublicKey") String walletPublicKey) {
         return transactionService.getTransactionsByWallet(walletPublicKey);
     }
 }

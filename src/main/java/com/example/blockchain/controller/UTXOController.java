@@ -31,18 +31,18 @@ public class UTXOController {
         return utxoService.getAllUTXOs();
     }
 
-    @GetMapping(value = "/{publicKey}/{txId}/{outputIndex}")
-    public UTXO getUTXO(@PathVariable("publicKey") String publicKey, @PathVariable("txId") String txId, @PathVariable("outputIndex") int outputIndex) {
+    @GetMapping(params = {"publicKey", "txId", "outputIndex"})
+    public UTXO getUTXO(@RequestParam("publicKey") String publicKey, @RequestParam("txId") String txId, @RequestParam("outputIndex") int outputIndex) {
         return utxoService.getUTXO(publicKey, txId, outputIndex);
     }
 
-    @GetMapping(value = "/{publicKey}")
-    public List<UTXO> getUtxoByOwner(@PathVariable("publicKey") String publicKey) {
+    @GetMapping(params = {"walletPublicKey"})
+    public List<UTXO> getUtxoByOwner(@RequestParam("walletPublicKey") String publicKey) {
         return utxoService.getUtxoByOwner(publicKey);
     }
 
-    @GetMapping("/{walletPublicKey}/balance")
-    public double getWalletBalance(@PathVariable("walletPublicKey") String walletPublicKey) {
+    @GetMapping(value = "/balance", params = {"walletPublicKey"})
+    public double getWalletBalance(@RequestParam("walletPublicKey") String walletPublicKey) {
         return utxoService.getWalletBalance(walletPublicKey);
     }
 

@@ -13,7 +13,7 @@ function App() {
     option: string
   }>({
     componentType: SidebarComponentType.WALLETS,
-    option: 'MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAErfbjmzUy2nrRNC1vrfWh0wlYfwvMieoP5v72Ebsn8Jl9pa4s9Q65iqgsSgRlhSUBwm2zWD+ScCxKXSOu1eupDQ=='
+    option: 'MIGNAgEAMBAGByqGSM49AgEGBSuBBAAKBHYwdAIBAQQgsy75RftrsHMhNHw0yJLyaT4n1ADoASqYoEQvzeYzrsSgBwYFK4EEAAqhRANCAASkXuBWf17lovz8RDXz4w3uge90GUS07/5e3Apqmx85xim2KwD551J/81zdfxzAg5G6JbsfDw3xGsyZKCwxJOTY'
   })
 
   return (
