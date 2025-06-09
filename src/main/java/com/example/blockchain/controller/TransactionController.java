@@ -1,6 +1,7 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Transaction;
+import com.example.blockchain.model.TransactionRequest;
 import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.BlockchainService;
 import com.example.blockchain.service.TransactionService;
@@ -23,10 +24,17 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @PostMapping
+    @PostMapping(value = "/add")
     public ResponseEntity<ApiResponse> addTransaction(@RequestBody Transaction transaction) {
         transactionService.saveTransactionToMemPool(transaction);
         return ResponseEntity.ok(new ApiResponse("Transaction added successfully", 200));
+    }
+
+    @PostMapping(value = "/create")
+    public ResponseEntity<ApiResponse> createTransaction(@RequestBody TransactionRequest transactionRequest) {
+        //System.out.println("Creating transaction: \n" + transactionRequest);
+        transactionService.createTransaction(transactionRequest);
+        return ResponseEntity.ok(new ApiResponse("Transaction created successfully", 200));
     }
 
     @GetMapping

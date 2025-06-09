@@ -59,7 +59,8 @@ public class TransactionService{
         /*createTransaction(
                 walletService.getPublicKey(),
                 new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05},
-                10
+                10,
+                "0"
         );*/
     }
 
@@ -203,7 +204,7 @@ public class TransactionService{
         }
     }
 
-    public void createTransaction(byte[] senderBytePublicKey, byte[] receiverBytePublicKey, double coinAmount) {
+    public void createTransaction(TransactionRequest transactionRequest) {
         // Required utxo are selected from the existing ones
         // We create output utxo for the receiver
         // Then we create the transaction and validate it (if input utxo exists and both input and output utxo are valid)
@@ -211,9 +212,16 @@ public class TransactionService{
         // all validation should be done in the node service class, here we just create the transaction
 
         // Create raw transaction
-        String senderPublicKey = Base64.getEncoder().encodeToString(senderBytePublicKey);
-        String receiverPublicKey = Base64.getEncoder().encodeToString(receiverBytePublicKey);
-        long amount = (long) (coinAmount * 100000000L);
+        /*String senderPublicKey = Base64.getEncoder().encodeToString(senderBytePublicKey);
+        String receiverPublicKey = Base64.getEncoder().encodeToString(receiverBytePublicKey);*/
+
+
+        // VALIDATE PIN HERE
+
+        long amount = (long) (transactionRequest.getAmount() * 100000000L);
+        String senderPublicKey = transactionRequest.getSenderPublicKey();
+        String receiverPublicKey = transactionRequest.getReceiverPublicKey();
+
         List<UTXO> ownerUTXO = utxoService.getUtxoByOwner(senderPublicKey);
         System.out.println("Owner UTXO: \n" + ownerUTXO);
         long selectedAmount = 0;
@@ -248,7 +256,7 @@ public class TransactionService{
         System.out.println("Selected UTXO: \n" + inputs);
         if(selectedAmount < amount + feeAmount) {
             System.out.println("[TRANSACTION ERROR] Not enough UTXO to create transaction (Try decreasing the fee)");
-            return;
+            throw new ApiException("Not enough UTXO to create transaction (Try decreasing the fee)", 400);
         }
 
         transaction.setInputs(inputs);
@@ -280,6 +288,7 @@ public class TransactionService{
             System.out.println("[TRANSACTION ERROR] Transaction was not accepted by the network");
             transaction.setStatus(TransactionStatus.REJECTED);
             transactionRepository.saveTransaction(transaction);
+            throw new ApiException("Transaction was not accepted by the network", 400);
         }
     }
 

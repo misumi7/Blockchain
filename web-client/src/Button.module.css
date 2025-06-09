@@ -16,6 +16,8 @@
 
       display: flex;
       align-items: center;
+
+      overflow: hidden;
 }
 
 .button:hover {
@@ -29,4 +31,12 @@
 
 .buttonIcon {
       height: 1.6rem;
+}
+
+.inactiveButton {
+      filter: grayscale(100%);
+}
+
+.button span, .button img {
+      transition: .1s;
 }

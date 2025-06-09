@@ -8,7 +8,8 @@ import noTransactionsIcon from './assets/icons/no_transactions_icon.png';
 import { Button } from './Button';
 
 import axios from 'axios';
-import { ModalPage } from './ModalPage'
+import { TransactionModalPage } from './TransactionModalPage'
+import { CreateTransactionModalPage } from './CreateTransactionModalPage';
 
 interface WalletInfoProps {
       walletPublicKey : string;
@@ -74,10 +75,12 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
             fetchData();
       }, [walletPublicKey]);
       
+      const [createTransaction, setCreateTransaction] = useState<boolean>(false);
+
       return (
             <div className={styles.walletInfo}>
                   {modalPageData && 
-                        <ModalPage transaction={modalPageData} onClose={() => {setShowModalPage(undefined);}}/>}
+                        <TransactionModalPage transaction={modalPageData} onClose={() => {setShowModalPage(undefined);}}/>}
                   
                   <div className={styles.walletName}>{walletName ?? "Undefined Wallet"}</div>
                   <div className={styles.block}>
@@ -112,7 +115,12 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                                           {totalBalance} coins
                                     </div>
                               </div>
-                              <Button text='Send' icon={coinIcon} className={styles.button}/>
+                              <Button text='Send' icon={coinIcon} isActive={Number(walletBalance) > 0 } className={styles.button} onClick={() => {Number(walletBalance) > 0 && setCreateTransaction(true)}}/>
+                              {
+                                    createTransaction && (
+                                          <CreateTransactionModalPage walletPublicKey={walletPublicKey} onClose={() => {setCreateTransaction(false);}}/>
+                                    )
+                              }
                         </div>
                   </div>
                   <div className={`${styles.block} ${styles.walletTransactions}`}>

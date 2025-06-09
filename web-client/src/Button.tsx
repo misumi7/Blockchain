@@ -5,18 +5,21 @@ interface ButtonProps {
       icon? : string;
       iconRight? : boolean;  
       className? : string;
+      isActive? : boolean;
+      onClick? : () => void;
+      hideText? : boolean;
 }
 
-export const Button : React.FC<ButtonProps> = ({ text, icon, iconRight, className }) => {
+export const Button : React.FC<ButtonProps> = ({ text, icon, iconRight, hideText, className, isActive, onClick }) => {
       return (
-            <div className={`${styles.button} ${className}`}>
+            <div className={`${styles.button} ${className} ${isActive ? '' : styles.inactiveButton}`} onClick={() => { onClick && onClick(); }}>
                   {icon && !iconRight && 
-                  (<img src={icon} className={styles.buttonIcon}></img>)}
+                  (<img src={icon} className={`${styles.buttonIcon} ${hideText ? styles.centerIcon : ''}`}></img>)}
 
-                  <span>{text}</span>
+                  <span className={hideText ? styles.hideText : ''}>{text}</span>
 
                   {icon && iconRight && 
-                  (<img src={icon} className={styles.buttonIcon}></img>)}
+                  (<img src={icon} className={`${styles.buttonIcon} ${hideText ? styles.centerIcon : ''}`}></img>)}
             </div>
       );
 }

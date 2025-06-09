@@ -1,0 +1,40 @@
+.pinInput {
+      display: flex;
+      flex-direction: column;
+
+      align-items: center;
+}
+
+.pinInput label {
+      padding-top: 1.5vh;
+}
+
+.pinBox {
+      width: 100%;
+      margin-top: .5vh;
+      margin-left: .44vw;
+
+      display: flex;
+      justify-content: center;
+}
+
+.pinBox input {
+      width: 2rem;
+      height: 2rem;
+      margin-left: .1vw;
+      margin-right: .1vw;
+      outline: none;
+      
+      border-radius: .24vw;
+      border: .15vw solid rgb(218, 218, 218);
+
+      text-align: center;
+      font-family: var(--font);
+      font-size: 1.2rem;
+
+      transition-duration: .4s;
+}     
+
+.pinBox input:focus {
+      border: .15vw solid #edc421;
+}

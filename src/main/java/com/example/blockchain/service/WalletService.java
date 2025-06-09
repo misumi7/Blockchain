@@ -64,6 +64,11 @@ public class WalletService {
         }
     }
 
+    private byte[] encryptPrivateKey(byte[] privateKey, String IV, String key) {
+
+        return Base64.getEncoder().encode(privateKey);
+    }
+
     public byte[] getPrivateKey() {
         return currentWallet.getPrivateKeyBytes();
     }
