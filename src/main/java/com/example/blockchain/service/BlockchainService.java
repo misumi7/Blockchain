@@ -45,9 +45,9 @@ public class BlockchainService {
         // this.utxoService = utxoService;
 
         // TEMP::
-        blockchainRepository.deleteAllBlocks();
+        /*blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        utxoService.deleteAllUTXO();
+        utxoService.deleteAllUTXO();*/
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -66,7 +66,7 @@ public class BlockchainService {
         List<Transaction> transactions = new ArrayList<>();
         while(!nodeService.getMemPool().isEmpty() && transactions.size() < Block.MAX_BLOCK_SIZE_TRANSACTIONS){
             Transaction transaction = nodeService.getMemPool().peek();
-            if(blockSize + transaction.getSize() > Block.MAX_BLOCK_SIZE_BYTES) {
+            if(blockSize + transaction.getSizeInBytes() > Block.MAX_BLOCK_SIZE_BYTES) {
                 break;
             }
             if(transactionService.isTransactionValid(transaction)) {
@@ -74,7 +74,7 @@ public class BlockchainService {
                 transactions.add(transaction);
                 nodeService.removeTransactionFromMemPool(transaction);
                 totalFee += transaction.getTransactionFee();
-                blockSize += transaction.getSize();
+                blockSize += transaction.getSizeInBytes();
             }
             else {
                 System.out.println("[MINING] Invalid transaction found in mempool: " + transaction.getTransactionId());
@@ -262,7 +262,7 @@ public class BlockchainService {
                 0,
                 "GENESIS",
                 Arrays.asList(firstTransaction),
-                0,
+                LocalDateTime.of(2025, 1, 4, 12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
                 0,
                 null
         );
@@ -382,5 +382,35 @@ public class BlockchainService {
 
     public boolean deleteAllBlocks() {
         return blockchainRepository.deleteAllBlocks();
+    }
+
+    public Map<Long, Block> getBlocks(long from, long count) {
+        Map<Long, Block> blocks = new HashMap<>();
+        long startWith = from;
+        if(from > blockchainRepository.getLatestBlockIndex() || from < 0) {
+            startWith = blockchainRepository.getLatestBlockIndex();
+        }
+        Block block = blockchainRepository.getBlock(startWith);
+        for(long i = startWith; block != null && i > startWith - count; --i) {
+            blocks.put(block.getIndex(), block);
+            block = blockchainRepository.getBlock(block.getPreviousHash());
+        }
+        return blocks;
+    }
+
+    public long getBlockchainSizeInBytes() {
+        long size = 0;
+        for (Block block : getAllBlocks().values()) {
+            size += block.getSizeInBytes();
+        }
+        return size;
+    }
+
+    public long getTransactionCount() {
+        long count = 0;
+        for (Block block : getAllBlocks().values()) {
+            count += block.getTransactions().size();
+        }
+        return count;
     }
 }

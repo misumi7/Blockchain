@@ -17,10 +17,6 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
       const [isActive, setIsActive] = useState(false);
       const componentContentRef = useRef<HTMLDivElement>(null);
       const [height, setHeight] = useState('0px');
-
-      const handleClick = () => {
-            setIsActive(!isActive);
-      }
       
       useEffect(() => {
             isActive && componentContentRef.current ? setHeight(`${componentContentRef.current.scrollHeight}px`) : setHeight('0px');
@@ -42,30 +38,56 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                               }
                               break;
                         case SidebarComponentType.NETWORK:
-                              setComponentContent(['an']);
+                              setComponentContent(['Dashboard']);
                               break;
                         case SidebarComponentType.NODE:
-                              setComponentContent(['ann']);
+                              setComponentContent(['-']);
                               break;
                         case SidebarComponentType.SETTINGS:
-                              setComponentContent(['as']);
+                              setComponentContent(['-']);
                               break;
                   }
             };
             fetchData();
       }, [setComponentContent]);
 
-      const [editableOptions, setEditableOptions] = useState<Record<string, boolean>>({});
-      const handleEditClick = (key: string) => {
-            setEditableOptions(prev => ({ // ...prev are the values in prev, the 'key' will be overriden
-                  ...prev,
-                  [key]: true
-            }));
+      const [walletName, setWalletName] = useState<string>('');
+      const [editingKey, setEditingKey] = useState<string>();
+      const onChangeHandler = (e : React.ChangeEvent<HTMLInputElement>) => {
+            setWalletName(e.target.value);
       };
+
+      const updateWalletName = async (walletPublicKey : string, newName : string) => {
+            await axios.patch('/api/wallets', {
+                  walletPublicKey: walletPublicKey,
+                  walletName: newName
+            })
+            .then(response => {
+                  if (response.status == 200) {
+                        componentContent[editingKey || ''] = walletName;
+                  }
+            });
+            setEditingKey(undefined);
+      };
+
+      const inputRef = useRef<HTMLInputElement>(null);
+      useEffect(() => {
+            if (inputRef.current) {
+                  inputRef.current.focus();
+            }
+      }, [inputRef]);
 
       return (
             <div className={styles.sidebarComponent}>
-                  <div className={styles.sidebarComponentTitle} onClick={() => {handleClick();}}>
+                  <div className={`${styles.sidebarComponentTitle} ${isSelected && componentContent.length == 0 ? styles.selectedComponent : ''}`} 
+                        onClick={() => {
+                              // if(componentContent && componentContent.length > 0){
+                                    setIsActive(!isActive);
+                              // }
+                              // else {
+                              //       onSelected("-1"); setSelectedElement("-1");
+                              // }
+                        }}>
                         <img className={styles.icon} src={icon}></img>
                         <span>{type}</span>
                   </div>
@@ -73,14 +95,39 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                         {componentContent && Object.entries(componentContent).map(([key, name]) => (
                               <div className={`${styles.sidebarElement} ${(isSelected && selectedElement == key) ? styles.selectedElement : ''}`} key={key} onClick={() => {onSelected(key); setSelectedElement(key);}}>
                                     {isSelected && selectedElement == key && <img className={styles.icon} src={selectedIcon}></img>}
-                                    <input className={styles.sidebarElementOption} value={String(name)} readOnly={!editableOptions[key]}></input>
-                                    {type == SidebarComponentType.WALLETS && (<img className={styles.nameEditButton} src={editIcon} onClick={(e) => {e.stopPropagation(); handleEditClick(key);}}></img>)}    
+                                    <input 
+                                          ref={editingKey == key ? inputRef : undefined}
+                                          className={styles.sidebarElementOption} 
+                                          value={editingKey == key ? walletName : String(name)} 
+                                          readOnly={editingKey == key ? false : true}
+                                          onChange={(e) => onChangeHandler(e)}
+                                          onBlur={() => {
+                                                // input lost focus
+                                                if(editingKey == key && walletName != String(name)){
+                                                      updateWalletName(editingKey, walletName);
+                                                }
+                                          }}
+                                          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                                if (e.key === "Enter" && editingKey == key) {
+                                                      updateWalletName(editingKey, walletName);
+                                                }
+                                          }}
+                                          autoFocus={editingKey == key}>
+                                    </input>
+                                    {type == SidebarComponentType.WALLETS && (
+                                          <img 
+                                                className={styles.nameEditButton} 
+                                                src={editIcon} 
+                                                onClick={(e) => {
+                                                      e.stopPropagation(); 
+                                                      setEditingKey(key);
+                                                      setWalletName(String(name));
+                                                }}
+                                          >
+                                          </img>)
+                                    }    
                               </div>
-                        ))}          
-                        {/* <div className={`${styles.sidebarElement} ${styles.selectedElement}`}>
-                              <img className={styles.icon} src={selectedIcon}></img>
-                              <span>Wallet {2}</span>
-                        </div>                   */}     
+                        ))}
                   </div>
             </div>   
       );

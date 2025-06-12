@@ -25,6 +25,22 @@ public class BlockchainController {
         return blockchainService.getAllBlocks();
     }
 
+    @GetMapping(value = "/size")
+    public long getBlockchainSizeInBytes() {
+        //System.out.println("Getting blockchain size in bytes || " + blockchainService.getBlockchainSizeInBytes());
+        return blockchainService.getBlockchainSizeInBytes();
+    }
+
+    @GetMapping(value = "/transaction-count")
+    public long getTransactionCount() {
+        return blockchainService.getTransactionCount();
+    }
+
+    @GetMapping(params = {"from", "count"})
+    public Map<Long, Block> getBlocks(@RequestParam("from") long from, @RequestParam("count") long count) {
+        return blockchainService.getBlocks(from, count);
+    }
+
     @GetMapping(value = "/{hash}")
     public Block getBlock(@PathVariable("hash") String hash) {
         return blockchainService.getBlock(hash);

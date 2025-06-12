@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class UTXO {
+public class UTXO implements Serializable {
     private final String txId;
     private final int outputIndex;
     private final String owner;

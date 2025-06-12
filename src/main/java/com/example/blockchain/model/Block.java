@@ -1,17 +1,19 @@
 package com.example.blockchain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Block {
+public class Block implements Serializable {
     public static final int MAX_BLOCK_SIZE_BYTES = 1_000_000; // 1 mb
     public static final int MAX_BLOCK_SIZE_TRANSACTIONS = 5000;
 
@@ -143,6 +145,21 @@ public class Block {
 
     public void setNonce(long nonce) {
         this.nonce = nonce;
+    }
+
+    public long getSizeInBytes() {
+        long size = 0;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.flush();
+            size += baos.toByteArray().length;
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return size;
     }
 
     @Override

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import styles from './TransactionModalPage.module.css'
 
-import closeIcon from './assets/icons/close_icon.png'
-import dropDownIcon from './assets/icons/drop_down_icon.png';
+import dropDownIcon from '../assets/icons/drop_down_icon.png';
 import { ModalPage } from './ModalPage';
 
 interface TransactionModalPageProps {
@@ -35,39 +34,39 @@ export const TransactionModalPage: React.FC<TransactionModalPageProps> = ({ tran
                   <span className={styles.title}>Transaction Details:</span>
                   <div className={styles.section}>
                         <div className={styles.contentElement}>
-                              <span className={""}>Hash: </span>
-                              <span className={""}>{transaction.transactionId}</span>
+                              <span>Hash: </span>
+                              <span>{transaction.transactionId}</span>
                         </div>
                         <div className={styles.contentElement}>
                               <span>Status: </span>
                               <span className={styles.status} style={{backgroundColor: getColor(transaction.status)[0], color: getColor(transaction.status)[1]}}> {transaction.status}</span>
                         </div>
                         <div className={styles.contentElement}>
-                              <span className={""}>Date: </span>
-                              <span className={""}>{new Date(transaction.timeStamp).toLocaleString()}</span>
+                              <span>Date: </span>
+                              <span>{new Date(transaction.timeStamp).toLocaleString()}</span>
                         </div>
                   </div>
                   <div className={styles.section}>
                         <div className={styles.contentElement}>
-                              <span className={""}>Amount: </span>
-                              <span className={""}>{transaction.amount / 100_000_000} coins</span>
+                              <span>Amount: </span>
+                              <span>{transaction.amount / 100_000_000} coins</span>
                         </div>
                         <div className={`${styles.contentElement}`}>
-                              <span className={""}>Sender: </span>
+                              <span>Sender: </span>
                               {!showFullSenderKey && <span className={styles.addressSpan} onClick={() => {setShowFullSenderKey(!showFullSenderKey)}}>{transaction.senderPublicKey.length >= 54 ? `${transaction.senderPublicKey.substring(0, 27)}...${transaction.senderPublicKey.substring(transaction.senderPublicKey.length - 27, transaction.senderPublicKey.length)}` : transaction.senderPublicKey || "Unknown"}</span>}
                               {showFullSenderKey && <span className={styles.addressSpan} onClick={() => {setShowFullSenderKey(!showFullSenderKey)}}>{transaction.senderPublicKey || "Unknown"}</span>}
 
                         </div>
                         <div className={`${styles.contentElement}`}>
-                              <span className={""}>Receiver: </span>
+                              <span>Receiver: </span>
                               {!showFullReceiverKey && <span className={styles.addressSpan} onClick={() => {setShowFullReceiverKey(!showFullReceiverKey)}}>{transaction.receiverPublicKey.length >= 54 ? `${transaction.receiverPublicKey.substring(0, 27)}...${transaction.receiverPublicKey.substring(transaction.receiverPublicKey.length - 27, transaction.receiverPublicKey.length)}` : transaction.receiverPublicKey}</span>}
                               {showFullReceiverKey && <span className={styles.addressSpan} onClick={() => {setShowFullReceiverKey(!showFullReceiverKey)}}>{transaction.receiverPublicKey}</span>}
                         </div>
                   </div>
                   <div className={styles.section}>
                         <div className={styles.contentElement}>
-                              <span className={""}>Inputs:</span>
-                              <span className={""}>({transaction.inputs ? transaction.inputs.length : "0"})</span>
+                              <span>Inputs:</span>
+                              <span>({transaction.inputs ? transaction.inputs.length : "0"})</span>
                               <img className={styles.showMoreIcon} src={dropDownIcon} onClick={() => {setShowInputs(!showInputs)}}></img>
                         </div>      
                         {showInputs && transaction.inputs && transaction.inputs.length > 0 && (
@@ -95,8 +94,8 @@ export const TransactionModalPage: React.FC<TransactionModalPageProps> = ({ tran
                               </table>
                         )}
                         <div className={styles.contentElement}>
-                              <span className={""}>Outputs:</span>
-                              <span className={""}>({transaction.outputs ? transaction.outputs.length : "0"})</span>
+                              <span>Outputs:</span>
+                              <span>({transaction.outputs ? transaction.outputs.length : "0"})</span>
                               <img className={styles.showMoreIcon} src={dropDownIcon} onClick={() => {setShowOutputs(!showOutputs)}}></img>
                         </div>
                         {showOutputs && transaction.outputs && transaction.outputs.length > 0 && (
@@ -123,11 +122,11 @@ export const TransactionModalPage: React.FC<TransactionModalPageProps> = ({ tran
                               </table>
                         )}
                         <div className={styles.contentElement}>
-                              <span className={""}>Fee: </span>
-                              <span className={""}>{transaction.transactionFee / 100_000_000} coins</span>
+                              <span>Fee: </span>
+                              <span>{transaction.transactionFee / 100_000_000} coins</span>
                         </div>
                         <div className={styles.contentElement}>
-                              <span className={""}>Signature: </span>
+                              <span>Signature: </span>
                               {!showFullSignature && <span className={styles.addressSpan} onClick={() => {setShowFullSignature(!showFullSignature)}}>{transaction.digitalSignature && transaction.digitalSignature.length >= 54 ? `${transaction.digitalSignature.substring(0, 27)}...${transaction.digitalSignature.substring(transaction.digitalSignature.length - 27, transaction.digitalSignature.length)}` : transaction.digitalSignature || "Unsigned"}</span>}
                               {showFullSignature && <span className={styles.addressSpan} onClick={() => {setShowFullSignature(!showFullSignature)}}>{transaction.digitalSignature || "Unsigned"}</span>}
                         </div>

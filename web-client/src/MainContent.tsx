@@ -1,6 +1,7 @@
 import { WalletInfo } from './WalletInfo'
 import styles from './MainContent.module.css'
 import { SidebarComponentType } from './sidebar/SidebarComponentType';
+import { Network } from './Network';
 
 interface MainContentProps{
       contentType : string;
@@ -18,7 +19,7 @@ export const MainContent: React.FC<MainContentProps> = ({ contentType, option}) 
                         }
                         {
                               contentType == SidebarComponentType.NETWORK && (
-                                    <div>Some component</div>
+                                    <Network/>
                               )
                         }
                   </div>

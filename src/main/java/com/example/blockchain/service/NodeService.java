@@ -116,7 +116,7 @@ public class NodeService {
     private void removeDeadPeers() {
         for(String peer : node.getPeers()){
             Runnable removeInactivePeers = () -> {
-                if (!isPeerAlive(peer)){
+                if (!isPeerAlive(peer) && !Node.PUBLIC_NODES.contains(peer)) {
                     System.out.println("[DEAD PEER REMOVAL] " + peer);
                     node.getPeers().remove(peer);
                 }
@@ -148,10 +148,10 @@ public class NodeService {
             }
             catch (RestClientException e){
                 System.out.println("[NO ANSWER] " + peer);
-                if (!isPeerAlive(peer)){
+                /*if (!isPeerAlive(peer)){
                     System.out.println("[PEER REMOVAL] " + peer);
                     node.getPeers().remove(peer);
-                }
+                }*/
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -211,7 +211,7 @@ public class NodeService {
         for(String peer : node.getPeers()){
             Runnable sendTransactionToPeer = () -> {
                 try {
-                    String url = peer + "/api/transactions";
+                    String url = peer + "/api/transactions/add";
                     ApiResponse response = restTemplate.postForObject(url, transaction, ApiResponse.class);
                     if (response.getStatus() == 200) {
                         successCount.incrementAndGet();
@@ -270,5 +270,31 @@ public class NodeService {
 
     public void execute(Runnable task) {
         executor.execute(task);
+    }
+
+    public int getMemPoolSizeInBytes() {
+        int size = 0;
+        for (Transaction transaction : node.getMemPool()) {
+            size += transaction.getSizeInBytes();
+        }
+        return size;
+    }
+
+    public int getPeersCount() {
+        return node.getPeers().size();
+    }
+
+    public void ping(String ipAddress) {
+        try {
+            String url = ipAddress + "/api/nodes/ping";
+            ResponseEntity<ApiResponse> response = restTemplate.getForEntity(url, ApiResponse.class);
+            if (response.getStatusCodeValue() != 200) {
+                throw new ApiException("Peer is not alive", 503);
+            }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new ApiException("Peer is not alive", 503);
+        } catch (RestClientException e) {
+            throw new ApiException("Error pinging peer", 500);
+        }
     }
 }

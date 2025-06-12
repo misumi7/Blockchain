@@ -1,17 +1,14 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Transaction;
-import com.example.blockchain.model.TransactionRequest;
+import com.example.blockchain.request.TransactionRequest;
 import com.example.blockchain.response.ApiResponse;
-import com.example.blockchain.service.BlockchainService;
 import com.example.blockchain.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -40,6 +37,11 @@ public class TransactionController {
     @GetMapping
     public Map<String, Transaction> getTransactions() {
         return transactionService.getTransactions();
+    }
+
+    @GetMapping(value = "/fee")
+    public short getRecommendedFee() {
+        return transactionService.getOptimalFeeRate();
     }
 
     @GetMapping(value = "/{transactionId}")

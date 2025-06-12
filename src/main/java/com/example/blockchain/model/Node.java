@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 public class Node {
-    private static final Set<String> PUBLIC_NODES = Set.of("http://localhost:8086");
+    public static final Set<String> PUBLIC_NODES = Set.of("http://localhost:8086");
     private String type = "light"; // light / full
     private final Set<String> peers;
 
@@ -27,8 +27,6 @@ public class Node {
     // test when create and validate transactions if their inputs are not reserved
     // if they are, then transaction is invalid
     private final Set<String> reservedUTXOs = new HashSet<>();
-
-
 
     public Node() {
         // String type,

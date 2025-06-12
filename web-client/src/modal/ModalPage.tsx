@@ -1,5 +1,5 @@
 import styles from './ModalPage.module.css'
-import closeIcon from './assets/icons/close_icon.png'
+import closeIcon from '../assets/icons/close_icon.png'
 
 interface ModalPageProps {
       onClose : () => void;

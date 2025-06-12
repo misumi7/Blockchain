@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 import static java.lang.Math.min;
 
-public class Transaction {
+public class Transaction implements Serializable {
     private String transactionId;
     private final String senderPublicKey;
     private final String receiverPublicKey;
@@ -100,9 +100,21 @@ public class Transaction {
     }
 
     @JsonIgnore
-    public int getSize(){
+    public long getSizeInBytes(){
         //System.out.println("TRANSACTION SIZE: " + Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length);
-        return Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length;
+        //return Objects.requireNonNull(toJson(this)).getBytes(StandardCharsets.UTF_8).length;
+        long size = 0;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.flush();
+            size += baos.toByteArray().length;
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return size;
     }
 
     public void setDigitalSignature(byte[] digitalSignature) {

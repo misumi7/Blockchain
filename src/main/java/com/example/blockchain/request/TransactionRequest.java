@@ -1,4 +1,4 @@
-package com.example.blockchain.model;
+package com.example.blockchain.request;
 
 import org.springframework.web.bind.annotation.RequestParam;
 

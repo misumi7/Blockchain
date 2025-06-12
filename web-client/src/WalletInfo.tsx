@@ -8,8 +8,8 @@ import noTransactionsIcon from './assets/icons/no_transactions_icon.png';
 import { Button } from './Button';
 
 import axios from 'axios';
-import { TransactionModalPage } from './TransactionModalPage'
-import { CreateTransactionModalPage } from './CreateTransactionModalPage';
+import { TransactionModalPage } from './modal/TransactionModalPage'
+import { CreateTransactionModalPage } from './modal/CreateTransactionModalPage';
 
 interface WalletInfoProps {
       walletPublicKey : string;
@@ -34,15 +34,14 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
 
       const [walletName, setWalletName] = useState<string>();
       useEffect(() => {
-                  const fetchData = async () => {
-                        const name = await axios.get<string>(`/api/wallets/name`, {
-                              params: {walletPublicKey}
-                        });
-                        setWalletName(name.data);
-                  }
-                  fetchData();
+            const fetchData = async () => {
+                  const name = await axios.get<string>(`/api/wallets/name`, {
+                        params: {walletPublicKey}
+                  });
+                  setWalletName(name.data);
             }
-      , [walletPublicKey]);
+            fetchData();
+      }, [walletPublicKey]);
 
       const [walletBalance, setWalletBalance] = useState<string>();
       useEffect(() => {

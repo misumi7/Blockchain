@@ -1,9 +1,12 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Transaction;
+import com.example.blockchain.request.UpdateWalletNameRequest;
+import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.TransactionService;
 import com.example.blockchain.service.UTXOService;
 import com.example.blockchain.service.WalletService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,5 +37,11 @@ public class WalletController {
     @GetMapping(value = "/transactions", params = {"walletPublicKey"})
     public List<Transaction> getTransactionsByWallet(@RequestParam("walletPublicKey") String walletPublicKey) {
         return transactionService.getTransactionsByWallet(walletPublicKey);
+    }
+
+    @PatchMapping()
+    public ResponseEntity<ApiResponse> updateWalletName(@RequestBody UpdateWalletNameRequest updateNameRequest) {
+        walletService.setWalletName(updateNameRequest.getWalletName(), updateNameRequest.getWalletPublicKey());
+        return ResponseEntity.ok(new ApiResponse("Wallet name updated successfully", 200));
     }
 }

@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import styles from './CreateTransactionModalPage.module.css'
 import { ModalPage } from './ModalPage';
-import { Button } from './Button';
-import { PinInput } from './PinInput';
+import { Button } from '../Button';
+import { PinInput } from '../PinInput';
 
-import processTransactionIcon from './assets/icons/transaction_processing.gif'
-import sendIcon from './assets/icons/send_transaction_icon.png'
+import processTransactionIcon from '../assets/icons/transaction_processing.gif'
+import sendIcon from '../assets/icons/send_transaction_icon.png'
 import axios from 'axios';
 
 

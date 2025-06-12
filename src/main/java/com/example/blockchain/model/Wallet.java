@@ -17,19 +17,19 @@ public class Wallet {
     private String publicKey;
     private String privateKey;
 
-    public Wallet() {
+    /*public Wallet() {
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC", "BC");
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256k1");
             keyGen.initialize(ecSpec, new SecureRandom());
             KeyPair keyPair = keyGen.generateKeyPair();
 
-            this.privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
             this.publicKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
+            this.privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /*public Wallet(byte[] publicKeyBytes, byte[] privateKeyBytes) {
         try {

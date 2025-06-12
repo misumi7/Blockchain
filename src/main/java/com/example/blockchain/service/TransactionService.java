@@ -2,6 +2,7 @@ package com.example.blockchain.service;
 
 import com.example.blockchain.model.*;
 import com.example.blockchain.repository.TransactionRepository;
+import com.example.blockchain.request.TransactionRequest;
 import com.example.blockchain.response.ApiException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -43,6 +44,8 @@ public class TransactionService{
                     for (String utxo : transaction.getInputs()){
                         nodeService.unlockUTXO(utxo);
                     }
+
+                    nodeService.removeTransactionFromMemPool(transaction);
                 }
                 else{
                     System.out.println("[TRANSACTION RESEND] Transaction accepted: " + transaction.getTransactionId());
@@ -238,7 +241,7 @@ public class TransactionService{
                 0
         );
 
-        long feeAmount = (long) feeRate * transaction.getSize();
+        long feeAmount = (long) feeRate * transaction.getSizeInBytes();
         //transaction.setTransactionFee(feeAmount);
 
         List<String> inputs = new ArrayList<>();

@@ -7,7 +7,6 @@ import './main.css';
 import { SidebarComponentType } from './sidebar/SidebarComponentType';
 
 function App() {
-                                                                                                     /*.NETWORK by default*/
   const [selectedComponent, setSelectedComponent] = useState<{
     componentType: SidebarComponentType,
     option: string
@@ -18,8 +17,10 @@ function App() {
 
   return (
     <div className='mainScreen'>
-      <Sidebar onComponentSelected={(componentType, option) => setSelectedComponent({ componentType, option })} />
-      <MainContent contentType={selectedComponent?.componentType ?? ''} option={selectedComponent?.option ?? ''}/>
+      <Sidebar onComponentSelected={(componentType, option) => setSelectedComponent({ componentType, option })}/>
+      <MainContent 
+        contentType={selectedComponent?.componentType ?? ''} 
+        option={selectedComponent?.option ?? ''}/>
     </div>
   )
 }

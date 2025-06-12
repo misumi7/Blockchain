@@ -6,10 +6,7 @@ import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.PriorityQueue;
@@ -31,10 +28,27 @@ public class NodeController {
         return nodeService.getPeers();
     }
 
+    @GetMapping(value = "/peers/count")
+    public int getPeersCount() {
+        return nodeService.getPeersCount();
+    }
+
     @GetMapping(value = "/mempool")
     public PriorityQueue<Transaction> getMemPool() {
         return nodeService.getMemPool();
     }
+
+    @GetMapping(value = "/mempool/size")
+    public int getMemPoolSizeInBytes() {
+        return nodeService.getMemPoolSizeInBytes();
+    }
+
+    @GetMapping(value = "/ping", params = {"addr"})
+    public ResponseEntity<ApiResponse> ping(@RequestParam("addr") String ipAddress) {
+        nodeService.ping(ipAddress);
+        return ResponseEntity.ok(new ApiResponse("Peer " + ipAddress + " is alive", 200));
+    }
+
 
     @GetMapping(value = "/ping")
     public ResponseEntity<ApiResponse> ping() {
