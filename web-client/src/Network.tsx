@@ -51,7 +51,7 @@ function getAddressComponents(addr : string) : string[] {
       return [ip, port];
 }
 
-export const Network : React.FC<NetworkProps> = ({}) => {
+export const Network : React.FC<NetworkProps> = ({ }) => {
       const AUTO_UPDATE = 1000 * 60 * 3;
 
       const [updateData, setUpdateData] = useState<boolean>(false);
@@ -212,6 +212,18 @@ export const Network : React.FC<NetworkProps> = ({}) => {
             checkPeers();
       }, [peers, updateData]);
 
+      const [isBlockhainSynchronized, setIsBlockhainSynchronized] = useState<boolean>(false);
+      useEffect(() => {
+            const fetchData = async () => {
+                  await axios.get<boolean>(`/api/blocks/sync`)
+                  .then((response) => {
+                        setIsBlockhainSynchronized(response.status == 200);
+                  }).catch(() => {
+                        setIsBlockhainSynchronized(false);
+                  });
+            }
+            fetchData();
+      }, [updateData]);
 
       return (
             <div className={styles.network}>
@@ -219,9 +231,19 @@ export const Network : React.FC<NetworkProps> = ({}) => {
                         <div className={`${styles.block} ${styles.blockhainInfo}`}>
                               <div className={styles.titleStatusBlock}>
                                     <span className={styles.blockTitle}>Blockchain</span>
-                                    <div className={styles.blockchainStatus}>
-                                          <span className={`${styles.greenDot}`}></span>
-                                          <span>Synchronized</span>
+                                    <div className={styles.blockchainStatus} /*title="Your blockhain is deprecated"*/>
+                                          {isBlockhainSynchronized ? (
+                                                <>
+                                                      <span className={`${styles.greenDot}`}></span>
+                                                      <span>Synchronized</span>
+                                                </>
+                                          ) :
+                                          (
+                                                <>
+                                                      <span className={`${styles.redDot}`}></span>
+                                                      <span>Out of Sync</span>
+                                                </>
+                                          )}
                                     </div>
                               </div>
                               <div className={styles.gridData}>

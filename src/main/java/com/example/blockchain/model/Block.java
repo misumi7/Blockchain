@@ -1,6 +1,7 @@
 package com.example.blockchain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -147,6 +148,7 @@ public class Block implements Serializable {
         this.nonce = nonce;
     }
 
+    @JsonIgnore
     public long getSizeInBytes() {
         long size = 0;
         try {

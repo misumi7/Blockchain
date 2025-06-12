@@ -11,9 +11,10 @@ interface SidebarComponentProps {
       isSelected : boolean;
       icon : string;
       onSelected : (option : string) => void;
+      onWalletNameUpdated? : (walletNameUpdated : string) => void;
 }
 
-export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> = ({ type, isSelected, icon, onSelected }) => {
+export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> = ({ type, isSelected, icon, onSelected, onWalletNameUpdated }) => {
       const [isActive, setIsActive] = useState(false);
       const componentContentRef = useRef<HTMLDivElement>(null);
       const [height, setHeight] = useState('0px');
@@ -29,16 +30,15 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
             const fetchData = async () => {
                   switch(type){
                         case SidebarComponentType.WALLETS:
-                              try {
-                                    const walletsPublicKeys = await axios.get<Map<string, string>>('/api/wallets');
-                                    setComponentContent(walletsPublicKeys.data);
-                              }
-                              catch(e){
+                              await axios.get<Map<string, string>>('/api/wallets')
+                              .then((response) => {
+                                    setComponentContent(response.data);
+                              }).catch((e) => {
                                     console.error("Failed to load wallets", e);
-                              }
+                              });
                               break;
                         case SidebarComponentType.NETWORK:
-                              setComponentContent(['Dashboard']);
+                              setComponentContent(['Dashboard'/*, 'Mempool'*/]);
                               break;
                         case SidebarComponentType.NODE:
                               setComponentContent(['-']);
@@ -65,6 +65,10 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
             .then(response => {
                   if (response.status == 200) {
                         componentContent[editingKey || ''] = walletName;
+                        // update WalletInfo block
+                        if(onWalletNameUpdated){
+                              onWalletNameUpdated(walletPublicKey);
+                        }
                   }
             });
             setEditingKey(undefined);

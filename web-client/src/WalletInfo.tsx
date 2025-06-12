@@ -13,10 +13,29 @@ import { CreateTransactionModalPage } from './modal/CreateTransactionModalPage';
 
 interface WalletInfoProps {
       walletPublicKey : string;
+      walletNameUpdated : string;
+      onWalletNameUpdateHandled: () => void;
 }
 
-export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
-      const [wasCopied, setCopied] = useState(false);
+export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, walletNameUpdated, onWalletNameUpdateHandled }) => {
+      const [wasCopied, setCopied] = useState<boolean>(false);
+      const [updateTrigger, setUpdateTrigger] = useState<boolean>(false);
+      //const [updateWalletNameTrigger, setUpdateWalletNameTrigger] = useState<boolean>(false);
+      const [updateTransactionsTrigger, setUpdateTransactionsTrigger] = useState<boolean>(false);
+
+      useEffect(() => {
+      if (walletNameUpdated === walletPublicKey) {
+            const fetchName = async () => {
+                  const res = await axios.get<string>('/api/wallets/name', {
+                        params: { walletPublicKey },
+                  });
+                  setWalletName(res.data);
+                  onWalletNameUpdateHandled();
+            };
+            fetchName();
+      }
+      }, [walletNameUpdated]);
+
       const pkInputRef = useRef<HTMLInputElement>(null);
       const copyPublicKey = () => {
             if(pkInputRef.current){
@@ -41,28 +60,8 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                   setWalletName(name.data);
             }
             fetchData();
-      }, [walletPublicKey]);
-
-      const [walletBalance, setWalletBalance] = useState<string>();
-      useEffect(() => {
-            const fetchData = async () => {
-                  const balance = await axios.get<string>(`/api/utxo/balance`, {
-                              params: {walletPublicKey}
-                        });
-                  setWalletBalance(balance.data);
-            }
-            fetchData();
-      }, [walletPublicKey]);
-
-      const [totalBalance, setTotalBalance] = useState<string>();
-      useEffect(() => {
-            const fetchData = async () => {
-                  const balance = await axios.get<string>(`/api/utxo/balance/total`);
-                  setTotalBalance(balance.data);
-            }
-            fetchData();
-      }, [walletPublicKey]);
-
+      }, [walletPublicKey, updateTrigger]);
+      
       const [transactions, setTransactions] = useState<Map<string, string>>();
       useEffect(() => {
             const fetchData = async () => {
@@ -72,10 +71,29 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                   setTransactions(transactions.data);
             }
             fetchData();
-      }, [walletPublicKey]);
+      }, [walletPublicKey, updateTrigger, updateTransactionsTrigger]);
+      
+      const [walletBalance, setWalletBalance] = useState<string>();
+      useEffect(() => {
+            const fetchData = async () => {
+                  const balance = await axios.get<string>(`/api/utxo/balance`, {
+                        params: {walletPublicKey}
+                  });
+                  setWalletBalance(balance.data);
+            }
+            fetchData();
+      }, [walletPublicKey, transactions]);
+      
+      const [totalBalance, setTotalBalance] = useState<string>();
+      useEffect(() => {
+            const fetchData = async () => {
+                  const balance = await axios.get<string>(`/api/utxo/balance/total`);
+                  setTotalBalance(balance.data);
+            }
+            fetchData();
+      }, [walletPublicKey, transactions]);
       
       const [createTransaction, setCreateTransaction] = useState<boolean>(false);
-
       return (
             <div className={styles.walletInfo}>
                   {modalPageData && 
@@ -114,10 +132,10 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey }) => {
                                           {totalBalance} coins
                                     </div>
                               </div>
-                              <Button text='Send' icon={coinIcon} isActive={Number(walletBalance) > 0 } className={styles.button} onClick={() => {Number(walletBalance) > 0 && setCreateTransaction(true)}}/>
+                              <Button text='Send' icon={coinIcon} isActive={Number(walletBalance) > 0 } className={styles.button} onClick={() => {Number(walletBalance) > 0 ? setCreateTransaction(true) : null}}/>
                               {
                                     createTransaction && (
-                                          <CreateTransactionModalPage walletPublicKey={walletPublicKey} onClose={() => {setCreateTransaction(false);}}/>
+                                          <CreateTransactionModalPage onSent={() => {setUpdateTransactionsTrigger(!updateTransactionsTrigger)}} walletPublicKey={walletPublicKey} onClose={() => {setCreateTransaction(false);}}/>
                                     )
                               }
                         </div>

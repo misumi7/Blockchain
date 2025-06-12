@@ -204,13 +204,9 @@
       /* opacity: .75; */
 }
 
-.blockLine {
-      /* position: relative; */
-      /* height: 100%; */
-      /* background-color: red; */
-      /* width: 100%; */
-      /* overflow: hidden; */
-}
+/* .blockchainStatus {
+      cursor: pointer;
+} */
 
 .blockPath {
       z-index: 0;

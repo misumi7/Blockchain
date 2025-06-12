@@ -13,14 +13,19 @@ function App() {
   }>({
     componentType: SidebarComponentType.WALLETS,
     option: 'MIGNAgEAMBAGByqGSM49AgEGBSuBBAAKBHYwdAIBAQQgsy75RftrsHMhNHw0yJLyaT4n1ADoASqYoEQvzeYzrsSgBwYFK4EEAAqhRANCAASkXuBWf17lovz8RDXz4w3uge90GUS07/5e3Apqmx85xim2KwD551J/81zdfxzAg5G6JbsfDw3xGsyZKCwxJOTY'
-  })
+  });
+
+  const [walletNameUpdated, setWalletNameUpdated] = useState<string>();
 
   return (
     <div className='mainScreen'>
-      <Sidebar onComponentSelected={(componentType, option) => setSelectedComponent({ componentType, option })}/>
+      <Sidebar onComponentSelected={(componentType, option) => setSelectedComponent({ componentType, option })} onWalletNameUpdated={(walletNameUpdated) => setWalletNameUpdated(walletNameUpdated)}/>
       <MainContent 
         contentType={selectedComponent?.componentType ?? ''} 
-        option={selectedComponent?.option ?? ''}/>
+        option={selectedComponent?.option ?? ''}
+        walletNameUpdated={walletNameUpdated ?? ''}
+        onWalletNameUpdateHandled={() => setWalletNameUpdated('')}  
+      />
     </div>
   )
 }

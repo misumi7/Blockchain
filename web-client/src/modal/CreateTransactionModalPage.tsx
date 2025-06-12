@@ -12,6 +12,7 @@ import axios from 'axios';
 
 interface CreateTransactionModalPage{
       onClose : () => void;
+      onSent : () => void;
       walletPublicKey: string;
 }
 
@@ -19,7 +20,7 @@ function validatePin(pinValues : string[]) : boolean {
       return pinValues.length > 0 && pinValues.every(value => value != '');
 }
 
-export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> = ({ onClose, walletPublicKey }) => {
+export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> = ({ onClose, walletPublicKey, onSent }) => {
       const [playProcessingAnimation, setPlayAnimation] = useState(false);
       const [pinValues, setPinValues] = useState<string[]>([]);
       const [wasTransactionAccepted, setWasTransactionAccepted] = useState<boolean>(); 
@@ -38,6 +39,8 @@ export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> =
                   return;
             }
             
+            console.log("awd");
+
             await axios.post('/api/transactions/create', {
                   senderPublicKey: senderRef.current?.value,
                   receiverPublicKey: receiverRef.current?.value,
@@ -46,8 +49,10 @@ export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> =
             })
             .then(response => {
                   setWasTransactionAccepted(response.status == 200);
+                  onSent();
             }).catch(() => {
                   setWasTransactionAccepted(false);
+                  onSent();
             });
 
             setTimeout(() => setWasTransactionAccepted(undefined), 1000);

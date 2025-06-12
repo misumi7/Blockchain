@@ -7,6 +7,7 @@ import com.example.blockchain.model.UTXO;
 import com.example.blockchain.repository.BlockchainRepository;
 import com.example.blockchain.repository.TransactionRepository;
 import com.example.blockchain.repository.UTXORepository;
+import com.example.blockchain.response.ApiException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -401,7 +402,7 @@ public class BlockchainService {
     public long getBlockchainSizeInBytes() {
         long size = 0;
         for (Block block : getAllBlocks().values()) {
-            size += block.getSizeInBytes();
+            size += block != null ? block.getSizeInBytes() : 0;
         }
         return size;
     }
@@ -412,5 +413,51 @@ public class BlockchainService {
             count += block.getTransactions().size();
         }
         return count;
+    }
+
+    public boolean isBlockchainSync() {
+        CountDownLatch latch = new CountDownLatch(nodeService.getPeers().size());
+        String latestBlockHash = blockchainRepository.getLatestBlockHash();
+        Map<String, Integer> latestBlocks = new ConcurrentHashMap<>();
+        for(String peer : nodeService.getPeers()){
+            Runnable getLatestBlock = () -> {
+                try {
+                    String url = peer + "/api/blocks/latest";
+                    Block latestBlock = nodeService.getRestTemplate().getForObject(url, Block.class);
+                    if(latestBlock != null) {
+                        if(latestBlocks.containsKey(latestBlock.getBlockHash())){
+                            latestBlocks.replace(latestBlock.getBlockHash(), latestBlocks.get(latestBlock.getBlockHash()) + 1);
+                        }
+                        else {
+                            latestBlocks.put(latestBlock.getBlockHash(), 1);
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                latch.countDown();
+            };
+            nodeService.execute(getLatestBlock);
+        }
+
+        try{
+            latch.await();
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        String mostCommonBlockHash = latestBlocks.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        if(mostCommonBlockHash == null) {
+            System.out.println("[BLOCKCHAIN SYNC] No latest block found from peers");
+            return true;
+            //throw new ApiException("No latest block found from peers", 404);
+        }
+
+        return mostCommonBlockHash.equals(latestBlockHash);
     }
 }

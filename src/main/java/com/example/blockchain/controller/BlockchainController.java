@@ -31,6 +31,16 @@ public class BlockchainController {
         return blockchainService.getBlockchainSizeInBytes();
     }
 
+    @GetMapping(value = "/sync")
+    public ResponseEntity<ApiResponse> isBlockchainSync() {
+        boolean isSync = blockchainService.isBlockchainSync();
+        if (isSync) {
+            return ResponseEntity.ok(new ApiResponse("Blockchain is synchronized", 200));
+        } else {
+            return ResponseEntity.status(400).body(new ApiResponse("Blockchain is not synchronized", 400));
+        }
+    }
+
     @GetMapping(value = "/transaction-count")
     public long getTransactionCount() {
         return blockchainService.getTransactionCount();

@@ -10,9 +10,10 @@ import { useState } from 'react';
 
 interface SidebarComponentProps {
       onComponentSelected : (componentType: SidebarComponentType, option : string) => void;
+      onWalletNameUpdated : (isWalletNameUpdated : string) => void;
 }
 
-export const Sidebar : React.FC<SidebarComponentProps> = ({ onComponentSelected }) => {
+export const Sidebar : React.FC<SidebarComponentProps> = ({ onComponentSelected, onWalletNameUpdated }) => {
       const [currentComponentSelected, setCurrentComponentSelected] = useState<SidebarComponentType>();
 
       return (
@@ -26,6 +27,9 @@ export const Sidebar : React.FC<SidebarComponentProps> = ({ onComponentSelected 
                                     setCurrentComponentSelected(SidebarComponentType.WALLETS);
                                     onComponentSelected(SidebarComponentType.WALLETS, option);
                               }} 
+                              onWalletNameUpdated={(walletNameUpdated) => {
+                                    onWalletNameUpdated(walletNameUpdated);
+                              }}
                         />         
                         <SidebarComponent 
                               type={SidebarComponentType.NETWORK} 
