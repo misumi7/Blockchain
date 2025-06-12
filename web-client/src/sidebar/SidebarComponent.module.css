@@ -42,18 +42,27 @@
       text-wrap: nowrap;
 
       height: 9.7vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
       /*width: 90%;
       margin-left: auto;
       margin-right: auto;*/  
 } 
 
-.sidebarElement:hover .nameEditButton{
+.sidebarElement:hover .nameEditButton {
       opacity: .7;
       margin-right: 2vw;
 }
 
+.sidebarComponentTitle:hover .nameEditButton {
+      opacity: .7;
+      margin-right: 2.2vw;
+}
+
+
+.sidebarComponentTitle .nameEditButton {
+      margin-right: 2.405vw;
+
+}
 
 .nameEditButton {
       opacity: 0;
@@ -65,14 +74,17 @@
       align-self: center;
 
       pointer-events: auto;
+      margin-left: auto;
 }
 
-.sidebarElement:has(.nameEditButton:hover) .nameEditButton {
-      opacity: .35;
+.sidebarElement:has(.nameEditButton:hover) .nameEditButton, .sidebarComponentTitle:has(.nameEditButton:hover) .nameEditButton {
+      opacity: .95;
+      scale: 1.04;
 }
 
-.sidebarElement:has(.nameEditButton:active) .nameEditButton {
-      opacity: 0.2;
+.sidebarElement:has(.nameEditButton:active) .nameEditButton, .sidebarComponentTitle:has(.nameEditButton:active) .nameEditButton {
+      opacity: 0.7;
+      scale: 1;
       transition-duration: .1s;
 }
 
@@ -96,8 +108,7 @@
 }
 
 .selectedElement {
-      display: grid;
-      grid-template-columns: 0.25fr 1fr 1fr;
+      display: flex;
       background: var(--golden-gradient);
 
       align-items: center;

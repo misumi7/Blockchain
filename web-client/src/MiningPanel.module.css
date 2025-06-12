@@ -1,0 +1,25 @@
+.panel {
+      display: flex;
+      flex-direction: column;
+
+      min-height: 100vh;
+      width: 100%;
+      background-color: var(--background-color-2);
+      box-shadow: 0 0 1vw rgba(0, 0, 0, 0.247);
+      overflow: scroll;
+}
+
+.panel::-webkit-scrollbar {
+      display: none;
+}
+
+.pagetitle {
+      font: var(--font);
+      font-size: 2.5rem;
+      font-weight: 600;
+      /*text-indent: 3vw;*/
+
+      margin-top: 2.5vh;
+      margin-left: 3.45vw;
+      margin-bottom: 2.1vh; 
+}

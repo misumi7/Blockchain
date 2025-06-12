@@ -44,6 +44,8 @@ public class WalletRepository{
             batch.delete(walletCF, wallet.getPublicKeyBytes());
             batch.delete(walletNameCF, wallet.getPublicKeyBytes());
             db.write(new WriteOptions(), batch);
+            /*db.compactRange(walletCF);
+            db.compactRange(walletNameCF); */// to ensure that data is deleted
             return true;
         } catch (RocksDBException e) {
             e.printStackTrace();

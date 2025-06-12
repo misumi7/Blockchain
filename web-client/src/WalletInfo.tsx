@@ -82,7 +82,7 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, wallet
                   setWalletBalance(balance.data);
             }
             fetchData();
-      }, [walletPublicKey, transactions]);
+      }, [walletPublicKey, transactions, updateTransactionsTrigger]);
       
       const [totalBalance, setTotalBalance] = useState<string>();
       useEffect(() => {
@@ -91,7 +91,7 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, wallet
                   setTotalBalance(balance.data);
             }
             fetchData();
-      }, [walletPublicKey, transactions]);
+      }, [walletPublicKey, transactions, updateTransactionsTrigger]);
       
       const [createTransaction, setCreateTransaction] = useState<boolean>(false);
       return (
@@ -106,7 +106,7 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, wallet
                               <div className={styles.publicKey} onClick={copyPublicKey} >
                                     <input name="publicKey" 
                                           className={styles.publicKeyBox} 
-                                          value={walletPublicKey} 
+                                          value={walletPublicKey}
                                           ref={pkInputRef}
                                           readOnly>
                                     </input>

@@ -4,6 +4,7 @@ import styles from './SidebarComponent.module.css'
 
 import selectedIcon from '../assets/icons/selected_icon.png';
 import editIcon from '../assets/icons/edit_icon.png';
+import addWalletIcon from '../assets/icons/add_new_wallet_icon.png'
 import { SidebarComponentType } from './SidebarComponentType';
 
 interface SidebarComponentProps {
@@ -15,13 +16,14 @@ interface SidebarComponentProps {
 }
 
 export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> = ({ type, isSelected, icon, onSelected, onWalletNameUpdated }) => {
-      const [isActive, setIsActive] = useState(false);
       const componentContentRef = useRef<HTMLDivElement>(null);
       const [height, setHeight] = useState('0px');
+      const [updateComponentListTrigger, setUpdateComponentListTrigger] = useState<boolean>(false);
       
+      const [isActive, setIsActive] = useState(false);
       useEffect(() => {
             isActive && componentContentRef.current ? setHeight(`${componentContentRef.current.scrollHeight}px`) : setHeight('0px');
-      }, [isActive]);
+      }, [isActive, updateComponentListTrigger]);
 
       const [selectedElement, setSelectedElement] = useState<string>();
 
@@ -41,7 +43,7 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                               setComponentContent(['Dashboard'/*, 'Mempool'*/]);
                               break;
                         case SidebarComponentType.NODE:
-                              setComponentContent(['-']);
+                              setComponentContent(['Mining Panel']);
                               break;
                         case SidebarComponentType.SETTINGS:
                               setComponentContent(['-']);
@@ -49,7 +51,7 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                   }
             };
             fetchData();
-      }, [setComponentContent]);
+      }, [updateComponentListTrigger]);
 
       const [walletName, setWalletName] = useState<string>('');
       const [editingKey, setEditingKey] = useState<string>();
@@ -74,6 +76,18 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
             setEditingKey(undefined);
       };
 
+      const createNewWallet = async () => {
+            await axios.post('/api/wallets')
+            .then(response => {
+                  if (response.status == 200) {
+                        setUpdateComponentListTrigger(!updateComponentListTrigger);
+                  }
+            })
+            .catch((err) => {
+                  console.error(err);
+            });
+      };
+
       const inputRef = useRef<HTMLInputElement>(null);
       useEffect(() => {
             if (inputRef.current) {
@@ -83,7 +97,7 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
 
       return (
             <div className={styles.sidebarComponent}>
-                  <div className={`${styles.sidebarComponentTitle} ${isSelected && componentContent.length == 0 ? styles.selectedComponent : ''}`} 
+                  <div className={`${styles.sidebarComponentTitle} ${/*isSelected && componentContent.length == 0 ? styles.selectedComponent : */''}`} 
                         onClick={() => {
                               // if(componentContent && componentContent.length > 0){
                                     setIsActive(!isActive);
@@ -94,6 +108,17 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                         }}>
                         <img className={styles.icon} src={icon}></img>
                         <span>{type}</span>
+                        {type == SidebarComponentType.WALLETS && (
+                              <img 
+                                    className={styles.nameEditButton} 
+                                    src={addWalletIcon} 
+                                    onClick={(e) => {
+                                          e.stopPropagation();
+                                          createNewWallet();
+                                    }}
+                              >
+                              </img>)
+                        } 
                   </div>
                   <div className={`${styles.sidebarElements}`} ref={componentContentRef} style={{maxHeight: height}}>
                         {componentContent && Object.entries(componentContent).map(([key, name]) => (
@@ -126,6 +151,7 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                                                       e.stopPropagation(); 
                                                       setEditingKey(key);
                                                       setWalletName(String(name));
+                                                      setTimeout(() => inputRef.current?.focus(), 0);
                                                 }}
                                           >
                                           </img>)

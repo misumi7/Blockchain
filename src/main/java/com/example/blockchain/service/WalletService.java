@@ -6,14 +6,19 @@ import com.example.blockchain.response.ApiException;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import jakarta.annotation.PostConstruct;
+import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
+import org.bouncycastle.crypto.params.Argon2Parameters;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +39,17 @@ public class WalletService {
                 .map(e -> new Wallet(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
         this.currentWallet = walletList.isEmpty() ? null : walletList.getLast();
-
     }
 
     @PostConstruct
     public void init() {
         if(walletList.isEmpty()) {
-            //createNewWallet();
+            createNewWallet();
+        }
+
+        for(Wallet wallet : walletList){
+            if(!wallet.getPublicKey().equals("MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEi3vx10+2C6ZWWV2ET/rwxiVqpOzgHO2yR9KGSG59WiOuB5GBBia6S1nwK0+tz1SSIA/NzBwD4+0kRmBIf1Z9Ug=="))
+                walletRepository.deleteWallet(wallet);
         }
         //setWalletName("Wallet #1", currentWallet.getPublicKey());
         /*createNewWallet();*/
@@ -51,33 +60,54 @@ public class WalletService {
         return walletList.size();
     }
 
-    public void switchWallet(){
-        // by index?
-        // to see when developing frontend
+    public void createNewWallet(){
+        try {
+            KeyPair newWalletKeyPair = getNewWalletKeyPair();
+            byte[] salt = generateSalt();
+            byte[] iv = generateIV();
+            SecretKeySpec derivedKey = deriveKey(DEFAULT_PIN, salt);
+
+            byte[] privateKeyBytes = newWalletKeyPair.getPrivate().getEncoded();
+            String encryptedPrivateKey = encryptPrivateKey(privateKeyBytes, iv, derivedKey);
+            String publicKey = Base64.getEncoder().encodeToString(newWalletKeyPair.getPublic().getEncoded());
+
+            Wallet newWallet = new Wallet(publicKey, encryptedPrivateKey);
+            walletRepository.saveWallet(newWallet, "Wallet #" + (walletList.size() + 1));
+            if (currentWallet == null) {
+                currentWallet = newWallet;
+            }
+            walletList.add(newWallet);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException("Error creating new wallet", 500);
+        }
     }
 
-    /*public void createNewWallet(){
-        KeyPair newWalletKeyPair = getNewWalletKeyPair();
-
-        String publicKey = Base64.getEncoder().encodeToString(newWalletKeyPair.getPublic().getEncoded());
-
-        byte[] salt = generateSalt();
-        byte[] iv = generateIV();
-        SecretKeySpec derivedKey = deriveKey(pin, salt);
-
-        Wallet newWallet = new Wallet(publicKey, encryptedPrivateKey);
-        walletRepository.saveWallet(newWallet, "Wallet #" + (walletList.size() + 1));
-        if(currentWallet == null){
-            currentWallet = newWallet;
+    private String encryptPrivateKey(byte[] privateKey, byte[] IV, SecretKeySpec key) {
+        try{
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            GCMParameterSpec spec = new GCMParameterSpec(128, IV);
+            cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(privateKey));
+        }  catch (Exception e) {
+            e.printStackTrace();
         }
-        walletList.add(newWallet);
-    }*/
+        return null;
+    }
 
-   /* private SecretKeySpec deriveKey(String pin, byte[] salt) {
-        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-        byte[] key = argon2.hash(2, 65536, 1, pin.toCharArray(), salt); // to search for methods that permits key derivation with custom salt
+    private SecretKeySpec deriveKey(String pin, byte[] salt) {
+        Argon2Parameters.Builder builder = new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
+                .withSalt(salt)
+                .withParallelism(1)
+                .withMemoryAsKB(65536)
+                .withIterations(2);
+        Argon2BytesGenerator generator = new Argon2BytesGenerator();
+        generator.init(builder.build());
+        byte[] key = new byte[32];
+        generator.generateBytes(pin.toCharArray(), key, 0, key.length);
         return new SecretKeySpec(key, "AES");
-    }*/
+    }
 
     private byte[] generateSalt() {
         SecureRandom random = new SecureRandom();
@@ -99,17 +129,11 @@ public class WalletService {
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256k1");
             keyGen.initialize(ecSpec, new SecureRandom());
             return keyGen.generateKeyPair();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ApiException("Error generating new wallet key pair", 500);
         }
     }
-
-    /*private String encryptPrivateKey(byte[] privateKey, String IV, String key) {
-
-        //return Base64.getEncoder().encode(privateKey);
-    }*/
 
     public void deleteWallet(Wallet wallet){
         walletRepository.deleteWallet(wallet);

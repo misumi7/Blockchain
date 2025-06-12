@@ -39,7 +39,13 @@ public class WalletController {
         return transactionService.getTransactionsByWallet(walletPublicKey);
     }
 
-    @PatchMapping()
+    @PostMapping
+    public ResponseEntity<ApiResponse> createWallet() {
+        walletService.createNewWallet();
+        return ResponseEntity.ok(new ApiResponse("Wallet created successfully", 200));
+    }
+
+    @PatchMapping
     public ResponseEntity<ApiResponse> updateWalletName(@RequestBody UpdateWalletNameRequest updateNameRequest) {
         walletService.setWalletName(updateNameRequest.getWalletName(), updateNameRequest.getWalletPublicKey());
         return ResponseEntity.ok(new ApiResponse("Wallet name updated successfully", 200));

@@ -4,6 +4,7 @@ import { SidebarComponentType } from './sidebar/SidebarComponentType';
 import { Network } from './Network';
 import { Mempool } from './Mempool';
 import { useState } from 'react';
+import { MiningPanel } from './MiningPanel';
 
 interface MainContentProps{
       contentType : string;
@@ -33,6 +34,14 @@ export const MainContent: React.FC<MainContentProps> = ({ contentType, option, w
                                                 return <Network/>;
                                           case '1':
                                                 return <Mempool/>
+                                    }
+                              })()
+                        }
+                        {
+                              contentType == SidebarComponentType.NODE && (() => {
+                                    switch(option){
+                                          case '0': 
+                                                return <MiningPanel/>;
                                     }
                               })()
                         }
