@@ -8,6 +8,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -164,9 +165,10 @@ public class TransactionService{
         return true;
     }
 
-    public void signTransaction(Transaction transaction){
+    public void signTransaction(Transaction transaction, String senderPublicKey, SecretKeySpec key) {
         try{
-            byte[] privateKeyBytes = walletService.getPrivateKey();
+            Wallet senderWallet = walletService.getWallet(senderPublicKey);
+            byte[] privateKeyBytes = walletService.decryptPrivateKey(senderWallet.getEncryptedPrivateKeyBytes(), senderWallet.getIv(), key);
 
             PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(privateKeyBytes);
             PrivateKey privateKey = KeyFactory.getInstance("EC", "BC").generatePrivate(privateSpec);
@@ -218,7 +220,7 @@ public class TransactionService{
         /*String senderPublicKey = Base64.getEncoder().encodeToString(senderBytePublicKey);
         String receiverPublicKey = Base64.getEncoder().encodeToString(receiverBytePublicKey);*/
 
-
+        System.out.println(transactionRequest);
         // VALIDATE PIN HERE
 
         long amount = (long) (transactionRequest.getAmount() * 100000000L);
@@ -274,7 +276,15 @@ public class TransactionService{
 
         transaction.setOutputs(outputs);
         transaction.setTransactionId(transaction.calculateHash());
-        signTransaction(transaction);
+        //System.out.println("transactionRequest.getEncryptedPin(): " + transactionRequest.getEncryptedPin());
+        String strKey = walletService.decryptPin(Base64.getDecoder().decode(transactionRequest.getEncryptedPin()), walletService.getRSAPrivateKey());
+        //System.out.println("Decrypted PIN: " + strKey);
+
+        // pin -> kdf -> aes key
+        Wallet senderWallet = walletService.getWallet(senderPublicKey);
+        SecretKeySpec key = walletService.deriveKey(strKey, senderWallet.getSalt());
+
+        signTransaction(transaction, transactionRequest.getSenderPublicKey(), key);
 
         // Send transaction to neighbors (and wait for confirmation)
         boolean wasTransactionAccepted = nodeService.sendTransaction(transaction);

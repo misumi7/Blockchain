@@ -1,14 +1,22 @@
 package com.example.blockchain.request;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public class TransactionRequest {
-    private final String senderPublicKey;
-    private final String receiverPublicKey;
-    private final double amount;
-    private final String encryptedPin;
+import java.util.Base64;
 
-    public TransactionRequest(String senderPublicKey, String receiverPublicKey, double amount, String encryptedPin) {
+public class TransactionRequest {
+    private String senderPublicKey;
+    private String receiverPublicKey;
+    private double amount;
+    private String encryptedPin;
+
+    @JsonCreator
+    public TransactionRequest(@JsonProperty("senderPublicKey") String senderPublicKey,
+                              @JsonProperty("receiverPublicKey") String receiverPublicKey,
+                              @JsonProperty("amount") double amount,
+                              @JsonProperty("encryptedPin") String encryptedPin) {
         this.senderPublicKey = senderPublicKey;
         this.receiverPublicKey = receiverPublicKey;
         this.amount = amount;

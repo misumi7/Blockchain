@@ -24,6 +24,16 @@ public class WalletController {
         this.transactionService = transactionService;
     }
 
+    @GetMapping(value = {"/salt"}, params = {"walletPublicKey"})
+    public byte[] getSalt(@RequestParam(value = "walletPublicKey") String walletPublicKey) {
+        return walletService.getWalletSalt(walletPublicKey);
+    }
+
+    @GetMapping(value = {"/rsa-public-key"})
+    public byte[] getRSAPublicKey() {
+        return walletService.getRSAPublicKey().getEncoded();
+    }
+
     @GetMapping
     public Map<String, String> getWallets() {
         return walletService.getWallets();
@@ -49,5 +59,11 @@ public class WalletController {
     public ResponseEntity<ApiResponse> updateWalletName(@RequestBody UpdateWalletNameRequest updateNameRequest) {
         walletService.setWalletName(updateNameRequest.getWalletName(), updateNameRequest.getWalletPublicKey());
         return ResponseEntity.ok(new ApiResponse("Wallet name updated successfully", 200));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse> deleteWallet(@RequestParam("walletPublicKey") String walletPublicKey, @RequestParam("pin") String encryptedPin) {
+        walletService.deleteWallet(walletPublicKey, encryptedPin);
+        return ResponseEntity.ok(new ApiResponse("Wallet deleted successfully", 200));
     }
 }

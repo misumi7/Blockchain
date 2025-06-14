@@ -1,6 +1,8 @@
 package com.example.blockchain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -15,7 +18,10 @@ import org.bouncycastle.jce.ECNamedCurveTable;
 
 public class Wallet {
     private String publicKey;
-    private String privateKey;
+    private String encryptedPrivateKey;
+
+    private byte[] salt;
+    private byte[] iv;
 
     /*public Wallet() {
         try {
@@ -46,31 +52,37 @@ public class Wallet {
         }
     }*/
 
-    public Wallet(String publicKey, String privateKey) {
-        try {
-            this.publicKey = publicKey;
-            this.privateKey = privateKey;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @JsonCreator
+    public Wallet(
+            @JsonProperty("publicKey") String publicKey,
+            @JsonProperty("encryptedPrivateKey") String encryptedPrivateKey,
+            @JsonProperty("salt") byte[] salt,
+            @JsonProperty("iv") byte[] iv) {
+                this.publicKey = publicKey;
+                this.encryptedPrivateKey = encryptedPrivateKey;
+                this.salt = salt;
+                this.iv = iv;
     }
 
     public String getPublicKey() {
         return publicKey;
     }
 
+    @JsonIgnore
     public byte[] getPublicKeyBytes() {
         return Base64.getDecoder().decode(publicKey);
     }
 
-    public byte[] getPrivateKeyBytes() {
-        return Base64.getDecoder().decode(privateKey);
+    @JsonIgnore
+    public byte[] getEncryptedPrivateKeyBytes() {
+        return Base64.getDecoder().decode(encryptedPrivateKey);
     }
 
-    public String getPrivateKey() {
-        return privateKey;
+    public String getEncryptedPrivateKey() {
+        return encryptedPrivateKey;
     }
 
+    /*@JsonIgnore
     public PublicKey getPublicKeyObject() {
         try {
             X509EncodedKeySpec publicSpec = new X509EncodedKeySpec(getPublicKeyBytes());
@@ -79,10 +91,9 @@ public class Wallet {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
-
-    public PrivateKey getPrivateKeyObject() {
+    /*public PrivateKey getPrivateKeyObject() {
         try {
             PKCS8EncodedKeySpec privateSpec = new PKCS8EncodedKeySpec(getPrivateKeyBytes());
             return KeyFactory.getInstance("EC", "BC").generatePrivate(privateSpec);
@@ -90,6 +101,42 @@ public class Wallet {
             e.printStackTrace();
         }
         return null;
+    }*/
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
+
+    @JsonProperty("salt")
+    public String getSaltBase64() {
+        return Base64.getEncoder().encodeToString(salt);
+    }
+
+    @JsonProperty("salt")
+    public void setSaltBase64(String saltBase64) {
+        this.salt = Base64.getDecoder().decode(saltBase64);
+    }
+
+    @JsonProperty("iv")
+    public String getIvBase64() {
+        return Base64.getEncoder().encodeToString(iv);
+    }
+
+    @JsonProperty("iv")
+    public void setIvBase64(String ivBase64) {
+        this.iv = Base64.getDecoder().decode(ivBase64);
     }
 
     public static String toJson(Wallet wallet){
@@ -115,8 +162,10 @@ public class Wallet {
     @Override
     public String toString() {
         return "Wallet{" +
-                "\n\tpublicKey=" + getPublicKey() +
-                "\n\tprivateKey=" + getPrivateKey() +
-                "\n}";
+                "publicKey='" + publicKey + '\'' +
+                ", encryptedPrivateKey='" + encryptedPrivateKey + '\'' +
+                ", salt=" + Arrays.toString(salt) +
+                ", iv=" + Arrays.toString(iv) +
+                '}';
     }
 }

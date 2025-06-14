@@ -50,7 +50,7 @@ public class Transaction implements Serializable {
 
 
     public String calculateHash(){
-        String stringToHash =  this.inputs == null ? "" : this.inputs.toString()
+        String stringToHash =  this.inputs == null ? "" : this.inputs.toString() //list hash or String.join(",", this.inputs)?
                 + this.senderPublicKey
                 + this.receiverPublicKey
                 + this.amount

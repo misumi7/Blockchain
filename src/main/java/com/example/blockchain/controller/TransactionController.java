@@ -29,7 +29,7 @@ public class TransactionController {
 
     @PostMapping(value = "/create")
     public ResponseEntity<ApiResponse> createTransaction(@RequestBody TransactionRequest transactionRequest) {
-        //System.out.println("Creating transaction: \n" + transactionRequest);
+        System.out.println("Received transaction request: " + transactionRequest.getEncryptedPin());
         transactionService.createTransaction(transactionRequest);
         return ResponseEntity.ok(new ApiResponse("Transaction created successfully", 200));
     }

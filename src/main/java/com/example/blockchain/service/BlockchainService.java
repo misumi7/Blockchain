@@ -240,7 +240,7 @@ public class BlockchainService {
     }
 
     public void addGenesisBlock(){
-        final String GENESIS_PUBLIC_KEY = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEi3vx10+2C6ZWWV2ET/rwxiVqpOzgHO2yR9KGSG59WiOuB5GBBia6S1nwK0+tz1SSIA/NzBwD4+0kRmBIf1Z9Ug==";
+        final String GENESIS_PUBLIC_KEY = "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAESChDsZKlIMTGd6vj/rYasBGlAMYUrmTNhCixTnTbz4ObttEIRwl7AfFA8z+jMbutq3ksC4KRvHEEfA7RbYis+w==";
         Transaction firstTransaction = new Transaction(
                 new ArrayList<>(),
                 null,

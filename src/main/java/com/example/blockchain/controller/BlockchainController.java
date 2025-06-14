@@ -15,7 +15,7 @@ import java.util.Map;
 public class BlockchainController {
     private final BlockchainService blockchainService;
 
-    @Autowired // magically instantiates the blockchainService if it is a component/service (bean)
+    @Autowired // instantiates the blockchainService if it is a component/service (bean)
     public BlockchainController(BlockchainService blockchainService) {
         this.blockchainService = blockchainService;
     }

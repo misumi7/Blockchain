@@ -22,7 +22,9 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
       
       const [isActive, setIsActive] = useState(false);
       useEffect(() => {
-            isActive && componentContentRef.current ? setHeight(`${componentContentRef.current.scrollHeight}px`) : setHeight('0px');
+            setTimeout(() => {
+                  isActive && componentContentRef.current ? setHeight(`${componentContentRef.current.scrollHeight}px`) : setHeight('0px');
+            }, 100);
       }, [isActive, updateComponentListTrigger]);
 
       const [selectedElement, setSelectedElement] = useState<string>();

@@ -6,11 +6,15 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, process.cwd());
   const backendPort = env.VITE_BACKEND_PORT;
 
-  return {plugins: [react()],
+  return {
+    plugins: [react()],
     server: {
       proxy: {
         '/api': `http://localhost:${backendPort}`
       }
+    },
+    optimizeDeps: {
+      exclude: ['argon2-wasm']
     }
   };
 });

@@ -53,7 +53,7 @@ export const TransactionModalPage: React.FC<TransactionModalPageProps> = ({ tran
                         </div>
                         <div className={`${styles.contentElement}`}>
                               <span>Sender: </span>
-                              {!showFullSenderKey && <span className={styles.addressSpan} onClick={() => {setShowFullSenderKey(!showFullSenderKey)}}>{transaction.senderPublicKey.length >= 54 ? `${transaction.senderPublicKey.substring(0, 27)}...${transaction.senderPublicKey.substring(transaction.senderPublicKey.length - 27, transaction.senderPublicKey.length)}` : transaction.senderPublicKey || "Unknown"}</span>}
+                              {!showFullSenderKey && <span className={styles.addressSpan} onClick={() => {setShowFullSenderKey(!showFullSenderKey)}}>{transaction.senderPublicKey.length >= 54 ? `${transaction.senderPublicKey.substring(0, 27)}...${transaction.senderPublicKey.substring(transaction.senderPublicKey.length - 27, transaction.senderPublicKey.length)}` : transaction.senderPublicKey || "None"}</span>}
                               {showFullSenderKey && <span className={styles.addressSpan} onClick={() => {setShowFullSenderKey(!showFullSenderKey)}}>{transaction.senderPublicKey || "Unknown"}</span>}
 
                         </div>
