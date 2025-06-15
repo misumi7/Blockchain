@@ -11,8 +11,8 @@ function App() {
     componentType: SidebarComponentType,
     option: string
   }>({
-    componentType: SidebarComponentType.WALLETS,
-    option: 'MIGNAgEAMBAGByqGSM49AgEGBSuBBAAKBHYwdAIBAQQgsy75RftrsHMhNHw0yJLyaT4n1ADoASqYoEQvzeYzrsSgBwYFK4EEAAqhRANCAASkXuBWf17lovz8RDXz4w3uge90GUS07/5e3Apqmx85xim2KwD551J/81zdfxzAg5G6JbsfDw3xGsyZKCwxJOTY'
+    componentType: SidebarComponentType.NODE,
+    option: '0'
   });
 
   const [walletNameUpdated, setWalletNameUpdated] = useState<string>();

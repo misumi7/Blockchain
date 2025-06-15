@@ -64,7 +64,7 @@ export const TransactionModalPage: React.FC<TransactionModalPageProps> = ({ tran
                         </div>
                   </div>
                   <div className={styles.section}>
-                        <div className={styles.contentElement}>
+                        <div className={`${styles.contentElement} ${styles.verticalAlignCenter}`}>
                               <span>Inputs:</span>
                               <span>({transaction.inputs ? transaction.inputs.length : "0"})</span>
                               <img className={styles.showMoreIcon} src={dropDownIcon} onClick={() => {setShowInputs(!showInputs)}}></img>
@@ -93,7 +93,7 @@ export const TransactionModalPage: React.FC<TransactionModalPageProps> = ({ tran
                                     </tbody>
                               </table>
                         )}
-                        <div className={styles.contentElement}>
+                        <div className={`${styles.contentElement} ${styles.verticalAlignCenter}`}>
                               <span>Outputs:</span>
                               <span>({transaction.outputs ? transaction.outputs.length : "0"})</span>
                               <img className={styles.showMoreIcon} src={dropDownIcon} onClick={() => {setShowOutputs(!showOutputs)}}></img>

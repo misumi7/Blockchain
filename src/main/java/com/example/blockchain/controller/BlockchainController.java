@@ -4,9 +4,13 @@ import com.example.blockchain.model.Block;
 import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.BlockchainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -56,6 +60,11 @@ public class BlockchainController {
         return blockchainService.getBlock(hash);
     }
 
+    @GetMapping(value = "/mining-reward")
+    public long getMiningReward() {
+        return blockchainService.getCurrentMiningReward();
+    }
+
     @GetMapping(value = "/latest")
     public Block getLatestBlock() {
         return blockchainService.getBlock(blockchainService.getLatestBlockIndex());
@@ -80,9 +89,25 @@ public class BlockchainController {
         return blockchainService.deleteAllBlocks();
     }
 
-    // TEMP::
+    @GetMapping(value = "/mining/logs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamMiningLogs() {
+        SseEmitter emitter = new SseEmitter(0L);
+        blockchainService.registerEmitter(emitter);
+
+        try {
+            emitter.send(SseEmitter.event()
+                    .name("init")
+                    .data("connected"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return emitter;
+    }
+
     @GetMapping(value = "/mine")
-    public void mineBlock() {
-        blockchainService.mineBlock();
+    public ResponseEntity<ApiResponse> mineBlock(@RequestParam("minerPublicKey") String minerPublicKey) {
+        blockchainService.mineBlock(minerPublicKey);
+        return ResponseEntity.ok(new ApiResponse("Mining started", 200));
     }
 }

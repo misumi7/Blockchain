@@ -38,6 +38,11 @@ public class NodeController {
         return nodeService.getMemPool();
     }
 
+    @GetMapping(value = "/mempool/count")
+    public int getMemPoolCount() {
+        return nodeService.getMemPoolSize();
+    }
+
     @GetMapping(value = "/mempool/size")
     public int getMemPoolSizeInBytes() {
         return nodeService.getMemPoolSizeInBytes();

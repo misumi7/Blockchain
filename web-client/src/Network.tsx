@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import styles from './Network.module.css'
 
 import BlockIcon from './assets/icons/block_icon.png'
 import axios from 'axios';
+import { BlockInfoModalPage } from './modal/BlockInfoModalPage';
 
 interface NetworkProps {
 
@@ -225,6 +226,8 @@ export const Network : React.FC<NetworkProps> = ({ }) => {
             fetchData();
       }, [updateData]);
 
+      const [blockInfo, setBlockInfo] = useState<any>(undefined);
+
       return (
             <div className={styles.network}>
                   <div className={styles.networkInfo}>
@@ -336,7 +339,7 @@ export const Network : React.FC<NetworkProps> = ({ }) => {
                               <div className={styles.blockPath}></div>
                               <div className={styles.blockScroller} ref={scrollerRef}>
                                     {blocks && blocks.size > 0 && Array.from(blocks.entries()).map(([id, data]) => (
-                                          <div className={styles.blockBox} key={id}>
+                                          <div className={styles.blockBox} key={id} onClick={() => setBlockInfo(data)}>
                                                 <img className={styles.blockIcon} src={BlockIcon}></img>
                                                 <div className={styles.blockData}>
                                                       <span>Block #{id}</span>
@@ -345,6 +348,7 @@ export const Network : React.FC<NetworkProps> = ({ }) => {
                                                 </div>
                                           </div>
                                     ))}
+                                    {blockInfo && <BlockInfoModalPage blockData={blockInfo} onClose={() => setBlockInfo(undefined)}/>}
                               </div>
                         </div>
                   </div>

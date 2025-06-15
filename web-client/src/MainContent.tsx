@@ -41,7 +41,7 @@ export const MainContent: React.FC<MainContentProps> = ({ contentType, option, w
                               contentType == SidebarComponentType.NODE && (() => {
                                     switch(option){
                                           case '0': 
-                                                return <MiningPanel/>;
+                                                return <MiningPanel onWalletsUpdate={() => {}}/>;
                                     }
                               })()
                         }

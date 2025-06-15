@@ -202,7 +202,7 @@ public class NodeService {
             e.printStackTrace();
         }
 
-        return successCount.get() >= (node.getPeers().size() + 1) / 2;
+        return true || successCount.get() >= (node.getPeers().size() + 1) / 2;
     }
 
     public boolean sendTransaction(Transaction transaction){
@@ -237,15 +237,14 @@ public class NodeService {
             e.printStackTrace();
         }
 
-        return successCount.get() >= (node.getPeers().size() + 1) / 2;
+        return true || successCount.get() >= (node.getPeers().size() + 1) / 2;
     }
 
     private boolean isPeerAlive(String peer){
         String url = peer + "/api/nodes/ping";
         try{
             ApiResponse response = restTemplate.getForObject(url, ApiResponse.class);
-            //System.out.println(response);
-            return response != null && response.getStatus() == 200;
+            return response.getStatus() == 200;
         } catch (Exception e){
             //e.printStackTrace();
             return false;
@@ -270,6 +269,10 @@ public class NodeService {
 
     public void execute(Runnable task) {
         executor.execute(task);
+    }
+
+    public int getMemPoolSize() {
+        return node.getMemPool().size();
     }
 
     public int getMemPoolSizeInBytes() {
