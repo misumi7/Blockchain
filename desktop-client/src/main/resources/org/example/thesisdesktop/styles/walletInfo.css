@@ -1,0 +1,18 @@
+.wallet-info {
+    -fx-font-family: 'Inter';
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
+}
+
+.wallet-title {
+    -fx-font-size: 35px;
+    -fx-font-weight: 700;
+    -fx-padding: 10px 0 0 50px ;
+    -fx-text-fill: #333;
+}
+
+.section {
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(178, 178, 178, 0.756), 5, 0, 0, 0);
+    -fx-background-radius: 11px;
+}

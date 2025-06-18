@@ -1,6 +1,7 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Block;
+import com.example.blockchain.model.Transaction;
 import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.BlockchainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -89,6 +91,11 @@ public class BlockchainController {
         return blockchainService.deleteAllBlocks();
     }
 
+    @GetMapping(value = "/mining/block-to-mine")
+    public Block getBlockToMine(@RequestParam(value = "minerPublicKey") String minerPublicKey) {
+        return blockchainService.getBlockToMine(minerPublicKey);
+    }
+
     @GetMapping(value = "/mining/logs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamMiningLogs() {
         SseEmitter emitter = new SseEmitter(0L);
@@ -105,9 +112,9 @@ public class BlockchainController {
         return emitter;
     }
 
-    @GetMapping(value = "/mine")
+    /*@GetMapping(value = "/mine")
     public ResponseEntity<ApiResponse> mineBlock(@RequestParam("minerPublicKey") String minerPublicKey) {
         blockchainService.mineBlock(minerPublicKey);
         return ResponseEntity.ok(new ApiResponse("Mining started", 200));
-    }
+    }*/
 }

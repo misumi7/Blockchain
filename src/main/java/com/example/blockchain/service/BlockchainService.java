@@ -104,7 +104,75 @@ public class BlockchainService {
         }
     }
 
-    public void mineBlock(String minerPublicKey) {
+
+    public Block getBlockToMine(String minerPublicKey) {
+        if (nodeService.getMemPool().isEmpty()) {
+            System.out.println("[MINING] Not enough transactions in mempool to mine a block");
+            sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Not enough transactions in mempool to mine a block");
+            throw new ApiException("Not enough transactions in mempool to mine a block", 400);
+        }
+        // Choose transactions from mempool
+        sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Selecting transactions from mempool for mining");
+        long blockSize = 0;
+        long totalFee = 0;
+        List<Transaction> transactions = new ArrayList<>();
+        while (!nodeService.getMemPool().isEmpty() && transactions.size() < Block.MAX_BLOCK_SIZE_TRANSACTIONS) {
+            Transaction transaction = nodeService.getMemPool().peek();
+            if (blockSize + transaction.getSizeInBytes() > Block.MAX_BLOCK_SIZE_BYTES) {
+                break;
+            }
+            if (transactionService.isTransactionValid(transaction)) {
+                transaction.setStatus(TransactionStatus.CONFIRMED);
+                transactions.add(transaction);
+                nodeService.removeTransactionFromMemPool(transaction);
+                totalFee += transaction.getTransactionFee();
+                blockSize += transaction.getSizeInBytes();
+            } else {
+                System.out.println("[MINING] Invalid transaction found in mempool: " + transaction.getTransactionId());
+                sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Invalid transaction found in mempool: " + transaction.getTransactionId());
+                throw new ApiException("Invalid transaction found in mempool: " + transaction.getTransactionId(), 400);
+            }
+        }
+        // After transactions are chosen, create a transaction with fee and mining reward for the miner
+        long miningRewardAmount = getCurrentMiningReward();
+        sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Setting up mining reward and fees for the miner");
+        Transaction rewardTransaction = new Transaction(
+                new ArrayList<>(),
+                null,
+                Instant.now().toEpochMilli(),
+                miningRewardAmount + totalFee,
+                null,
+                minerPublicKey,
+                TransactionStatus.CONFIRMED,
+                0
+        );
+        UTXO miningReward = new UTXO(
+                rewardTransaction.getTransactionId(),
+                0,
+                minerPublicKey,
+                miningRewardAmount
+        );
+        UTXO fees = new UTXO(
+                rewardTransaction.getTransactionId(),
+                1,
+                minerPublicKey,
+                totalFee
+        );
+        rewardTransaction.setOutputs(Arrays.asList(miningReward, fees));
+        rewardTransaction.recalculateTransactionId();
+        transactions.add(rewardTransaction);
+
+        return new Block(
+                blockchainRepository.getLatestBlockIndex() + 1,
+                blockchainRepository.getLatestBlockHash(),
+                transactions,
+                Instant.now().toEpochMilli(),
+                0,
+                null
+        );
+    }
+
+    /*public void mineBlock(String minerPublicKey) {
         Runnable mineBlockTask = () -> {
             if (nodeService.getMemPool().isEmpty()) {
                 System.out.println("[MINING] Not enough transactions in mempool to mine a block");
@@ -190,7 +258,7 @@ public class BlockchainService {
             minedBlock.setBlockHash(minedBlock.calculateHash());
             System.out.println("[MINING] Mined a new block: " + minedBlock.getBlockHash() + " with " + transactions.size() + " transactions");
             sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Mined a new block: " + minedBlock.getBlockHash() + " with " + transactions.size() + " transactions");
-            transactions.forEach(System.out::println);
+            //transactions.forEach(System.out::println);
 
             if (nodeService.sendBlock(minedBlock)) {
                 System.out.println("[MINING] Block was accepted by peers: " + minedBlock.getBlockHash());
@@ -211,7 +279,7 @@ public class BlockchainService {
                 throw new RuntimeException(ex);
             }
         }
-    }
+    }*/
 
     public long getCurrentMiningReward(){
         return (INITIAL_REWARD_COINS / (2L * max(1, (int)(blockchainRepository.getLatestBlockIndex() / HALVING_STEP_BLOCKS)))) * 100_000_000L;
@@ -385,6 +453,9 @@ public class BlockchainService {
                 // recursively add all unlinked blocks
                 addBlock(nodeService.getUnlinkedBlocks().get(block.getBlockHash()));
             }
+            // Send block to the neighbours -- ??
+            nodeService.sendBlock(block);
+
             // after block is saved, check for our node's pending transactions and mempool
             // if found, change status to "confirmed", delete inputs and add outputs to UTXO db
             for(Transaction transaction : block.getTransactions()) {

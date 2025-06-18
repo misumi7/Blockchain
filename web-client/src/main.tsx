@@ -11,7 +11,7 @@ function App() {
     componentType: SidebarComponentType,
     option: string
   }>({
-    componentType: SidebarComponentType.NODE,
+    componentType: SidebarComponentType.WALLETS,
     option: '0'
   });
 
