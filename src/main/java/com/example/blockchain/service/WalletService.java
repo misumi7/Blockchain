@@ -232,11 +232,15 @@ public class WalletService {
         }
     }
 
-    // TEMP version!!!
-    public void deleteWallet(Wallet wallet){
-        walletRepository.deleteWallet(wallet);
-        walletList.remove(wallet);
-        if(currentWallet.equals(wallet)){
+    // TEMP version!!
+    public void deleteWallet(String walletPublicKey){
+        Wallet walletToRemove = walletList.stream()
+                .filter(wallet -> wallet.getPublicKey().equals(walletPublicKey))
+                .findFirst()
+                .orElseThrow(() -> new ApiException("Wallet not found", 404));
+        walletRepository.deleteWallet(walletToRemove);
+        walletList.remove(walletToRemove);
+        if(currentWallet.equals(walletToRemove)){
             currentWallet = walletList.isEmpty() ? null : walletList.getFirst();
         }
     }

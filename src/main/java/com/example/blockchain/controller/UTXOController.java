@@ -43,6 +43,7 @@ public class UTXOController {
 
     @GetMapping(value = "/balance", params = {"walletPublicKey"})
     public double getWalletBalance(@RequestParam("walletPublicKey") String walletPublicKey) {
+        System.out.println("Fetching balance for wallet: " + walletPublicKey);
         return utxoService.getWalletBalance(walletPublicKey);
     }
 

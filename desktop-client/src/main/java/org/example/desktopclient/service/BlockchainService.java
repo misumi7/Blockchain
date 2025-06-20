@@ -64,10 +64,13 @@ public class BlockchainService {
                             logCallback.accept("Mined block successfully sent to the network");
                             miningSessionReward.addAndGet(blockToMine.getTransactions().stream()
                                     .filter(tx -> tx.getReceiverPublicKey().equals(minerPublicKey))
-                                    .mapToLong(Transaction::getAmount)
+                                    .mapToLong(Transaction::getTransactionFee)
                                     .sum());
+                            // TEMP:: TODO:: last transaction should always be the miners reward transaction, but test it, just in case
+                            miningSessionReward.addAndGet(blockToMine.getTransactions().getLast().getAmount());
                             updateSessionReward(miningPanel, miningSessionReward.get());
-                        } else {
+                        }
+                        else {
                             logCallback.accept("Failed to send mined block to the network");
                         }
                     }

@@ -10,17 +10,17 @@ import java.util.Map;
 public class WalletsModel {
     private static WalletsModel instance;
     private final Map<String, SimpleStringProperty> walletNames = new HashMap<>();
-    private SimpleStringProperty walletBalance = new SimpleStringProperty("0.00");
-    private SimpleStringProperty totalBalance = new SimpleStringProperty("0.00");
-    private List<TableTransaction> tableTransactions = new ArrayList<>();
+    private final Map<String, SimpleStringProperty> walletBalances = new HashMap<>();
+    private final SimpleStringProperty totalBalance = new SimpleStringProperty("0.00");
+    private List<TableTransactionInfo> tableTransactions = new ArrayList<>();
 
     private WalletsModel() {}
 
-    public List<TableTransaction> getTableTransactions() {
+    public List<TableTransactionInfo> getTableTransactions() {
         return tableTransactions;
     }
 
-    public void setTableTransactions(List<TableTransaction> tableTransactions) {
+    public void setTableTransactions(List<TableTransactionInfo> tableTransactions) {
         this.tableTransactions = tableTransactions;
     }
 
@@ -32,12 +32,16 @@ public class WalletsModel {
         this.totalBalance.set(balance);
     }
 
-    public SimpleStringProperty getWalletBalanceProperty() {
-        return walletBalance;
+    public Map<String, SimpleStringProperty> getWalletBalances() {
+        return walletBalances;
     }
 
-    public void setWalletBalance(String balance) {
-        this.walletBalance.set(balance);
+    public SimpleStringProperty getWalletBalanceProperty(String walletPublicKey) {
+        return walletBalances.get(walletPublicKey);
+    }
+
+    public void setWalletBalance(String walletPublicKey, String balance) {
+        this.walletBalances.get(walletPublicKey).set(balance);
     }
 
     public SimpleStringProperty getWalletNameProperty(String walletPublicKey) {

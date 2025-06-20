@@ -1,6 +1,5 @@
 package org.example.desktopclient.view;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -11,10 +10,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.example.desktopclient.controller.UTXOController;
 import org.example.desktopclient.controller.WalletController;
-import org.example.desktopclient.model.TableTransaction;
+import org.example.desktopclient.model.TableTransactionInfo;
 
 import java.util.Objects;
 
@@ -69,7 +67,7 @@ public class WalletInfo extends VBox {
         Label walletBalanceLabel = new Label("Wallet balance:");
         walletBalanceLabel.getStyleClass().addAll("wallet-balance-label");
         Label walletBalanceValue = new Label("0.00 coins");
-        walletBalanceValue.textProperty().bind(utxoController.getWalletBalanceProperty());
+        walletBalanceValue.textProperty().bind(utxoController.getWalletBalanceProperty(walletPublicKey));
         walletBalanceValue.getStyleClass().addAll("wallet-balance-value");
 
         ImageView walletBalanceCoinIconView = new ImageView(coinIcon);
@@ -122,28 +120,33 @@ public class WalletInfo extends VBox {
         secondSectionTitle.getStyleClass().addAll("section-title");
 
         // Transaction Table
-        ObservableList<TableTransaction> transactions = FXCollections.observableArrayList();
+        ObservableList<TableTransactionInfo> transactions = FXCollections.observableArrayList();
         transactions.addAll(walletController.getWalletTransactions());
-        TableView<TableTransaction> transactionTable = new TableView<>(transactions);
+
+        TableView<TableTransactionInfo> transactionTable = new TableView<>(transactions);
+        Label noTransactionsLabel = new Label("No transactions found");
+        noTransactionsLabel.getStyleClass().add("no-transactions-label");
+        transactionTable.setPlaceholder(noTransactionsLabel);
+
         transactionTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         transactionTable.prefWidthProperty().bind(secondSection.widthProperty().multiply(.96));
         transactionTable.getStyleClass().addAll("transaction-table");
 
-        TableColumn<TableTransaction, Long> dateColumn = new TableColumn<>("Date");
+        TableColumn<TableTransactionInfo, Long> dateColumn = new TableColumn<>("Date");
         dateColumn.getStyleClass().addAll("transaction-table-column");
-        dateColumn.setCellValueFactory(new PropertyValueFactory<TableTransaction, Long>("timeStamp"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<TableTransactionInfo, Long>("timeStamp"));
 
-        TableColumn<TableTransaction, Long> amountColumn = new TableColumn<>("Amount");
+        TableColumn<TableTransactionInfo, Long> amountColumn = new TableColumn<>("Amount");
         amountColumn.getStyleClass().addAll("transaction-table-column");
-        amountColumn.setCellValueFactory(new PropertyValueFactory<TableTransaction, Long>("amount"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<TableTransactionInfo, Long>("amount"));
 
-        TableColumn<TableTransaction, String> statusColumn = new TableColumn<>("Status");
+        TableColumn<TableTransactionInfo, String> statusColumn = new TableColumn<>("Status");
         statusColumn.getStyleClass().addAll("transaction-table-column");
-        statusColumn.setCellValueFactory(new PropertyValueFactory<TableTransaction, String>("status"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<TableTransactionInfo, String>("status"));
 
-        TableColumn<TableTransaction, String> hashColumn = new TableColumn<>("Transaction Id");
+        TableColumn<TableTransactionInfo, String> hashColumn = new TableColumn<>("Transaction Id");
         hashColumn.getStyleClass().addAll("transaction-table-column");
-        hashColumn.setCellValueFactory(new PropertyValueFactory<TableTransaction, String>("transactionId"));
+        hashColumn.setCellValueFactory(new PropertyValueFactory<TableTransactionInfo, String>("transactionId"));
 
         transactionTable.getColumns().addAll(dateColumn, amountColumn, statusColumn, hashColumn);
 

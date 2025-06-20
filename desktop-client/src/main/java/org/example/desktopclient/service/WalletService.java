@@ -3,7 +3,6 @@ package org.example.desktopclient.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.property.SimpleStringProperty;
 import org.example.desktopclient.HttpClientProvider;
 import org.example.desktopclient.model.Transaction;
 
@@ -81,5 +80,49 @@ public class WalletService {
                         throw new RuntimeException("Failed to fetch wallet transactions: " + response.statusCode());
                     }
                 });
+    }
+
+    public CompletableFuture<Boolean> setWalletName(String walletPublicKey, String newName) {
+        String body = """
+             {
+                  "walletPublicKey": "%s",
+                  "walletName": "%s"
+             }
+             """.formatted(URLEncoder.encode(walletPublicKey), URLEncoder.encode(newName));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL))
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200){
+                        return true;
+                    }
+                    else {
+                        throw new RuntimeException("Failed to update wallet name: " + response.body());
+                    }
+                });
+    }
+
+    public CompletableFuture<Boolean> deleteWallet(String publicKey) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "?walletPublicKey=" + URLEncoder.encode(publicKey)))
+                .DELETE()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    return response.statusCode() == 200;
+                });
+    }
+
+    public CompletableFuture<Boolean> createWallet() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> response.statusCode() == 200);
     }
 }

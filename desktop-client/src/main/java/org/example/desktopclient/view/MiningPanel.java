@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MiningPanel extends VBox {
+    private static MiningPanel instance;
     private final WalletController walletsController = WalletController.getInstance();
     //private Map<String, String> walletNames;
     private Label mempoolSizeLabel;
@@ -33,9 +34,12 @@ public class MiningPanel extends VBox {
     private Label sessionRewardValue;
     //private ComboBox<Pair<String, SimpleStringProperty>> walletComboBox;
     private final BlockchainController blockchainController = BlockchainController.getInstance();
+    private ComboBox<Pair<String, SimpleStringProperty>> walletComboBox;
     private boolean isMining = false;
 
     public MiningPanel() {
+        instance = this;
+
         getStyleClass().addAll("node");
         InnerShadow innerShadow = new InnerShadow();
         innerShadow.setOffsetY(2);
@@ -58,7 +62,7 @@ public class MiningPanel extends VBox {
         walletNames.forEach((k, v) -> {
             walletList.add(new Pair<>(k, v));
         });
-        ComboBox<Pair<String, SimpleStringProperty>> walletComboBox = new ComboBox<>();
+        walletComboBox = new ComboBox<>();
         walletComboBox.setConverter(new StringConverter<Pair<String, SimpleStringProperty>>() {
             @Override
             public String toString(Pair<String, SimpleStringProperty> pair) {
@@ -200,6 +204,10 @@ public class MiningPanel extends VBox {
         getChildren().addAll(title, miningOptions, logFieldWrapper, miningInfoBox);
     }
 
+    public static MiningPanel getInstance() {
+        return instance;
+    }
+
     private void addLog(TextArea logArea, String message) {
         Platform.runLater(() -> {
             logArea.appendText(message + "\n");
@@ -209,6 +217,20 @@ public class MiningPanel extends VBox {
 
     public void setMempoolTransactionCount(String mempoolSize) {
         this.mempoolSizeLabel.setText("Mempool: " + mempoolSize + " transactions");
+    }
+
+    public void updateComboBoxOptions(){
+        Map<String, SimpleStringProperty> walletNames = walletsController.getWalletsModel().getWalletNames();
+        ObservableList<Pair<String, SimpleStringProperty>> walletList = FXCollections.observableArrayList();
+        walletNames.forEach((k, v) -> {
+            walletList.add(new Pair<>(k, v));
+        });
+        walletComboBox.setItems(walletList);
+        if (!walletList.isEmpty()) {
+            walletComboBox.setValue(walletList.getFirst());
+        } else {
+            walletComboBox.setValue(null);
+        }
     }
 
     /*public void setWalletNames() {

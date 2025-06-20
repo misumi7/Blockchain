@@ -1,16 +1,15 @@
 package org.example.desktopclient.model;
 
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class TableTransaction {
+public class TableTransactionInfo {
     private SimpleStringProperty timeStamp;
     private SimpleDoubleProperty amount;
     private SimpleStringProperty status;
     private SimpleStringProperty transactionId;
 
-    public TableTransaction(String timeStamp, double amount, TransactionStatus status, String transactionId) {
+    public TableTransactionInfo(String timeStamp, double amount, TransactionStatus status, String transactionId) {
         this.timeStamp = new SimpleStringProperty(timeStamp);
         this.amount = new SimpleDoubleProperty(amount);
         this.status = new SimpleStringProperty(status.toString().substring(0, 1) + status.toString().substring(1).toLowerCase());

@@ -17,11 +17,14 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SideMenu extends VBox {
-    WalletController walletController = WalletController.getInstance();
+    private static SideMenu instance;
+    private WalletController walletController = WalletController.getInstance();
     private Consumer<Pair<String, String>> onSectionSelected;
     private String selectedOption = "";
+    private TitledPane wallets = new TitledPane();
 
     public SideMenu(Consumer<Pair<String, String>> onSectionSelected) {
+        instance = this;
         this.onSectionSelected = onSectionSelected;
 
         getStyleClass().addAll("left-menu");
@@ -29,7 +32,6 @@ public class SideMenu extends VBox {
 
         Accordion accordion = new Accordion();
 
-        TitledPane wallets = new TitledPane();
         wallets.setText("Wallets");
         wallets.getStyleClass().addAll("menu-component", "wallets");
 
@@ -46,7 +48,7 @@ public class SideMenu extends VBox {
         });
 
         //walletsContent.setPadding(new Insets(10));
-        Map<String, SimpleStringProperty> walletNames = walletController.getWalletsModel().getWalletNames();
+        Map<String, SimpleStringProperty> walletNames = walletController.getWalletNames();
         VBox walletsContent = new VBox();
         for (String key : walletNames.keySet()) {
             Label walletLabel = new Label();
@@ -128,6 +130,31 @@ public class SideMenu extends VBox {
         */
 
         getChildren().addAll(accordion);
+    }
+
+    public static SideMenu getInstance() {
+        return instance;
+    }
+
+    public void updateSideMenuWalletList(){
+        Map<String, SimpleStringProperty> walletNames = walletController.getWalletNames();
+        VBox walletsContent = new VBox();
+        for (String key : walletNames.keySet()) {
+            Label walletLabel = new Label();
+            walletLabel.textProperty().bind(walletNames.get(key));
+            HBox walletButton = new HBox(walletLabel);
+            walletButton.getStyleClass().addAll("wallet-button");
+            walletButton.setOnMouseClicked(event -> {
+                onSectionSelected.accept(new Pair<>(selectedOption, key));
+                for (Node node : walletsContent.getChildren()) {
+                    node.getStyleClass().remove("selected-option");
+                }
+                walletButton.getStyleClass().add("selected-option");
+            });
+            walletsContent.getChildren().add(walletButton);
+        }
+        walletsContent.getStyleClass().addAll("wallets-content");
+        wallets.setContent(walletsContent);
     }
 
     /*public void setWalletNames(Map<String, String> walletNames) {

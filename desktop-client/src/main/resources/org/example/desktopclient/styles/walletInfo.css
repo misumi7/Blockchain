@@ -53,7 +53,7 @@
 }
 
 .send-button:hover {
-    -fx-opacity: .85;
+    -fx-opacity: .88;
 }
 
 .section-title {
@@ -105,5 +105,12 @@
 
 .transaction-table .table-row-cell:even:focused .table-cell, .transaction-table .table-row-cell:odd:focused .table-cell{
     -fx-text-fill: black;
+}
+
+.no-transactions-label {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-size: 28px;
+    -fx-text-fill: rgba(0, 0, 0, 0.5);
+    -fx-alignment: CENTER;
 }
 

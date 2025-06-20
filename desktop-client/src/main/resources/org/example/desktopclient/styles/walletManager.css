@@ -1,0 +1,105 @@
+.wallet-manager {
+    -fx-font-family: 'Inter 24pt';
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
+}
+
+.wallet-manager-title {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-size: 35px;
+    -fx-font-weight: 700;
+    -fx-padding: 20px 0 0 50px;
+}
+
+.wallet-table-view {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-radius: 0;
+}
+
+.wallet-table-view .table-cell {
+    -fx-alignment: CENTER;
+    -fx-padding: 16px 0 10px 0;
+    -fx-font-size: 15px;
+    -fx-border-width: 0 0 0 0;
+    -fx-border-color: rgba(0, 0, 0, 0.147);
+}
+
+.nempty-wallet-table-row:even .table-cell, .nempty-wallet-table-row:odd .table-cell {
+    -fx-border-width: 0 0 1px 0;
+}
+
+/*.wallet-table-view .table-row-cell:focused .table-cell {
+    -fx-border-color: transparent transparent transparent transparent;
+}*/
+
+.wallet-table-view .column-header-background {
+    -fx-pref-height: 30px;
+}
+
+.wallet-table-view .column-header {
+    -fx-background-color: #f1f1f1;
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-alignment: CENTER;
+    -fx-font-size: 17px;
+    /*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 2, 0, 0, 0);*/
+    -fx-border-width: 1px 0 1px 0;
+    -fx-border-color: rgba(0, 0, 0, 0.147);
+}
+
+.wallet-table-view .table-row-cell:even, .wallet-table-view .table-row-cell:odd{
+    -fx-background-color: transparent;
+}
+
+/*.wallet-table-view .table-row-cell:even:focused, .wallet-table-view .table-row-cell:odd:focused {
+    -fx-background-color: transparent;
+}*/
+
+.wallet-table-view .nempty-wallet-table-row:even:hover, .wallet-table-view .nempty-wallet-table-row:odd:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.047);
+}
+
+.wallet-table-view .table-row-cell:even:focused .table-cell, .wallet-table-view .table-row-cell:odd:focused .table-cell{
+    -fx-text-fill: black;
+}
+
+.wallet-table-button {
+    -fx-cursor: pointer;
+    -fx-alignment: CENTER;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.wallet-table-button:hover {
+    -fx-opacity: .55;
+}
+
+.add-wallet-button {
+    -fx-text-fill: black;
+    -fx-background-color: linear-gradient(to left, rgba(255, 227, 69, 0.90) 0%, rgba(255, 221, 0, 0.85) 100%);
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
+    -fx-font-size: 16px;
+}
+
+.add-wallet-button:hover {
+    -fx-opacity: .85;
+}
+
+wallet-search-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-radius: 12px;
+    -fx-padding: 8px 10px;
+    -fx-font-size: 15px;
+}
+
+.wallet-table-placeholder {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-size: 32px;
+    -fx-text-fill: rgba(0, 0, 0, 0.5);
+    -fx-alignment: CENTER;
+}

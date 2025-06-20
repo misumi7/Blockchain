@@ -9,6 +9,7 @@ import com.example.blockchain.service.WalletService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -57,13 +58,15 @@ public class WalletController {
 
     @PatchMapping
     public ResponseEntity<ApiResponse> updateWalletName(@RequestBody UpdateWalletNameRequest updateNameRequest) {
-        walletService.setWalletName(updateNameRequest.getWalletName(), updateNameRequest.getWalletPublicKey());
+        System.out.println("Received update name request: " + updateNameRequest.getWalletName() + ", " + updateNameRequest.getWalletPublicKey());
+        walletService.setWalletName(URLDecoder.decode(updateNameRequest.getWalletName()), URLDecoder.decode(updateNameRequest.getWalletPublicKey()));
         return ResponseEntity.ok(new ApiResponse("Wallet name updated successfully", 200));
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse> deleteWallet(@RequestParam("walletPublicKey") String walletPublicKey, @RequestParam("pin") String encryptedPin) {
-        walletService.deleteWallet(walletPublicKey, encryptedPin);
+    public ResponseEntity<ApiResponse> deleteWallet(@RequestParam("walletPublicKey") String walletPublicKey/*, @RequestParam("pin") String encryptedPin*/) {
+        //System.out.println("Wallet deleted: " + walletPublicKey);
+        walletService.deleteWallet(walletPublicKey/*, encryptedPin*/);
         return ResponseEntity.ok(new ApiResponse("Wallet deleted successfully", 200));
     }
 }
