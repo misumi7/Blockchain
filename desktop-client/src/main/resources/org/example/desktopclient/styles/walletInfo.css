@@ -1,0 +1,109 @@
+.wallet-info {
+    -fx-font-family: 'Inter 24pt';
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
+}
+
+.wallet-title {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-size: 35px;
+    -fx-font-weight: 700;
+    -fx-padding: 10px 0 0 50px ;
+    -fx-text-fill: #333;
+}
+
+.section {
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(178, 178, 178, 0.756), 5, 0, 0, 0);
+    -fx-background-radius: 11px;
+}
+
+.wallet-address {
+    -fx-font-family: 'Inter 24pt';
+    -fx-font-size: 16px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #dcdcdc;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.wallet-balance-label {
+    -fx-font-family: 'Inter 24pt';
+    -fx-font-size: 18px;
+}
+
+.wallet-balance-value {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-weight: 700;
+    -fx-font-size: 22px;
+}
+
+.wallet-address-label {
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 0 3px;
+}
+
+.send-button {
+    -fx-background-color: linear-gradient(to left, rgba(255, 227, 69, 0.90) 0%, rgba(255, 221, 0, 0.85) 100%);
+    -fx-padding: 8px 10px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 16px;
+}
+
+.send-button:hover {
+    -fx-opacity: .85;
+}
+
+.section-title {
+    -fx-font-size: 25px;
+    -fx-font-family: 'Inter 28pt Medium';
+    -fx-font-weight: 700;
+    -fx-padding: 10px 0 0 20px;
+}
+
+.transaction-table {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-radius: 0;
+}
+
+.transaction-table .table-cell {
+    -fx-alignment: CENTER;
+    -fx-padding: 16px 0 10px 0;
+    -fx-font-size: 13px;
+}
+
+.transaction-table .table-row-cell:focused .table-cell {
+    -fx-border-color: transparent rgba(133, 133, 133, 0.1) transparent rgba(133, 133, 133, 0.1);
+}
+
+.transaction-table .column-header-background {
+    -fx-pref-height: 30px;
+}
+
+.transaction-table .column-header {
+    -fx-background-color: #f1f1f1;
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-alignment: CENTER;
+    -fx-font-size: 14px;
+    /*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 2, 0, 0, 0);*/
+    -fx-border-width: 1px 0 1px 0;
+    -fx-border-color: rgba(0, 0, 0, 0.147);
+}
+
+.transaction-table .table-row-cell:even, .transaction-table .table-row-cell:odd{
+    -fx-background-color: transparent;
+}
+
+.transaction-table .table-row-cell:even:focused, .transaction-table .table-row-cell:odd:focused {
+    -fx-background-color: rgba(207, 207, 207, 0.35);
+}
+
+.transaction-table .table-row-cell:even:focused .table-cell, .transaction-table .table-row-cell:odd:focused .table-cell{
+    -fx-text-fill: black;
+}
+

@@ -1,0 +1,117 @@
+.node {
+    -fx-font-family: 'Inter 24pt';
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
+}
+
+.node-shadow-top {
+    -fx-background-color: linear-gradient(from 0px 0px to 0px 10px, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.mining-title {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-padding: 2px 0 0 0;
+    -fx-font-size: 38px;
+    -fx-font-weight: 700;
+    /*-fx-padding: 10px 0 0 45px;*/
+    -fx-text-fill: #333;
+    /*-fx-color: black;*/
+}
+
+.mining-button {
+    -fx-background-color: #25b315;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 9px 22px;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 1, 2);
+}
+
+.start-mining-button:hover {
+    -fx-background-color: #20ab11;
+}
+
+.start-mining-button {
+    -fx-background-color: #25b315;
+}
+
+.stop-mining-button {
+    -fx-background-color: #f44336;
+}
+
+.stop-mining-button:hover {
+    -fx-background-color: #e53935;
+}
+
+.mempool-size {
+    -fx-padding: 2px 0 0 4px;
+}
+
+.wallet-combo-box {
+    -fx-background-color: #fbfbfb;
+    -fx-border-color: #dcdcdc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt';
+}
+
+.wallet-combo-box .list-cell:selected {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+}
+
+.wallet-combo-box .list-cell:hover {
+    -fx-background-color: #FFDF00;
+    -fx-text-fill: black;
+}
+
+.wallet-selection-box {
+    -fx-padding: 10px 0 0 0;
+}
+
+.wallet-combo-box .arrow {
+    -fx-opacity: 0;
+    -fx-max-width: 0;
+    -fx-padding: 0;
+}
+
+.log-area {
+    -fx-background-color: #fbfbfb;
+    -fx-border-color: #dcdcdc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Inconsolata";
+    -fx-text-fill: black;
+    -fx-control-inner-background: #fbfbfb;
+    -fx-effect: none;
+    /*-fx-faint-focus-color: transparent;*/
+}
+
+.log-area:focused {
+    -fx-focus-color: transparent;
+    -fx-focus-effect: none;
+    -fx-faint-focus-color: transparent;
+}
+
+.mining-info-component {
+    -fx-background-color: linear-gradient(to top, rgba(237, 237, 237, 1) 0%, rgba(237, 237, 237, 1) 67%, rgba(227, 227, 227, 1) 100%);
+    -fx-border-width: 1px;
+    -fx-border-color: rgba(75, 75, 75, 0.352);
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.mining-info-component-title {
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-size: 18px;
+}
+
+.mining-info-component-value {
+    -fx-font-family: 'Inter 24pt';
+    -fx-font-size: 23px;
+    -fx-text-fill: black;
+}

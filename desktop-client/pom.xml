@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>ThesisDesktop</artifactId>
+    <artifactId>desktop-client</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>ThesisDesktop</name>
 
@@ -112,7 +112,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.example.thesisdesktop/org.example.thesisdesktop.Main</mainClass>
+                            <mainClass>org.example.thesisdesktop/org.example.desktopclient.Main</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
