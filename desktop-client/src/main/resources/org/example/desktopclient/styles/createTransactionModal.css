@@ -1,0 +1,42 @@
+.modal-container {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+
+.create-transaction-button {
+    -fx-background-color: linear-gradient(to left, rgba(255, 227, 69, 0.90) 0%, rgba(255, 221, 0, 0.85) 100%);
+    -fx-padding: 8px 10px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 16px;
+}
+
+.create-transaction-button:hover {
+    -fx-opacity: .88;
+}
+
+.create-transaction-pin-field {
+    -fx-alignment: CENTER;
+    -fx-background-color: #f5f5f5;
+    -fx-border-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 2, 0, 0, 0);
+}
+
+.create-transaction-field {
+    -fx-background-color: #f5f5f5;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 2, 0, 0, 0);
+}
+
+.create-transaction-label {
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 4px 0;
+}

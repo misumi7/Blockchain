@@ -5,6 +5,7 @@ import java.util.List;
 
 public class TransactionsModel {
     private static TransactionsModel instance;
+    private Transaction displayedTransaction;
 
     private TransactionsModel() {}
 
@@ -13,5 +14,13 @@ public class TransactionsModel {
             instance = new TransactionsModel();
         }
         return instance;
+    }
+
+    public void updateTransactionDetails(Transaction transaction) {
+        this.displayedTransaction = transaction;
+    }
+
+    public Transaction getDisplayedTransaction() {
+        return displayedTransaction;
     }
 }

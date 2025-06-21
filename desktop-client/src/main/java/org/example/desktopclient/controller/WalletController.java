@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class WalletController {
     public final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss");
     private static WalletController instance;
-    private final WalletService walletService = new WalletService();
+    private final WalletService walletService = WalletService.getInstance();
     private final WalletsModel walletsModel = WalletsModel.getInstance();
 
     private WalletController() {

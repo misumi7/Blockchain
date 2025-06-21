@@ -233,42 +233,6 @@ public class MiningPanel extends VBox {
         }
     }
 
-    /*public void setWalletNames() {
-        *//*if(walletNames == null || walletNames.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "No wallets available. Please create a wallet first.", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }*//*
-        Map<String, SimpleStringProperty> walletNames = walletsController.getWalletsModel().getWalletNames();
-        ObservableList<Pair<String, SimpleStringProperty>> walletList = FXCollections.observableArrayList();
-        walletNames.forEach((k, v) -> {
-            walletList.add(new Pair<String, SimpleStringProperty>(k, v));
-        });
-
-        walletComboBox.setConverter(new StringConverter<Pair<String, SimpleStringProperty>>() {
-            @Override
-            public String toString(Pair<String, SimpleStringProperty> pair) {
-                return pair == null ? "" : pair.getValue().getValue();
-            }
-
-            @Override
-            public Pair<String, SimpleStringProperty> fromString(String string) {
-                return null;
-            }
-        });
-
-        walletComboBox.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Pair<String, SimpleStringProperty> item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getValue().getValue());
-            }
-        });
-
-        walletComboBox.setItems(walletList);
-        walletComboBox.setValue(walletList.getFirst());
-    }*/
-
     public void updatePerformance(long performance) {
         Platform.runLater(() -> {
             if(performance < 1_000){

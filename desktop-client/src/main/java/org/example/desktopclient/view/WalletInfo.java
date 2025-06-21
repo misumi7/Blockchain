@@ -1,15 +1,23 @@
 package org.example.desktopclient.view;
 
+import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
+import javafx.util.Duration;
 import org.example.desktopclient.controller.UTXOController;
 import org.example.desktopclient.controller.WalletController;
 import org.example.desktopclient.model.TableTransactionInfo;
@@ -21,7 +29,7 @@ public class WalletInfo extends VBox {
     private final UTXOController utxoController = UTXOController.getInstance();
     private Image coinIcon = new Image(Objects.requireNonNull(getClass().getResource("/org/example/desktopclient/images/coin_icon.png")).toExternalForm());
 
-    public WalletInfo(String walletPublicKey) {
+    public WalletInfo(StackPane root, String walletPublicKey) {
         utxoController.updateWalletBalanceProperty(walletPublicKey);
         utxoController.updateTotalBalanceProperty();
         walletController.updateWalletTransactions(walletPublicKey);
@@ -103,7 +111,38 @@ public class WalletInfo extends VBox {
 
         Button sendButton = new Button("Send", coinIconView);
         sendButton.getStyleClass().addAll("send-button");
-        //HBox.setMargin(sendButton, new Insets(0, 0, 0, 0));
+        sendButton.setOnMouseClicked(event -> {
+            CreateTransactionModal createTransactionModal = new CreateTransactionModal(root, walletPublicKey);
+            createTransactionModal.prefWidthProperty().bind(root.widthProperty());
+            createTransactionModal.prefHeightProperty().bind(root.heightProperty());
+
+            BoxBlur blur = new BoxBlur(3, 3, 2);
+            for(Node node : root.getChildren()) {
+                node.setEffect(blur);
+            }
+
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(200), createTransactionModal);
+            createTransactionModal.setOpacity(0);
+            fadeIn.setToValue(1);
+
+            StackPane.setAlignment(createTransactionModal, Pos.CENTER);
+            root.getChildren().addAll(createTransactionModal);
+            fadeIn.play();
+
+            setOnKeyPressed(e -> {
+                if (e.getCode().toString().equals("ESCAPE")) {
+                    FadeTransition fadeOut = new FadeTransition(Duration.millis(200), createTransactionModal);
+                    fadeOut.setToValue(0);
+                    fadeOut.setOnFinished(ev -> {
+                        root.getChildren().removeAll(createTransactionModal);
+                        for(Node node : root.getChildren()) {
+                            node.setEffect(null);
+                        }
+                    });
+                    fadeOut.play();
+                }
+            });
+        });
 
         walletBalanceBox.setAlignment(Pos.CENTER_LEFT);
         walletBalanceBox.getChildren().addAll(walletBalanceContent, totalBalanceContent, sendButton);
@@ -131,6 +170,49 @@ public class WalletInfo extends VBox {
         transactionTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         transactionTable.prefWidthProperty().bind(secondSection.widthProperty().multiply(.96));
         transactionTable.getStyleClass().addAll("transaction-table");
+
+        transactionTable.setRowFactory(t -> {
+            TableRow<TableTransactionInfo> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    TableTransactionInfo transactionSelected = row.getItem();
+                    if (transactionSelected != null) {
+                        TransactionModal transactionModal = new TransactionModal(root, transactionSelected.getTransactionId());
+                        transactionModal.prefWidthProperty().bind(root.widthProperty());
+                        transactionModal.prefHeightProperty().bind(root.heightProperty());
+
+                        BoxBlur blur = new BoxBlur(3, 3, 2);
+                        for(Node node : root.getChildren()) {
+                            node.setEffect(blur);
+                        }
+
+                        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), transactionModal);
+                        transactionModal.setOpacity(0);
+                        fadeIn.setToValue(1);
+
+                        StackPane.setAlignment(transactionModal, Pos.CENTER);
+                        root.getChildren().addAll(transactionModal);
+                        fadeIn.play();
+
+                        setOnKeyPressed(e -> {
+                            if (e.getCode().toString().equals("ESCAPE")) {
+                                FadeTransition fadeOut = new FadeTransition(Duration.millis(200), transactionModal);
+                                fadeOut.setToValue(0);
+                                fadeOut.setOnFinished(ev -> {
+                                    root.getChildren().removeAll(transactionModal);
+                                    for(Node node : root.getChildren()) {
+                                        node.setEffect(null);
+                                    }
+                                });
+                                fadeOut.play();
+                            }
+                        });
+
+                    }
+                }
+            });
+            return row;
+        });
 
         TableColumn<TableTransactionInfo, Long> dateColumn = new TableColumn<>("Date");
         dateColumn.getStyleClass().addAll("transaction-table-column");

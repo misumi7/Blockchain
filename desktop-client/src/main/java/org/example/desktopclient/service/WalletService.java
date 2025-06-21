@@ -6,18 +6,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.desktopclient.HttpClientProvider;
 import org.example.desktopclient.model.Transaction;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.MGF1ParameterSpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class WalletService {
+    private static WalletService instance;
     private static final String BASE_URL = "http://localhost:8085/api/wallets";
     private static final HttpClient httpClient = HttpClientProvider.getClient();
+
+    private WalletService() {}
+
+    public static WalletService getInstance() {
+        if (instance == null) {
+            instance = new WalletService();
+        }
+        return instance;
+    }
 
     public CompletableFuture<Map<String, String>> getWalletNames(){
         HttpRequest request = HttpRequest.newBuilder()
@@ -124,5 +142,36 @@ public class WalletService {
                 .build();
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> response.statusCode() == 200);
+    }
+
+    public String encryptPin(String pin, byte[] rsaPublicKey) {
+        try {
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(rsaPublicKey);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = keyFactory.generatePublic(spec);
+
+            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+            OAEPParameterSpec oaepParams = new OAEPParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey, oaepParams);
+            byte[] encryptedPin = cipher.doFinal(pin.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedPin);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to encrypt PIN: " + e.getMessage(), e);
+        }
+    }
+
+    public CompletableFuture<byte[]> getRSAPublicKey() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/rsa-public-key"))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return response.body();
+                    } else {
+                        throw new RuntimeException("Failed to fetch RSA public key: " + response.statusCode());
+                    }
+                });
     }
 }

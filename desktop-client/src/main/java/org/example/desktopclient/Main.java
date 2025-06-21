@@ -10,6 +10,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
@@ -46,10 +47,13 @@ public class Main extends Application {
         double screenHeight = screenBounds.getHeight();
 
         // --
-        HBox root = new HBox();
-        root.setSpacing(19);
-        root.setAlignment(Pos.TOP_CENTER);
-        root.getStyleClass().addAll("main-container");
+
+        StackPane root = new StackPane();
+        
+        HBox mainElements = new HBox();
+        mainElements.setSpacing(19);
+        mainElements.setAlignment(Pos.TOP_CENTER);
+        mainElements.getStyleClass().addAll("main-container");
 
         VBox mainContent = new VBox();
 
@@ -58,8 +62,8 @@ public class Main extends Application {
 
         WalletManager walletManager = new WalletManager();
 
-        /*walletInfo.prefWidthProperty().bind(root.widthProperty().multiply(.66));
-        walletInfo.prefHeightProperty().bind(root.heightProperty());
+        /*walletInfo.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+        walletInfo.prefHeightProperty().bind(mainElements.heightProperty());
         mainContent.getChildren().add(walletInfo);*/
 
         SideMenu sideMenu = new SideMenu((selectedSection) -> {
@@ -70,15 +74,14 @@ public class Main extends Application {
                     case "Wallets":
                         switch (selectedSection.getValue()){
                             case "":
-                                // TEMP:: to add wallet manager here
-                                walletManager.prefWidthProperty().bind(root.widthProperty().multiply(.66));
-                                walletManager.prefHeightProperty().bind(root.heightProperty());
+                                walletManager.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+                                walletManager.prefHeightProperty().bind(mainElements.heightProperty());
                                 mainContent.getChildren().add(walletManager);
                                 break;
                             default:
-                                WalletInfo walletInfo = new WalletInfo(selectedSection.getValue());
-                                walletInfo.prefWidthProperty().bind(root.widthProperty().multiply(.66));
-                                walletInfo.prefHeightProperty().bind(root.heightProperty());
+                                WalletInfo walletInfo = new WalletInfo(root, selectedSection.getValue());
+                                walletInfo.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+                                walletInfo.prefHeightProperty().bind(mainElements.heightProperty());
                                 mainContent.getChildren().add(walletInfo);
                         }
                         break;
@@ -86,8 +89,8 @@ public class Main extends Application {
                         mainContent.getChildren().add(new Label("Network Page"));
                         break;
                     case "Node":
-                        miningPanel.prefWidthProperty().bind(root.widthProperty().multiply(.66));
-                        miningPanel.prefHeightProperty().bind(root.heightProperty());
+                        miningPanel.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+                        miningPanel.prefHeightProperty().bind(mainElements.heightProperty());
                         nodeController.updateMempoolTransactionCount(miningPanel);
                         mainContent.getChildren().add(miningPanel);
                         break;
@@ -99,16 +102,16 @@ public class Main extends Application {
         });
 
         // Updates:
-        //walletController.updateWalletNames(miningPanel, sideMenu);
+        // walletController.updateWalletNames(miningPanel, sideMenu);
 
+        mainContent.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+        mainContent.prefHeightProperty().bind(mainElements.heightProperty());
 
-        mainContent.prefWidthProperty().bind(root.widthProperty().multiply(.66));
-        mainContent.prefHeightProperty().bind(root.heightProperty());
+        sideMenu.prefWidthProperty().bind(mainElements.widthProperty().multiply(.3));
+        sideMenu.maxHeightProperty().bind(mainElements.heightProperty().multiply(.99));
 
-        sideMenu.prefWidthProperty().bind(root.widthProperty().multiply(.3));
-        sideMenu.maxHeightProperty().bind(root.heightProperty().multiply(.99));
-
-        root.getChildren().addAll(sideMenu, mainContent);
+        mainElements.getChildren().addAll(sideMenu, mainContent);
+        root.getChildren().addAll(mainElements);
 
         Scene scene = new Scene(root, screenWidth / 1.5, screenHeight / 1.5);
 
@@ -118,29 +121,17 @@ public class Main extends Application {
         scene.getStylesheets().add(getClass().getResource("styles/miningPanel.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/customTitledPane.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/walletManager.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("styles/transactionModal.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("styles/createTransactionModal.css").toExternalForm());
 
         primaryStage.setTitle("Full Node Client");
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
 
-        // TEMP::
-		/*new Thread (() -> {
-			SpringApplication.run(Main.class);
-		}, "SpringThread").start();*/
     }
 
     public static void main(String[] args) {
         launch();
-    }
-
-    public CompletableFuture<String> getChain() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/api/nodes/mempool/count"))
-                .GET()
-                .build();
-
-        return CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body);
     }
 }

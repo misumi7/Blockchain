@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 public class WalletManager extends VBox {
     private final WalletController walletController = WalletController.getInstance();
     private final UTXOController utxoController = UTXOController.getInstance();
+    private ObservableList<TableWalletInfo> wallets;
+
     public WalletManager() {
         utxoController.updateWalletBalances();
 
@@ -40,7 +42,7 @@ public class WalletManager extends VBox {
                 .map((e) -> new Pair<>(e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));*/
 
-        ObservableList<TableWalletInfo> wallets = FXCollections.observableArrayList(
+        wallets = FXCollections.observableArrayList(
                 walletController.getWalletsModel().getWalletNames()
                         .entrySet()
                         .stream()
@@ -282,7 +284,7 @@ public class WalletManager extends VBox {
             }
         });*/
 
-        // Add button and search
+        // Add button
 
         HBox toolBox = new HBox();
         VBox.setMargin(toolBox, new Insets(0, 0, 0, 54));
@@ -297,14 +299,14 @@ public class WalletManager extends VBox {
             if(walletController.createWallet()){
                 walletController.updateWalletNames();
                 utxoController.updateWalletBalances();
-                ObservableList<TableWalletInfo> updatedWallets = FXCollections.observableArrayList(
+                wallets = FXCollections.observableArrayList(
                         walletController.getWalletsModel().getWalletNames()
                                 .entrySet()
                                 .stream()
                                 .map(e -> new TableWalletInfo(e.getKey(), e.getValue().get(), utxoController.getWalletBalanceProperty(e.getKey()).get()))
                                 .collect(Collectors.toList())
                 );
-                walletTable.setItems(updatedWallets);
+                walletTable.setItems(wallets);
                 SideMenu.getInstance().updateSideMenuWalletList();
                 MiningPanel.getInstance().updateComboBoxOptions();
             }
@@ -314,6 +316,8 @@ public class WalletManager extends VBox {
                 alert.showAndWait();
             }
         });
+
+        // Search
 
         TextField searchField = new TextField();
         searchField.setPromptText("Search...");
