@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Block implements Serializable {
-    public static final int MAX_BLOCK_SIZE_BYTES = 1_000_000; // 1 mb
+    public static final int MAX_BLOCK_SIZE_BYTES = 1_000_000;
     public static final int MAX_BLOCK_SIZE_TRANSACTIONS = 5000;
 
 

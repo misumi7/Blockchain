@@ -74,4 +74,21 @@ public class TransactionService {
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> response.statusCode() == 200);
     }
+
+    public CompletableFuture<Integer> getFeeAmount() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/fee"))
+                .GET()
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return Integer.parseInt(response.body());
+                    }
+                    else {
+                        throw new RuntimeException("Failed to fetch fee amount: " + response.statusCode());
+                    }
+                });
+    }
 }

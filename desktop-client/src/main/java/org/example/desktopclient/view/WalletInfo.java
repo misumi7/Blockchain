@@ -66,6 +66,7 @@ public class WalletInfo extends VBox {
 
         HBox walletAddressWrapper = new HBox(walletAddress);
         VBox walletAddressBox = new VBox(walletAddressLabel, walletAddressWrapper);
+
         // Wallet Stats
 
         HBox walletBalanceBox = new HBox();

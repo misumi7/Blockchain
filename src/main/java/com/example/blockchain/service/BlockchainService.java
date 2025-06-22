@@ -543,6 +543,7 @@ public class BlockchainService {
         }
         Block block = blockchainRepository.getBlock(startWith);
         for(long i = startWith; block != null && i > startWith - count; --i) {
+            System.out.println("[BLOCK] " + block.getIndex() + " " + block.getBlockHash() + " " + LocalDateTime.ofEpochSecond(block.getTimeStamp() / 1000, 0, ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             blocks.put(block.getIndex(), block);
             block = blockchainRepository.getBlock(block.getPreviousHash());
         }

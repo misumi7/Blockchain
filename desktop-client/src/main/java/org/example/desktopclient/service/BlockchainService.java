@@ -14,8 +14,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -158,5 +160,89 @@ public class BlockchainService {
         if (miningPanel != null) {
             miningPanel.updateSessionReward(sessionReward);
         }
+    }
+
+    public CompletableFuture<Long> getBlockchainSizeInBytes() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/size"))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            return Long.parseLong(response.body());
+                        }
+                        catch (NumberFormatException e) {
+                            throw new RuntimeException("Failed to parse blockchain size: " + e.getMessage(), e);
+                        }
+                    }
+                    else {
+                        throw new RuntimeException("Failed to get blockchain size: " + response.body());
+                    }
+                });
+    }
+
+    public CompletableFuture<Block> getLastBlock() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/latest"))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            return objectMapper.readValue(response.body(), Block.class);
+                        }
+                        catch (Exception e) {
+                            throw new RuntimeException("Failed to parse last block: " + e.getMessage(), e);
+                        }
+                    }
+                    else {
+                        throw new RuntimeException("Failed to get last block timestamp: " + response.body());
+                    }
+                });
+    }
+
+    public CompletableFuture<Long> getTotalTransactions() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/transaction-count"))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            return Long.parseLong(response.body());
+                        }
+                        catch (NumberFormatException e) {
+                            throw new RuntimeException("Failed to parse total transactions: " + e.getMessage(), e);
+                        }
+                    }
+                    else {
+                        throw new RuntimeException("Failed to get total transactions: " + response.body());
+                    }
+                });
+    }
+
+    public CompletableFuture<Map<Long, Block>> getLastBlocks(long currentMax, long countToGet) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "?from=" + currentMax + "&count=" + countToGet))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            return objectMapper.readValue(response.body(), new TypeReference<>() {});
+                        } catch (Exception e) {
+                            throw new RuntimeException("Failed to parse last blocks: " + e.getMessage(), e);
+                        }
+                    } else {
+                        throw new RuntimeException("Failed to fetch last blocks: HTTP " + response.statusCode());
+                    }
+                });
     }
 }

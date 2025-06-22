@@ -17,10 +17,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.example.desktopclient.controller.NodeController;
 import org.example.desktopclient.controller.WalletController;
-import org.example.desktopclient.view.SideMenu;
-import org.example.desktopclient.view.MiningPanel;
-import org.example.desktopclient.view.WalletInfo;
-import org.example.desktopclient.view.WalletManager;
+import org.example.desktopclient.view.*;
 
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -59,7 +56,12 @@ public class Main extends Application {
 
         // TEMP:: toAdd: notifications page; :: or set it to settings page and add notifications there
         MiningPanel miningPanel = new MiningPanel();
-
+        Network network = new Network(root);
+        // TEMP::
+        network.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+        network.prefHeightProperty().bind(mainElements.heightProperty());
+        mainContent.getChildren().add(network);
+        // ::
         WalletManager walletManager = new WalletManager();
 
         /*walletInfo.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
@@ -86,7 +88,9 @@ public class Main extends Application {
                         }
                         break;
                     case "Network":
-                        mainContent.getChildren().add(new Label("Network Page"));
+                        network.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+                        network.prefHeightProperty().bind(mainElements.heightProperty());
+                        mainContent.getChildren().add(network);
                         break;
                     case "Node":
                         miningPanel.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
@@ -108,7 +112,7 @@ public class Main extends Application {
         mainContent.prefHeightProperty().bind(mainElements.heightProperty());
 
         sideMenu.prefWidthProperty().bind(mainElements.widthProperty().multiply(.3));
-        sideMenu.maxHeightProperty().bind(mainElements.heightProperty().multiply(.99));
+        sideMenu.maxHeightProperty().bind(mainElements.heightProperty().multiply(.983));
 
         mainElements.getChildren().addAll(sideMenu, mainContent);
         root.getChildren().addAll(mainElements);
@@ -123,6 +127,7 @@ public class Main extends Application {
         scene.getStylesheets().add(getClass().getResource("styles/walletManager.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/transactionModal.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/createTransactionModal.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("styles/network.css").toExternalForm());
 
         primaryStage.setTitle("Full Node Client");
         primaryStage.setScene(scene);
