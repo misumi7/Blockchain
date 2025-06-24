@@ -3,8 +3,10 @@ package org.example.desktopclient.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import org.example.desktopclient.HttpClientProvider;
 import org.example.desktopclient.model.Block;
+import org.example.desktopclient.model.BlockchainModel;
 import org.example.desktopclient.model.Transaction;
 import org.example.desktopclient.view.MiningPanel;
 
@@ -25,6 +27,7 @@ import java.util.function.Consumer;
 public class BlockchainService {
     private static final String BASE_URL = "http://localhost:8085/api/blocks";
     private static final HttpClient httpClient = HttpClientProvider.getClient();
+    //private final BlockchainModel blockchainModel = BlockchainModel.getInstance();
     private Thread miningThread;
     // If multiple threads will be required, use :
     // ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -71,6 +74,7 @@ public class BlockchainService {
                             // TEMP:: TODO:: last transaction should always be the miners reward transaction, but test it, just in case
                             miningSessionReward.addAndGet(blockToMine.getTransactions().getLast().getAmount());
                             updateSessionReward(miningPanel, miningSessionReward.get());
+                            //blockchainModel.updateLastBlocks(List.of(blockToMine));
                         }
                         else {
                             logCallback.accept("Failed to send mined block to the network");
@@ -244,5 +248,19 @@ public class BlockchainService {
                         throw new RuntimeException("Failed to fetch last blocks: HTTP " + response.statusCode());
                     }
                 });
+    }
+
+    public boolean isBlockchainSync() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/sync"))
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode() == 200;
+        } catch (Exception e) {
+            System.err.println("Error checking sync status: " + e.getMessage());
+            return false;
+        }
     }
 }

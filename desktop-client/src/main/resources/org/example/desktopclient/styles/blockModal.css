@@ -1,0 +1,6 @@
+.no-transactions-placeholder {
+    -fx-font-size: 17px;
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-text-fill: rgba(0, 0, 0, 0.75);
+    -fx-font-weight: 700;
+}

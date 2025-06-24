@@ -1,5 +1,6 @@
 package org.example.desktopclient.model;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,6 +15,7 @@ public class BlockchainModel {
     SimpleStringProperty lastBlockTimestamp = new SimpleStringProperty("0 seconds ago");
     SimpleIntegerProperty feeAmount = new SimpleIntegerProperty(0);
     SimpleLongProperty totalTransactions = new SimpleLongProperty(0);
+    SimpleBooleanProperty isSync = new SimpleBooleanProperty(false);
     TreeSet<Block> lastBlocks = new TreeSet<>(Comparator.comparingLong(Block::getIndex));
 
     private BlockchainModel() {}
@@ -23,6 +25,18 @@ public class BlockchainModel {
             instance = new BlockchainModel();
         }
         return instance;
+    }
+
+    public boolean isSync() {
+        return isSync.get();
+    }
+
+    public SimpleBooleanProperty getIsSyncProperty() {
+        return isSync;
+    }
+
+    public void setSync(boolean isSync) {
+        this.isSync.set(isSync);
     }
 
     public String getBlockchainSizeInBytes() {
@@ -99,7 +113,7 @@ public class BlockchainModel {
 
     public void updateLastBlocks(List<Block> blocksToAdd) {
         lastBlocks.addAll(blocksToAdd);
-        System.out.println("Updated last blocks: " + lastBlocks.size() + " blocks");
+        //System.out.println("Updated last blocks: " + lastBlocks.size() + " blocks");
     }
 
     public TreeSet<Block> getLastBlocks() {

@@ -1,5 +1,6 @@
 package org.example.desktopclient.model;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.ArrayList;
@@ -13,8 +14,21 @@ public class WalletsModel {
     private final Map<String, SimpleStringProperty> walletBalances = new HashMap<>();
     private final SimpleStringProperty totalBalance = new SimpleStringProperty("0.00");
     private List<TableTransactionInfo> tableTransactions = new ArrayList<>();
+    private SimpleIntegerProperty notificationCount = new SimpleIntegerProperty(0);
 
     private WalletsModel() {}
+
+    public int getNotificationCount() {
+        return notificationCount.get();
+    }
+
+    public SimpleIntegerProperty notificationCountProperty() {
+        return notificationCount;
+    }
+
+    public void setNotificationCount(int notificationCount) {
+        this.notificationCount.set(notificationCount);
+    }
 
     public List<TableTransactionInfo> getTableTransactions() {
         return tableTransactions;

@@ -77,15 +77,6 @@ public class Block implements Serializable {
         return this.blockHash.startsWith("0000");
     }
 
-    /*public boolean mineBlock(){
-        while(!this.blockHash.startsWith("0000")){
-            this.nonce++;
-            this.blockHash = this.calculateHash();
-            //System.out.println("Mining: " + this.blockHash + " with nonce: " + this.nonce);
-        }
-        return true;
-    }*/
-
     public static String toJson(Block block){
         try{
             return new ObjectMapper().writeValueAsString(block);

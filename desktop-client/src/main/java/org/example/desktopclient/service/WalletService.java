@@ -174,4 +174,19 @@ public class WalletService {
                     }
                 });
     }
+
+    public CompletableFuture<Boolean> isDefaultPinSet() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/is-default-pin-set"))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return Boolean.parseBoolean(response.body());
+                    } else {
+                        throw new RuntimeException("Failed to check if default PIN is set: " + response.statusCode());
+                    }
+                });
+    }
 }

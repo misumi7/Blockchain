@@ -354,4 +354,25 @@ public class TransactionService{
     public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
         return transactionRepository.getTransactionsByWallet(walletPublicKey);
     }
+
+    // Checks if the default PIN is set by deriving the pubKey from the enc prKey
+    public boolean isDefaultPinSet() {
+        return comparePins(WalletService.DEFAULT_PIN);
+    }
+
+    public boolean comparePins(String pin) {
+        try {
+            Wallet wallet = walletService.getWalletList().getFirst();
+            SecretKeySpec derivedKey = walletService.deriveKey(pin, wallet.getSalt());
+
+            Transaction testTransaction = new Transaction(new ArrayList<>(), new ArrayList<>(), 0, 0, wallet.getPublicKey(), wallet.getPublicKey(), TransactionStatus.PENDING, 0);
+            signTransaction(testTransaction, wallet.getPublicKey(), derivedKey);
+
+            return verifySignature(testTransaction);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException("Error comparing pins", 500);
+        }
+    }
 }

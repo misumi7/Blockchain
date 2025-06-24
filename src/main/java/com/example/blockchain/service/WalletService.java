@@ -1,11 +1,12 @@
 package com.example.blockchain.service;
 
+import com.example.blockchain.model.Transaction;
+import com.example.blockchain.model.TransactionStatus;
 import com.example.blockchain.model.Wallet;
 import com.example.blockchain.repository.WalletRepository;
 import com.example.blockchain.response.ApiException;
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
 import jakarta.annotation.PostConstruct;
+import org.bouncycastle.asn1.sec.ECPrivateKey;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -15,14 +16,13 @@ import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
@@ -35,9 +35,9 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.X509Certificate;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class WalletService {
@@ -268,6 +268,10 @@ public class WalletService {
         return wallets;
     }
 
+    public List<Wallet> getWalletList() {
+        return walletList;
+    }
+
     public byte[] getPublicKey() {
         return currentWallet.getPublicKeyBytes();
     }
@@ -354,5 +358,8 @@ public class WalletService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void setPin(String encryptedPin, String newEncryptedPin) {
     }
 }

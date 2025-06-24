@@ -1,5 +1,6 @@
 package org.example.desktopclient.view;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -10,10 +11,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -21,6 +24,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import org.example.desktopclient.controller.BlockchainController;
 import org.example.desktopclient.controller.NodeController;
@@ -35,7 +39,7 @@ public class Network extends StackPane {
     private BlockchainController blockchainController = BlockchainController.getInstance();
     private NodeController nodeController = NodeController.getInstance();
 
-    public Network(Node root) {
+    public Network(Scene scene, StackPane root) {
         blockchainController.updateBlockchainSizeInBytes();
         blockchainController.updateMempoolSizeInBytes();
         blockchainController.updateConnectionsCount();
@@ -80,8 +84,15 @@ public class Network extends StackPane {
         blockchainStatusBox.setAlignment(Pos.CENTER_RIGHT);
         Circle circle = new Circle();
         circle.setRadius(5);
-        circle.setFill(Color.GREEN);
-        Label blockchainStatus = new Label("Synchronized");
+        /*circle.setFill(blockchainController.isBlockchainSync() ? Color.GREEN : Color.RED);*/
+        circle.fillProperty().bind(Bindings.createObjectBinding(() -> {
+            return blockchainController.isBlockchainSync() ? Color.GREEN : Color.RED;
+        }, blockchainController.getIsBlockchainSyncProperty()));
+        Label blockchainStatus = new Label();
+        blockchainStatus.textProperty().bind(Bindings.createStringBinding(() -> {
+            boolean isSync = blockchainController.isBlockchainSync();
+            return isSync ? "Synchronized" : "Out of sync";
+        }, blockchainController.getIsBlockchainSyncProperty()));
         blockchainStatus.getStyleClass().add("network-section-status");
         blockchainStatusBox.getChildren().addAll(circle, blockchainStatus);
 
@@ -373,6 +384,40 @@ public class Network extends StackPane {
 
         for(Block block : blockchainController.getLastBlocks()) {
             VBox blockData = new VBox();
+            blockData.setOnMouseClicked(e -> {
+                if(e.getClickCount() == 2) {
+                    BlockModal blockModal = new BlockModal(root, block);
+                    blockModal.prefWidthProperty().bind(root.widthProperty().multiply(.7));
+                    blockModal.prefHeightProperty().bind(root.heightProperty().multiply(.9));
+
+                    BoxBlur blur = new BoxBlur(3, 3, 2);
+                    for (Node node : root.getChildren()) {
+                        node.setEffect(blur);
+                    }
+
+                    FadeTransition fadeIn = new FadeTransition(Duration.millis(200), blockModal);
+                    blockModal.setOpacity(0);
+                    fadeIn.setToValue(1);
+
+                    StackPane.setAlignment(blockModal, Pos.CENTER);
+                    root.getChildren().addAll(blockModal);
+                    fadeIn.play();
+
+                    setOnKeyPressed(event -> {
+                        if (event.getCode().toString().equals("ESCAPE")) {
+                            FadeTransition fadeOut = new FadeTransition(Duration.millis(200), blockModal);
+                            fadeOut.setToValue(0);
+                            fadeOut.setOnFinished(ev -> {
+                                root.getChildren().removeAll(blockModal);
+                                for (Node node : root.getChildren()) {
+                                    node.setEffect(null);
+                                }
+                            });
+                            fadeOut.play();
+                        }
+                    });
+                }
+            });
             blockData.setAlignment(Pos.CENTER);
 
             Image blockImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/example/desktopclient/images/block_icon.png")));
@@ -442,6 +487,40 @@ public class Network extends StackPane {
 
                         blockDataBox.getChildren().addAll(blockIndexLabel, transactionCountLabel, timePassedLabel);
                         blockData.getChildren().addAll(blockImageView, blockDataBox);
+                        blockData.setOnMouseClicked(e -> {
+                            if(e.getClickCount() == 2) {
+                                BlockModal blockModal = new BlockModal(root, block);
+                                blockModal.prefWidthProperty().bind(root.widthProperty());
+                                blockModal.prefHeightProperty().bind(root.heightProperty());
+
+                                BoxBlur blur = new BoxBlur(3, 3, 2);
+                                for (Node node : root.getChildren()) {
+                                    node.setEffect(blur);
+                                }
+
+                                FadeTransition fadeIn = new FadeTransition(Duration.millis(200), blockModal);
+                                blockModal.setOpacity(0);
+                                fadeIn.setToValue(1);
+
+                                StackPane.setAlignment(blockModal, Pos.CENTER);
+                                root.getChildren().addAll(blockModal);
+                                fadeIn.play();
+
+                                setOnKeyPressed(event -> {
+                                    if (event.getCode().toString().equals("ESCAPE")) {
+                                        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), blockModal);
+                                        fadeOut.setToValue(0);
+                                        fadeOut.setOnFinished(ev -> {
+                                            root.getChildren().removeAll(blockModal);
+                                            for (Node node : root.getChildren()) {
+                                                node.setEffect(null);
+                                            }
+                                        });
+                                        fadeOut.play();
+                                    }
+                                });
+                            }
+                        });
                         blocksContainer.getChildren().add(blockData);
                     }
                 });

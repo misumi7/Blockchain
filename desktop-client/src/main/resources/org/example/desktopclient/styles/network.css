@@ -1,7 +1,7 @@
 .network-content {
     -fx-font-family: 'Inter 24pt';
     -fx-background-color: #f1f1f1;
-    /*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);*/
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
 }
 
 .network-section {

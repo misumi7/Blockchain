@@ -1,10 +1,13 @@
 package org.example.desktopclient.controller;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import org.example.desktopclient.model.TableTransactionInfo;
 import org.example.desktopclient.model.Transaction;
 import org.example.desktopclient.model.WalletsModel;
 import org.example.desktopclient.service.WalletService;
+import org.example.desktopclient.view.Settings;
 import org.example.desktopclient.view.SideMenu;
 
 import java.time.Instant;
@@ -15,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WalletController {
+    public Settings settings = Settings.getInstance();
     public final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss");
     private static WalletController instance;
     private final WalletService walletService = WalletService.getInstance();
@@ -22,6 +26,46 @@ public class WalletController {
 
     private WalletController() {
         updateWalletNames();
+        settings.bindNotificationCount(getNotificationCountProperty());
+        if(walletService.isDefaultPinSet().join()){
+            Platform.runLater(() -> {
+                createNewNotification("You're currently using the default PIN code. For your security, we recommend updating it.", true);
+                createNewNotification("New user detected. Welcome!", false);
+            });
+            // Testing the notification system::
+            /*new Thread(() -> {
+                try {
+                    for (int i = 0; i < 12; ++i) {
+                        Thread.sleep(1000);
+                        Platform.runLater(() -> {
+                            createNewNotification("Please update your PIN code to enhance security.", true);
+                        });
+                    }
+                }
+                catch(Exception e){
+                        e.printStackTrace();
+                }
+            }).start();*/
+        }
+    }
+
+    public void createNewNotification(String message, boolean isAlert) {
+        settings.addNewNotification(message, isAlert);
+        incNotificationCount();
+    }
+
+    public void incNotificationCount() {
+        walletsModel.setNotificationCount(walletsModel.getNotificationCount() + 1);
+    }
+
+    public SimpleIntegerProperty getNotificationCountProperty() {
+        return walletsModel.notificationCountProperty();
+    }
+
+    public void decNotificationCount() {
+        if(walletsModel.getNotificationCount() > 0) {
+            walletsModel.setNotificationCount(walletsModel.getNotificationCount() - 1);
+        }
     }
 
     public void updateWalletNames() {

@@ -1,0 +1,116 @@
+.settings-scroll-pane {
+    -fx-font-family: 'Inter 24pt';
+    -fx-background-color: #f1f1f1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.247), 5, 0, 0, 0);
+}
+
+.settings-titled-pane > .content {
+    -fx-padding: 0;
+}
+
+.settings-titled-pane > .title {
+    -fx-font-size: 18px;
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-weight: 700;
+    -fx-padding: 0;
+    -fx-background-color: rgba(150, 150, 150, .05);
+    -fx-border-color: rgba(232, 232, 232, 1.0);
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-radius: 0;
+    -fx-padding: 0;
+}
+
+.settings-titled-pane > .content {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.settings-titled-pane .arrow{
+    -fx-opacity: 0;
+}
+
+.settings-scroll-pane:focused {
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.settings-scroll-pane .scroll-bar {
+    -fx-pref-width: 0;
+    -fx-opacity: 0;
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+}
+
+.notification-label {
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt';
+    -fx-text-fill: rgba(0, 0, 0, 0.85);
+}
+
+.notification-item {
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: rgba(232, 232, 232, 1.0);
+    -fx-padding: 9px 0 9px 0;
+}
+
+.settings-label-title {
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-weight: 700;
+}
+
+.settings-label-description {
+    -fx-font-size: 11px;
+    -fx-font-family: 'Inter 24pt';
+    -fx-text-fill: rgba(0, 0, 0, 0.5);
+}
+
+.settings-button {
+    -fx-background-color: rgba(128, 128, 128, 1);
+    -fx-font-family: 'Inter 24pt SemiBold';
+    -fx-font-size: 13px;
+    -fx-text-fill: #f1f1f1;
+    -fx-padding: 5px 7px;
+    -fx-border-radius: 15px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.settings-button:hover {
+    -fx-opacity: .8;
+}
+
+.update-pin-label {
+    -fx-font-size: 12px;
+    -fx-font-family: 'Inter 24pt';
+}
+
+.update-pin-button {
+    -fx-background-color: linear-gradient(to left, rgba(255, 227, 69, 0.90) 0%, rgba(255, 221, 0, 0.85) 100%);
+    -fx-padding: 9px 11px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 7px;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Inter 24pt';
+    -fx-font-weight: 600;
+}
+
+.update-pin-button:hover {
+    -fx-opacity: .88;
+}
+
+.notification-count-badge {
+    -fx-background-color: rgba(204, 0, 0, 1.0);
+    -fx-background-radius: 50%;
+    -fx-padding: 2px 5px;
+    -fx-font-size: 9px;
+    -fx-text-fill: #f1f1f1;
+}

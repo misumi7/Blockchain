@@ -69,4 +69,15 @@ public class WalletController {
         walletService.deleteWallet(walletPublicKey/*, encryptedPin*/);
         return ResponseEntity.ok(new ApiResponse("Wallet deleted successfully", 200));
     }
+
+    @PostMapping(value = "/pin")
+    public ResponseEntity<ApiResponse> updatePin(@RequestParam("oldPin") String oldEncryptedPin, @RequestParam("newPin") String newEncryptedPin) {
+        walletService.setPin(oldEncryptedPin, newEncryptedPin);
+        return ResponseEntity.ok(new ApiResponse("Default PIN set successfully", 200));
+    }
+
+    @GetMapping(value = "/is-default-pin-set")
+    public boolean isDefaultPinSet() {
+        return transactionService.isDefaultPinSet();
+    }
 }

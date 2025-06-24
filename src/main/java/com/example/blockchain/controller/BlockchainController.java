@@ -42,7 +42,8 @@ public class BlockchainController {
         boolean isSync = blockchainService.isBlockchainSync();
         if (isSync) {
             return ResponseEntity.ok(new ApiResponse("Blockchain is synchronized", 200));
-        } else {
+        }
+        else {
             return ResponseEntity.status(400).body(new ApiResponse("Blockchain is not synchronized", 400));
         }
     }

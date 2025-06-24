@@ -1,5 +1,6 @@
 package org.example.desktopclient.controller;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -99,6 +100,19 @@ public class BlockchainController {
         // Index (str), Block
         Map<Long, Block> lastBlocks = blockchainService.getLastBlocks(lastIndex, count).join();
         blockchainModel.updateLastBlocks(new ArrayList<>(lastBlocks.values()));
+    }
+
+    public void updateSyncStatus() {
+        boolean isSync = blockchainService.isBlockchainSync();
+        blockchainModel.setSync(isSync);
+    }
+
+    public SimpleBooleanProperty getIsBlockchainSyncProperty() {
+        return blockchainModel.getIsSyncProperty();
+    }
+
+    public boolean isBlockchainSync() {
+        return blockchainModel.isSync();
     }
 
     public static BlockchainController getInstance() {

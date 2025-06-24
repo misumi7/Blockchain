@@ -29,9 +29,12 @@ public class Main extends Application {
 
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     public static final String BASE_URL = "http://localhost:8085";
+    public static StackPane root = new StackPane();
+
 
     @Override
     public void start(Stage primaryStage) {
+
         Font.loadFont(getClass().getResourceAsStream("/org/example/desktopclient/fonts/Inconsolata.ttf"), 12);
         Font.loadFont(getClass().getResourceAsStream("/org/example/desktopclient/fonts/Inter.ttf"), 12);
         Font.loadFont(getClass().getResourceAsStream("/org/example/desktopclient/fonts/InterSemiBold.ttf"), 12);
@@ -43,10 +46,10 @@ public class Main extends Application {
         double screenWidth = screenBounds.getWidth();
         double screenHeight = screenBounds.getHeight();
 
+        Scene scene = new Scene(root, screenWidth / 1.5, screenHeight / 1.5);
+
         // --
 
-        StackPane root = new StackPane();
-        
         HBox mainElements = new HBox();
         mainElements.setSpacing(19);
         mainElements.setAlignment(Pos.TOP_CENTER);
@@ -55,18 +58,18 @@ public class Main extends Application {
         VBox mainContent = new VBox();
 
         // TEMP:: toAdd: notifications page; :: or set it to settings page and add notifications there
+        WalletManager walletManager = new WalletManager();
+        Network network = new Network(scene, root);
         MiningPanel miningPanel = new MiningPanel();
-        Network network = new Network(root);
+        Settings settings = Settings.getInstance();
         // TEMP::
+        settings.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+        settings.prefHeightProperty().bind(mainElements.heightProperty());
+        mainContent.getChildren().add(settings);
         network.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
         network.prefHeightProperty().bind(mainElements.heightProperty());
-        mainContent.getChildren().add(network);
+        // mainContent.getChildren().add(network);
         // ::
-        WalletManager walletManager = new WalletManager();
-
-        /*walletInfo.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
-        walletInfo.prefHeightProperty().bind(mainElements.heightProperty());
-        mainContent.getChildren().add(walletInfo);*/
 
         SideMenu sideMenu = new SideMenu((selectedSection) -> {
             Platform.runLater(() -> {
@@ -99,7 +102,9 @@ public class Main extends Application {
                         mainContent.getChildren().add(miningPanel);
                         break;
                     case "Settings":
-                        mainContent.getChildren().add(new Label("Settings Page"));
+                        settings.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
+                        settings.prefHeightProperty().bind(mainElements.heightProperty());
+                        mainContent.getChildren().add(settings);
                         break;
                 }
             });
@@ -117,8 +122,6 @@ public class Main extends Application {
         mainElements.getChildren().addAll(sideMenu, mainContent);
         root.getChildren().addAll(mainElements);
 
-        Scene scene = new Scene(root, screenWidth / 1.5, screenHeight / 1.5);
-
         scene.getStylesheets().add(getClass().getResource("styles/sideMenu.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/main.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/walletInfo.css").toExternalForm());
@@ -128,6 +131,8 @@ public class Main extends Application {
         scene.getStylesheets().add(getClass().getResource("styles/transactionModal.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/createTransactionModal.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("styles/network.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("styles/settings.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("styles/blockModal.css").toExternalForm());
 
         primaryStage.setTitle("Full Node Client");
         primaryStage.setScene(scene);
