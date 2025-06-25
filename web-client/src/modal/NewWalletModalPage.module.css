@@ -1,0 +1,85 @@
+.modal {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40vh;
+
+      padding-bottom: 3.2vh;
+}
+
+.importBlock {
+      user-select: none;
+      opacity: .45;
+      /* border: .1vw solid rgb(0, 0, 0); */
+      box-shadow: 0 0 .11vw black;
+      border-radius: .6vw;
+      margin: 6vh 1.5vw 1vh 1.5vw;
+      transition-duration: .3s;
+      height: 26vh;
+      width: 20vw;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+}
+
+.importLabel {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 1.1rem;
+}
+
+.importIcon {
+      /* padding: 7vh 6.5vw 7vh 6.5vw; */
+      opacity: .45;
+}
+
+.importBlock:hover {
+      box-shadow: 0 0 .3vw rgba(76, 76, 76, 0.69);
+      opacity: .7;
+}
+
+.importBlock:active {
+      transform: scale(.965);
+}
+
+.importBlock:hover .importIcon {
+      opacity: .5;
+}
+
+.createNewWalletButtonBox {
+      width: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+
+.createNewWalletButton {
+      margin-top: 1.05vh;
+      
+      user-select: none;
+      width: 55%;
+      background: var(--golden-gradient);
+      border-radius: .7vw;
+      box-shadow: .1vw .2vh .2vw rgba(0, 0, 0, 0.067);
+      height: 5vh;
+      
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      font-weight: 500;
+      font-size: 1.05rem;
+      letter-spacing: .02vw;
+
+      transition-duration: .2s;
+}
+
+.createNewWalletButton:hover {
+      opacity: .8;
+}
+
+.createNewWalletButton:active {
+      transform: scale(.97);
+}

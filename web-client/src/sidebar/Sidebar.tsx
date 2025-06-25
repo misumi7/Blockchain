@@ -3,9 +3,8 @@ import { SidebarComponent } from './SidebarComponent'
 import { SidebarComponentType } from './SidebarComponentType';
 
 import walletIcon from '../assets/icons/wallet_icon.png';
-import nodeIcon from '../assets/icons/node_icon.png';
 import networkIcon from '../assets/icons/network_icon.png';
-import settingsIcon from '../assets/icons/settings_icon.png';
+import lockIcon from '../assets/icons/lock_icon.png';
 import { useState } from 'react';
 
 interface SidebarComponentProps {
@@ -43,7 +42,7 @@ export const Sidebar : React.FC<SidebarComponentProps> = ({ onComponentSelected,
                         <SidebarComponent 
                               type={SidebarComponentType.NODE} 
                               isSelected={currentComponentSelected == SidebarComponentType.NODE} 
-                              icon={nodeIcon} 
+                              icon={lockIcon} 
                               onSelected={(option) => {
                                     setCurrentComponentSelected(SidebarComponentType.NODE);
                                     onComponentSelected(SidebarComponentType.NODE, option);
@@ -52,7 +51,7 @@ export const Sidebar : React.FC<SidebarComponentProps> = ({ onComponentSelected,
                         <SidebarComponent 
                               type={SidebarComponentType.SETTINGS} 
                               isSelected={currentComponentSelected == SidebarComponentType.SETTINGS} 
-                              icon={settingsIcon} 
+                              icon={lockIcon} 
                               onSelected={(option) => {
                                     setCurrentComponentSelected(SidebarComponentType.SETTINGS);
                                     onComponentSelected(SidebarComponentType.SETTINGS, option);

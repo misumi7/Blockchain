@@ -1,3 +1,9 @@
+.inactiveSidebarComponent {
+      color: #7c7c7c;
+      background-color: #e7e7e7;
+      border-bottom: .1vw solid #d9d9d9;
+}
+
 .sidebarComponentTitle {
       user-select: none;
       /*text-indent: 4%;*/
@@ -24,10 +30,13 @@
       width: 2rem;
 }
 
-.sidebarComponent {
-      cursor: pointer; 
-      width: 100%;
+.sidebarComponent:not(.inactiveSidebarComponent) {
       box-shadow: 0 .1vh 0 rgb(217, 217, 217);
+}
+
+.sidebarComponent {
+      cursor: pointer;
+      width: 100%;
 }
 
 .sidebarElements {

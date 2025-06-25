@@ -6,6 +6,7 @@ import selectedIcon from '../assets/icons/selected_icon.png';
 import editIcon from '../assets/icons/edit_icon.png';
 import addWalletIcon from '../assets/icons/add_new_wallet_icon.png'
 import { SidebarComponentType } from './SidebarComponentType';
+import { NewWalletModalPage } from '../modal/NewWalletModalPage';
 
 interface SidebarComponentProps {
       type : SidebarComponentType;
@@ -45,10 +46,10 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                               setComponentContent(['Dashboard'/*, 'Mempool'*/]);
                               break;
                         case SidebarComponentType.NODE:
-                              setComponentContent(['Mining Panel']);
+                              setComponentContent([]);
                               break;
                         case SidebarComponentType.SETTINGS:
-                              setComponentContent(['-']);
+                              setComponentContent([]);
                               break;
                   }
             };
@@ -97,8 +98,19 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
             }
       }, [inputRef]);
 
+      const [isNewWalletModalOpen, setIsNewWalletModalOpen] = useState<boolean>(false);
+
       return (
-            <div className={styles.sidebarComponent}>
+            <div className={`${styles.sidebarComponent} ${type == SidebarComponentType.NODE || type == SidebarComponentType.SETTINGS ? styles.inactiveSidebarComponent : ""}`}>
+                  {
+                        isNewWalletModalOpen && (
+                              <NewWalletModalPage
+                                    onClose={() => {
+                                          setIsNewWalletModalOpen(false);
+                                    }}
+                              />
+                        )
+                  }
                   <div className={`${styles.sidebarComponentTitle} ${/*isSelected && componentContent.length == 0 ? styles.selectedComponent : */''}`} 
                         onClick={() => {
                               // if(componentContent && componentContent.length > 0){
@@ -116,7 +128,8 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                                     src={addWalletIcon} 
                                     onClick={(e) => {
                                           e.stopPropagation();
-                                          createNewWallet();
+                                          //createNewWallet();
+                                          setIsNewWalletModalOpen(true);
                                     }}
                               >
                               </img>)
