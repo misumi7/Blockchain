@@ -49,6 +49,16 @@ public class WalletController {
         }
     }
 
+    public void updatePin(String oldPin, String newPin){
+        byte[] rsaPublicKey = walletService.getRSAPublicKey().join();
+        String encryptedOldPin = walletService.encryptPin(oldPin, rsaPublicKey);
+        String encryptedNewPin = walletService.encryptPin(newPin, rsaPublicKey);
+
+        if(walletService.updatePin(encryptedOldPin, encryptedNewPin)){
+            createNewNotification("PIN code updated successfully.", false);
+        }
+    }
+
     public void createNewNotification(String message, boolean isAlert) {
         settings.addNewNotification(message, isAlert);
         incNotificationCount();

@@ -90,7 +90,7 @@ public class SideMenu extends VBox {
         settingsArrow.setFitWidth(30);
         settingsArrow.setFitHeight(30);
         settings.setGraphic(settingsArrow);
-        settings.getStyleClass().addAll("menu-component", "settings", "last-component");
+        settings.getStyleClass().addAll("menu-component", "settings", "last-component", "selected");
 
 
         accordion.getPanes().addAll(

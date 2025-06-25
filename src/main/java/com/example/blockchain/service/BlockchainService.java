@@ -117,7 +117,7 @@ public class BlockchainService {
         long totalFee = 0;
         List<Transaction> transactions = new ArrayList<>();
         while (!nodeService.getMemPool().isEmpty() && transactions.size() < Block.MAX_BLOCK_SIZE_TRANSACTIONS) {
-            Transaction transaction = nodeService.getMemPool().peek();
+            Transaction transaction = nodeService.getMemPool().poll();
             if (blockSize + transaction.getSizeInBytes() > Block.MAX_BLOCK_SIZE_BYTES) {
                 break;
             }
@@ -127,7 +127,8 @@ public class BlockchainService {
                 nodeService.removeTransactionFromMemPool(transaction);
                 totalFee += transaction.getTransactionFee();
                 blockSize += transaction.getSizeInBytes();
-            } else {
+            }
+            else {
                 System.out.println("[MINING] Invalid transaction found in mempool: " + transaction.getTransactionId());
                 sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Invalid transaction found in mempool: " + transaction.getTransactionId());
                 throw new ApiException("Invalid transaction found in mempool: " + transaction.getTransactionId(), 400);

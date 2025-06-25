@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.MGF1ParameterSpec;
@@ -188,5 +189,32 @@ public class WalletService {
                         throw new RuntimeException("Failed to check if default PIN is set: " + response.statusCode());
                     }
                 });
+    }
+
+    public boolean updatePin(String encryptedOldPin, String encryptedNewPin) {
+        String body = """
+        {
+            "oldPin": "%s",
+            "newPin": "%s"
+        }
+        """.formatted(
+                URLEncoder.encode(encryptedOldPin, StandardCharsets.UTF_8),
+                URLEncoder.encode(encryptedNewPin, StandardCharsets.UTF_8)
+        );
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/pin"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return true;
+                    } else {
+                        throw new RuntimeException("Failed to update PIN: " + response.body());
+                    }
+                }).join();
     }
 }

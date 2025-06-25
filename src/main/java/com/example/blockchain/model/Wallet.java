@@ -159,6 +159,10 @@ public class Wallet {
         }
     }
 
+    public void setEncryptedPrivateKey(String encryptedPrivateKey) {
+        this.encryptedPrivateKey = encryptedPrivateKey;
+    }
+
     @Override
     public String toString() {
         return "Wallet{" +

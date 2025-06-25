@@ -50,8 +50,6 @@ public class Settings extends StackPane {
         notificationsArrow.setFitWidth(30);
         notificationsArrow.setFitHeight(30);
 
-        notificationCount.getStyleClass().add("notification-count-badge");
-
         StackPane notificationIconBox = new StackPane(notificationsArrow);
         StackPane.setAlignment(notificationCount, Pos.TOP_RIGHT);
         notificationIconBox.getChildren().add(notificationCount);
@@ -241,6 +239,7 @@ public class Settings extends StackPane {
             notificationCount.textProperty().bind(notificationCountProperty.asString());
             notificationCount.visibleProperty().bind(notificationCountProperty.greaterThan(0));
             notificationCount.managedProperty().bind(notificationCountProperty.greaterThan(0));
+            notificationCount.getStyleClass().add("notification-count-badge");
         });
     }
 

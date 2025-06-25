@@ -1,6 +1,7 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Transaction;
+import com.example.blockchain.request.UpdatePinRequest;
 import com.example.blockchain.request.UpdateWalletNameRequest;
 import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.TransactionService;
@@ -58,7 +59,7 @@ public class WalletController {
 
     @PatchMapping
     public ResponseEntity<ApiResponse> updateWalletName(@RequestBody UpdateWalletNameRequest updateNameRequest) {
-        System.out.println("Received update name request: " + updateNameRequest.getWalletName() + ", " + updateNameRequest.getWalletPublicKey());
+        System.out.println("Update name request: " + updateNameRequest.getWalletName() + ", " + updateNameRequest.getWalletPublicKey());
         walletService.setWalletName(URLDecoder.decode(updateNameRequest.getWalletName()), URLDecoder.decode(updateNameRequest.getWalletPublicKey()));
         return ResponseEntity.ok(new ApiResponse("Wallet name updated successfully", 200));
     }
@@ -71,9 +72,9 @@ public class WalletController {
     }
 
     @PostMapping(value = "/pin")
-    public ResponseEntity<ApiResponse> updatePin(@RequestParam("oldPin") String oldEncryptedPin, @RequestParam("newPin") String newEncryptedPin) {
-        walletService.setPin(oldEncryptedPin, newEncryptedPin);
-        return ResponseEntity.ok(new ApiResponse("Default PIN set successfully", 200));
+    public ResponseEntity<ApiResponse> updatePin(@RequestBody UpdatePinRequest updatePinRequest) {
+        transactionService.setPin(updatePinRequest.getEncOldPin(), updatePinRequest.getEncNewPin());
+        return ResponseEntity.ok(new ApiResponse("PIN updated successfully", 200));
     }
 
     @GetMapping(value = "/is-default-pin-set")

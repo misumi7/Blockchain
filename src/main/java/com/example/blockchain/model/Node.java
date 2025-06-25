@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 public class Node {
-    public static final Set<String> PUBLIC_NODES = Set.of("http://localhost:8086");
+    public static final Set<String> PUBLIC_NODES = Set.of("http://localhost:8086", "http://localhost:8090", "http://localhost:8082");
     private String type = "light"; // light / full
     private final Set<String> peers;
 

@@ -9,6 +9,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -285,6 +287,10 @@ public class TransactionService{
         SecretKeySpec key = walletService.deriveKey(strKey, senderWallet.getSalt());
 
         signTransaction(transaction, transactionRequest.getSenderPublicKey(), key);
+        if(!verifySignature(transaction)) {
+            System.out.println("[TRANSACTION ERROR] Transaction signature is invalid");
+            throw new ApiException("Transaction signature is invalid", 400);
+        }
 
         // Send transaction to neighbors (and wait for confirmation)
         boolean wasTransactionAccepted = nodeService.sendTransaction(transaction);
@@ -373,6 +379,33 @@ public class TransactionService{
         catch (Exception e) {
             e.printStackTrace();
             throw new ApiException("Error comparing pins", 500);
+        }
+    }
+
+    public void setPin(String encryptedPin, String newEncryptedPin) {
+        String decryptedPin = walletService.decryptPin(Base64.getDecoder().decode(URLDecoder.decode(encryptedPin)), walletService.privateKey);
+        String decryptedNewPin = walletService.decryptPin(Base64.getDecoder().decode(URLDecoder.decode(newEncryptedPin)), walletService.privateKey);
+
+        /*System.out.println("Decrypted PIN: " + decryptedPin);
+        System.out.println("Decrypted new PIN: " + decryptedNewPin);*/
+
+        if(!comparePins(decryptedPin)) {
+            throw new ApiException("Incorrect PIN received", 400);
+        }
+
+        for(Wallet wallet : walletService.getWalletList()){
+            byte[] decryptedWalletPrivateKey = walletService.decryptPrivateKey(
+                    wallet.getEncryptedPrivateKeyBytes(),
+                    wallet.getIv(),
+                    walletService.deriveKey(decryptedPin, wallet.getSalt())
+            );
+
+            SecretKeySpec newDerivedKey = walletService.deriveKey(decryptedNewPin, wallet.getSalt());
+
+            String encryptedPrivateKey = walletService.encryptPrivateKey(decryptedWalletPrivateKey, wallet.getIv(), newDerivedKey);
+            wallet.setEncryptedPrivateKey(encryptedPrivateKey);
+            walletService.updateWallet(wallet);
+            System.out.println("[PIN UPDATE] Wallet " + wallet.getPublicKey() + " PIN updated successfully");
         }
     }
 }

@@ -38,6 +38,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.MGF1ParameterSpec;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WalletService {
@@ -47,8 +48,8 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private List<Wallet> walletList;
     private Wallet currentWallet;
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
+    protected PrivateKey privateKey;
+    protected PublicKey publicKey;
 
     public WalletService(WalletRepository walletRepository) {
         this.walletRepository = walletRepository;
@@ -169,7 +170,7 @@ public class WalletService {
         }
     }
 
-    private String encryptPrivateKey(byte[] privateKey, byte[] IV, SecretKeySpec key) {
+    protected String encryptPrivateKey(byte[] privateKey, byte[] IV, SecretKeySpec key) {
         try{
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             GCMParameterSpec spec = new GCMParameterSpec(128, IV);
@@ -289,6 +290,18 @@ public class WalletService {
         }
     }
 
+    public void updateWallet(Wallet wallet) {
+        if (walletList.stream().map(Wallet::getPublicKey).toList().contains(wallet.getPublicKey())) {
+            walletRepository.saveWallet(wallet, walletRepository.getWalletName(wallet.getPublicKeyBytes()));
+            walletList = walletList.stream()
+                    .map(w -> w.getPublicKey().equals(wallet.getPublicKey()) ? wallet : w)
+                    .collect(Collectors.toList());
+        }
+        else {
+            throw new ApiException("Wallet not found", 404);
+        }
+    }
+
     public void setWalletName(String name, String walletPublicKey) {
         for (Wallet wallet : walletList) {
             if (wallet.getPublicKey().equals(walletPublicKey)) {
@@ -345,21 +358,14 @@ public class WalletService {
 
     public String decryptPin(byte[] ecnPin, PrivateKey privateKey) {
         try {
-            /*for(byte b : ecnPin) {
-                System.out.println(b);
-            }*/
             Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
             OAEPParameterSpec oaepParams = new OAEPParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
             cipher.init(Cipher.DECRYPT_MODE, privateKey, oaepParams);
             byte[] decryptedBytes = cipher.doFinal(ecnPin);
             return new String(decryptedBytes, StandardCharsets.UTF_8);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public void setPin(String encryptedPin, String newEncryptedPin) {
     }
 }

@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.example.desktopclient.controller.WalletController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,7 @@ public class PinUpdateModal extends StackPane {
             System.out.println("New PIN: " + newPin);
 
             if(oldPin.length() == 6 || newPin.length() == 6) {
-                // send request to the controller
+                WalletController.getInstance().updatePin(oldPin, newPin);
 
                 FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this);
                 fadeOut.setToValue(0);
