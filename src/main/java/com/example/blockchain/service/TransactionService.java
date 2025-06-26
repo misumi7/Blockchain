@@ -211,6 +211,14 @@ public class TransactionService{
         }
     }
 
+    public void saveWalletTransactions(List<Transaction> transactions) {
+        for(Transaction transaction : transactions) {
+            if(!transactionRepository.saveTransaction(transaction)) {
+                throw new ApiException("Transaction could not be saved", 500);
+            }
+        }
+    }
+
     public void createTransaction(TransactionRequest transactionRequest) {
         // Required utxo are selected from the existing ones
         // We create output utxo for the receiver
@@ -407,5 +415,15 @@ public class TransactionService{
             walletService.updateWallet(wallet);
             System.out.println("[PIN UPDATE] Wallet " + wallet.getPublicKey() + " PIN updated successfully");
         }
+    }
+
+    public void deleteWalletTransactions(String walletPublicKey) {
+        List<Transaction> transactions = transactionRepository.getTransactionsByWallet(walletPublicKey);
+        for(Transaction transaction : transactions) {
+            if(!transactionRepository.deleteTransaction(transaction.getTransactionId())) {
+                throw new ApiException("Transaction could not be deleted", 500);
+            }
+        }
+        System.out.println("[TRANSACTIONS DELETED] All transactions for wallet " + walletPublicKey + " deleted successfully");
     }
 }

@@ -50,9 +50,9 @@ public class BlockchainService {
         // this.utxoService = utxoService;
 
         // TEMP::
-        /*blockchainRepository.deleteAllBlocks();
+        blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        utxoService.deleteAllUTXO();*/
+        utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -104,6 +104,10 @@ public class BlockchainService {
         }
     }
 
+    public List<Transaction> getWalletTransactions(String walletPublicKey){
+        return blockchainRepository.getWalletTransactions(walletPublicKey);
+    }
+
 
     public Block getBlockToMine(String minerPublicKey) {
         if (nodeService.getMemPool().isEmpty()) {
@@ -131,7 +135,7 @@ public class BlockchainService {
             else {
                 System.out.println("[MINING] Invalid transaction found in mempool: " + transaction.getTransactionId());
                 //sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Invalid transaction found in mempool: " + transaction.getTransactionId());
-                nodeService.getMemPool().remove(transaction);
+                nodeService.removeTransactionFromMemPool(transaction);
                 transactionService.changeTransactionStatus(transaction.getTransactionId(), TransactionStatus.REJECTED);
                 throw new ApiException("Invalid transaction found in mempool: " + transaction.getTransactionId(), 400);
             }
@@ -144,7 +148,7 @@ public class BlockchainService {
                 null,
                 Instant.now().toEpochMilli(),
                 miningRewardAmount + totalFee,
-                null,
+                "",
                 minerPublicKey,
                 TransactionStatus.CONFIRMED,
                 0
@@ -401,6 +405,7 @@ public class BlockchainService {
                 TransactionStatus.CONFIRMED,
                 0
         );
+        firstTransaction.setDigitalSignature(new byte[1]);
         UTXO firstUTXO = new UTXO(
                 firstTransaction.getTransactionId(),
                 0,

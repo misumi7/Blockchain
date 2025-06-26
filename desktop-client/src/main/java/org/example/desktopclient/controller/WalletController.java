@@ -7,9 +7,13 @@ import org.example.desktopclient.model.TableTransactionInfo;
 import org.example.desktopclient.model.Transaction;
 import org.example.desktopclient.model.WalletsModel;
 import org.example.desktopclient.service.WalletService;
+import org.example.desktopclient.view.MiningPanel;
 import org.example.desktopclient.view.Settings;
 import org.example.desktopclient.view.SideMenu;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -153,5 +157,16 @@ public class WalletController {
 
     public boolean createWallet() {
         return walletService.createWallet().join();
+    }
+
+    public String downloadWallet(String publicKey) {
+        return walletService.downloadWallet(publicKey).join();
+    }
+
+    public void importWallet(File file) {
+        walletService.createWallet(file).join();
+        updateWalletNames();
+        SideMenu.getInstance().updateSideMenuWalletList();
+        MiningPanel.getInstance().updateComboBoxOptions();
     }
 }

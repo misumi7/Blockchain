@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.example.desktopclient.controller.NodeController;
+import org.example.desktopclient.controller.UTXOController;
 import org.example.desktopclient.controller.WalletController;
 import org.example.desktopclient.view.*;
 
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 public class Main extends Application {
     private final NodeController nodeController = NodeController.getInstance();
     private final WalletController walletController = WalletController.getInstance();
+    private final UTXOController utxoController = UTXOController.getInstance();
 
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     public static final String BASE_URL = "http://localhost:8085";
@@ -58,7 +60,7 @@ public class Main extends Application {
         VBox mainContent = new VBox();
 
         // TEMP:: toAdd: notifications page; :: or set it to settings page and add notifications there
-        WalletManager walletManager = new WalletManager();
+        WalletManager walletManager = new WalletManager(primaryStage);
         Network network = new Network(scene, root);
         MiningPanel miningPanel = new MiningPanel();
         Settings settings = Settings.getInstance();
@@ -82,6 +84,9 @@ public class Main extends Application {
                                 walletManager.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
                                 walletManager.prefHeightProperty().bind(mainElements.heightProperty());
                                 mainContent.getChildren().add(walletManager);
+                                walletController.updateWalletNames();
+                                utxoController.updateWalletBalances();
+                                walletManager.updateWalletTable();
                                 break;
                             default:
                                 WalletInfo walletInfo = new WalletInfo(root, selectedSection.getValue());

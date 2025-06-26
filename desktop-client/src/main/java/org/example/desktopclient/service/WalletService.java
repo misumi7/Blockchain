@@ -9,6 +9,9 @@ import org.example.desktopclient.model.Transaction;
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -145,6 +148,34 @@ public class WalletService {
                 .thenApply(response -> response.statusCode() == 200);
     }
 
+    public CompletableFuture<Boolean> createWallet(File file){
+        StringBuilder jsonContent = new StringBuilder();
+        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while((line = br.readLine()) != null) {
+                jsonContent.append(line).append("\n");
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to read wallet file: " + file.getName());
+        }
+        String body = jsonContent.toString().replace("}", ", \"walletName\": \"%s\"}".formatted(file.getName().replace(".json", "")));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/import"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return true;
+                    } else {
+                        throw new RuntimeException("Failed to create wallet: " + response.body());
+                    }
+                });
+    }
+
     public String encryptPin(String pin, byte[] rsaPublicKey) {
         try {
             X509EncodedKeySpec spec = new X509EncodedKeySpec(rsaPublicKey);
@@ -216,5 +247,21 @@ public class WalletService {
                         throw new RuntimeException("Failed to update PIN: " + response.body());
                     }
                 }).join();
+    }
+
+    public CompletableFuture<String> downloadWallet(String publicKey) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/wallet?walletPublicKey=" + URLEncoder.encode(publicKey, StandardCharsets.UTF_8)))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return response.body();
+                    }
+                    else {
+                        throw new RuntimeException("Failed to download wallet: " + response.statusCode());
+                    }
+                });
     }
 }

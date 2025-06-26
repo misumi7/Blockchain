@@ -90,8 +90,9 @@ public class TransactionRepository{
         RocksIterator it = db.newIterator(transactionCF);
         for(it.seekToFirst(); it.isValid(); it.next()) {
             Transaction transaction = Transaction.fromJson(new String(it.value(), StandardCharsets.UTF_8));
-            if(transaction != null && (transaction.getSenderPublicKey().equals(walletPublicKey) ||
-               transaction.getReceiverPublicKey().equals(walletPublicKey))) {
+            if(transaction != null &&
+                    (transaction.getSenderPublicKey() != null && transaction.getSenderPublicKey().equals(walletPublicKey)) ||
+                    (transaction.getReceiverPublicKey() != null && transaction.getReceiverPublicKey().equals(walletPublicKey))) {
                 transactions.add(transaction);
             }
         }

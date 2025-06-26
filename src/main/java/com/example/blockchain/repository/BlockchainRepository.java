@@ -1,12 +1,15 @@
 package com.example.blockchain.repository;
 
 import com.example.blockchain.model.Block;
+import com.example.blockchain.model.Transaction;
 import org.rocksdb.*;
 import org.springframework.stereotype.Repository;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -19,6 +22,25 @@ public class BlockchainRepository {
         this.db = baseRepository.getDb();
         this.blockCF = baseRepository.getBlockCF();
         this.blockIndexCF = baseRepository.getBlockIndexCF();
+    }
+
+    public synchronized List<Transaction> getWalletTransactions(String walletPublicKey){
+        List<Transaction> transactions = new ArrayList<>();
+        RocksIterator it = db.newIterator(blockCF);
+        for(it.seekToFirst(); it.isValid(); it.next()) {
+            Block block = Block.fromJson(new String(it.value(), StandardCharsets.UTF_8));
+            assert block != null;
+            for(Transaction transaction : block.getTransactions()) {
+                //System.out.println(transaction);
+                if (transaction != null &&
+                        (transaction.getSenderPublicKey() != null && transaction.getSenderPublicKey().equals(walletPublicKey)) ||
+                        (transaction.getReceiverPublicKey() != null && transaction.getReceiverPublicKey().equals(walletPublicKey))) {
+                    transactions.add(transaction);
+                }
+            }
+        }
+        it.close();
+        return transactions;
     }
 
     public synchronized Block getBlock(String key){

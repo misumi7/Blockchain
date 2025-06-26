@@ -4,7 +4,10 @@ import com.example.blockchain.model.Transaction;
 import com.example.blockchain.model.TransactionStatus;
 import com.example.blockchain.model.Wallet;
 import com.example.blockchain.repository.WalletRepository;
+import com.example.blockchain.request.WalletImportRequest;
 import com.example.blockchain.response.ApiException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.bouncycastle.asn1.sec.ECPrivateKey;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -101,9 +104,9 @@ public class WalletService {
 
     @PostConstruct
     public void init() {
-        if (walletList.isEmpty()) {
+        /*if (walletList.isEmpty()) {
             createNewWallet();
-        }
+        }*/
 
         // TEMP::
         /*try {
@@ -367,5 +370,37 @@ public class WalletService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getWalletKeyPairJson(String walletPublicKey) {
+        Wallet wallet = walletList.stream()
+                .filter(w -> w.getPublicKey().equals(walletPublicKey))
+                .findFirst()
+                .orElseThrow(() -> new ApiException("Wallet not found", 404));
+        return Wallet.toJson(wallet);/*"""
+            {
+                "publicKey": "%s",
+                "privateKey": "%s"
+            }
+            """.formatted(wallet.getPublicKey(), wallet.getEncryptedPrivateKey());*/
+    }
+
+    public void importWallet(WalletImportRequest walletImportRequest) {
+        try {
+            String publicKey = walletImportRequest.getPublicKey();
+            String encryptedPrivateKey = walletImportRequest.getEncryptedPrivateKey();
+            byte[] salt = Base64.getDecoder().decode(walletImportRequest.getSalt());
+            byte[] iv = Base64.getDecoder().decode(walletImportRequest.getIv());
+            String walletName = walletImportRequest.getWalletName();
+
+            Wallet newWallet = new Wallet(publicKey, encryptedPrivateKey, salt, iv);
+
+            addWallet(newWallet);
+            setWalletName(walletName, publicKey);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException("Error importing wallet", 500);
+        }
     }
 }

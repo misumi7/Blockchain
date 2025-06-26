@@ -84,7 +84,10 @@ public class MiningPanel extends VBox {
         });
 
         walletComboBox.setItems(walletList);
-        walletComboBox.setValue(walletList.getFirst());
+        walletComboBox.setPromptText("Select a wallet");
+        if(!walletList.isEmpty()) {
+            walletComboBox.setValue(walletList.getFirst());
+        }
         walletComboBox.getStyleClass().addAll("wallet-combo-box");
         walletComboBox.prefWidthProperty().bind(this.widthProperty().multiply(.57));
         walletComboBox.prefHeightProperty().bind(this.heightProperty().multiply(.05));
