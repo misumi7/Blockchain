@@ -15,6 +15,14 @@ export default defineConfig(({mode}) => {
     },
     optimizeDeps: {
       exclude: ['argon2-wasm']
-    }
+    },
+    resolve: {
+      alias: [
+        {
+          find: /^@nectary\/components\/(.*)$/,
+          replacement: "@nectary/components/$1/index",
+        },
+      ],
+    },
   };
 });

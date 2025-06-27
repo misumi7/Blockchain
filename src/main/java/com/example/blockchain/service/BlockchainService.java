@@ -50,9 +50,9 @@ public class BlockchainService {
         // this.utxoService = utxoService;
 
         // TEMP::
-        blockchainRepository.deleteAllBlocks();
+        /*blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        utxoService.deleteAllUTXO();
+        utxoService.deleteAllUTXO();*/
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -546,15 +546,16 @@ public class BlockchainService {
     public Map<Long, Block> getBlocks(long from, long count) {
         Map<Long, Block> blocks = new HashMap<>();
         long startWith = from;
-        if(from > blockchainRepository.getLatestBlockIndex() || from < 0) {
+        /*if(from > blockchainRepository.getLatestBlockIndex() || from < 0) {
             startWith = blockchainRepository.getLatestBlockIndex();
-        }
-        Block block = blockchainRepository.getBlock(startWith);
-        for(long i = startWith; block != null && i > startWith - count; --i) {
+        }*/
+        Block block = blockchainRepository.getBlock(from > blockchainRepository.getLatestBlockIndex() || from < 0 ? blockchainRepository.getLatestBlockIndex() : startWith - 1);
+        for(long i = startWith - 1; block != null && i > startWith - count; --i) {
             System.out.println("[BLOCK] " + block.getIndex() + " " + block.getBlockHash() + " " + LocalDateTime.ofEpochSecond(block.getTimeStamp() / 1000, 0, ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             blocks.put(block.getIndex(), block);
             block = blockchainRepository.getBlock(block.getPreviousHash());
         }
+        //System.out.println("a-------");
         return blocks;
     }
 
@@ -618,5 +619,16 @@ public class BlockchainService {
         }
 
         return mostCommonBlockHash.equals(latestBlockHash);
+    }
+
+    public Map<Long, Block> getBlocksFrom(long from) {
+        Map<Long, Block> blocks = new HashMap<>();
+        for(long i = from + 1; i <= blockchainRepository.getLatestBlockIndex(); ++i) {
+            Block block = blockchainRepository.getBlock(i);
+            if(block != null) {
+                blocks.put(block.getIndex(), block);
+            }
+        }
+        return blocks;
     }
 }

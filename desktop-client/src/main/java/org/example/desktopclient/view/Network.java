@@ -32,24 +32,97 @@ import org.example.desktopclient.model.Block;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Network extends StackPane {
+    private HBox blocksContainer = new HBox();
+    private StackPane latestBlocksContent = new StackPane();
     private final int sectionSpacing = 28;
     private BlockchainController blockchainController = BlockchainController.getInstance();
     private NodeController nodeController = NodeController.getInstance();
+    private SimpleBooleanProperty isPageActive = new SimpleBooleanProperty(false);
 
     public Network(Scene scene, StackPane root) {
-        blockchainController.updateBlockchainSizeInBytes();
-        blockchainController.updateMempoolSizeInBytes();
-        blockchainController.updateConnectionsCount();
-        blockchainController.updateLastBlockTimestamp();
-        blockchainController.updateFeeAmount();
-        blockchainController.updateTotalTransactions();
+        updateNetworkData();
+        blockchainController.updateLastBlocks(10);
 
-        nodeController.updateNeighbours();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Platform.runLater(() -> scene.getWindow().setOnCloseRequest(event -> scheduler.shutdownNow()));
+        scheduler.scheduleAtFixedRate(() -> {
+            if(isPageActive.get()) {
+                System.out.println("Updated all data: " + System.currentTimeMillis());
+                Platform.runLater(() -> {
+                    updateNetworkData();
 
-        blockchainController.updateLastBlocks();
+                    blocksContainer.getChildren().clear();
+                    for (Block block : blockchainController.getLastBlocks()) {
+                        VBox blockData = new VBox();
+                        blockData.setAlignment(Pos.CENTER);
+
+                        Image blockImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/example/desktopclient/images/block_icon.png")));
+                        ImageView blockImageView = new ImageView(blockImage);
+                        blockImageView.setFitWidth(73);
+                        blockImageView.setFitHeight(73);
+
+                        VBox blockDataBox = new VBox();
+                        blockDataBox.prefWidthProperty().bind(latestBlocksContent.prefWidthProperty().divide(5));
+                        blockDataBox.setAlignment(Pos.CENTER);
+                        blockDataBox.getStyleClass().add("network-latest-block-data-box");
+
+                        Label blockIndexLabel = new Label("Block #" + block.getIndex());
+                        blockIndexLabel.getStyleClass().add("network-latest-block-index");
+
+                        Label transactionCountLabel = new Label(block.getTransactions().size() + " transaction" + (block.getTransactions().size() != 1 ? "s" : ""));
+                        transactionCountLabel.getStyleClass().add("network-latest-block-transactions");
+
+                        Label timePassedLabel = new Label(blockchainController.getTimePassed(block.getTimeStamp()) + " ago");
+                        timePassedLabel.getStyleClass().add("network-latest-block-time");
+
+                        blockDataBox.getChildren().addAll(blockIndexLabel, transactionCountLabel, timePassedLabel);
+                        blockData.getChildren().addAll(blockImageView, blockDataBox);
+                        blockData.setOnMouseClicked(e -> {
+                            if (e.getClickCount() == 2) {
+                                BlockModal blockModal = new BlockModal(root, block);
+                                blockModal.prefWidthProperty().bind(root.widthProperty());
+                                blockModal.prefHeightProperty().bind(root.heightProperty());
+
+                                BoxBlur blur = new BoxBlur(3, 3, 2);
+                                for (Node node : root.getChildren()) {
+                                    node.setEffect(blur);
+                                }
+
+                                FadeTransition fadeIn = new FadeTransition(Duration.millis(200), blockModal);
+                                blockModal.setOpacity(0);
+                                fadeIn.setToValue(1);
+
+                                StackPane.setAlignment(blockModal, Pos.CENTER);
+                                root.getChildren().addAll(blockModal);
+                                fadeIn.play();
+
+                                setOnKeyPressed(event -> {
+                                    if (event.getCode().toString().equals("ESCAPE")) {
+                                        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), blockModal);
+                                        fadeOut.setToValue(0);
+                                        fadeOut.setOnFinished(ev -> {
+                                            root.getChildren().removeAll(blockModal);
+                                            for (Node node : root.getChildren()) {
+                                                node.setEffect(null);
+                                            }
+                                        });
+                                        fadeOut.play();
+                                    }
+                                });
+                            }
+                        });
+                        blocksContainer.getChildren().add(blockData);
+                    }
+                });
+            }
+        }, 0, 30, TimeUnit.SECONDS);
+        //Runtime.getRuntime().addShutdownHook(new Thread(scheduler::shutdown));
 
         // Start
 
@@ -360,7 +433,6 @@ public class Network extends StackPane {
         Label titleLatestBlocks = new Label("Latest Blocks");
         titleLatestBlocks.getStyleClass().add("network-section-title");
 
-        StackPane latestBlocksContent = new StackPane();
         latestBlocksContent.setAlignment(Pos.CENTER);
         latestBlocksContent.prefHeightProperty().bind(latestBlocksSection.heightProperty().multiply(0.8));
         latestBlocksContent.prefWidthProperty().bind(latestBlocksSection.widthProperty());
@@ -377,7 +449,7 @@ public class Network extends StackPane {
 
         lineLayer.getChildren().add(timeline);
 
-        HBox blocksContainer = new HBox();
+
         blocksContainer.setAlignment(Pos.CENTER);
 
         // Block data
@@ -539,5 +611,25 @@ public class Network extends StackPane {
         content.getChildren().addAll(firstRowSections, latestBlocksSection);
 
         getChildren().add(content);
+    }
+
+    public void setPageActive(boolean isActive) {
+        isPageActive.set(isActive);
+        if (isActive) {
+            updateNetworkData();
+        }
+    }
+
+    public void updateNetworkData(){
+        blockchainController.updateBlockchainSizeInBytes();
+        blockchainController.updateMempoolSizeInBytes();
+        blockchainController.updateConnectionsCount();
+        blockchainController.updateLastBlockTimestamp();
+        blockchainController.updateFeeAmount();
+        blockchainController.updateTotalTransactions();
+
+        nodeController.updateNeighbours();
+
+        //blockchainController.updateLastBlocks();
     }
 }

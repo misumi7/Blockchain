@@ -10,6 +10,7 @@ module org.example.thesisdesktop {
     requires com.almasb.fxgl.all;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires org.bouncycastle.provider;
 
     opens org.example.desktopclient to javafx.fxml;
     exports org.example.desktopclient;

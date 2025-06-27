@@ -58,6 +58,11 @@ public class BlockchainController {
         return blockchainService.getBlocks(from, count);
     }
 
+    @GetMapping(params = {"from"})
+    public Map<Long, Block> getBlocksFrom(@RequestParam("from") long from) {
+        return blockchainService.getBlocksFrom(from);
+    }
+
     @GetMapping(value = "/{hash}")
     public Block getBlock(@PathVariable("hash") String hash) {
         return blockchainService.getBlock(hash);
@@ -97,7 +102,7 @@ public class BlockchainController {
         return blockchainService.getBlockToMine(minerPublicKey);
     }
 
-    @GetMapping(value = "/mining/logs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    /*@GetMapping(value = "/mining/logs", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamMiningLogs() {
         SseEmitter emitter = new SseEmitter(0L);
         blockchainService.registerEmitter(emitter);
@@ -111,7 +116,7 @@ public class BlockchainController {
         }
 
         return emitter;
-    }
+    }*/
 
     /*@GetMapping(value = "/mine")
     public ResponseEntity<ApiResponse> mineBlock(@RequestParam("minerPublicKey") String minerPublicKey) {

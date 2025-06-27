@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import styles from './SidebarComponent.module.css'
+import styles from './SidebarComponent.module.css';
 
 import selectedIcon from '../assets/icons/selected_icon.png';
 import editIcon from '../assets/icons/edit_icon.png';
-import addWalletIcon from '../assets/icons/add_new_wallet_icon.png'
+import addWalletIcon from '../assets/icons/add_new_wallet_icon.png';
 import { SidebarComponentType } from './SidebarComponentType';
 import { NewWalletModalPage } from '../modal/NewWalletModalPage';
+import { Wallet } from '../types/Wallet';
+
 
 interface SidebarComponentProps {
       type : SidebarComponentType;
@@ -17,6 +19,7 @@ interface SidebarComponentProps {
 }
 
 export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> = ({ type, isSelected, icon, onSelected, onWalletNameUpdated }) => {
+      let wallets : Map<String, Wallet> = new Map<String, Wallet>(); 
       const componentContentRef = useRef<HTMLDivElement>(null);
       const [height, setHeight] = useState('0px');
       const [updateComponentListTrigger, setUpdateComponentListTrigger] = useState<boolean>(false);
@@ -35,12 +38,12 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
             const fetchData = async () => {
                   switch(type){
                         case SidebarComponentType.WALLETS:
-                              await axios.get<Map<string, string>>('/api/wallets')
+                              /*await axios.get<Map<string, string>>('/api/wallets')
                               .then((response) => {
                                     setComponentContent(response.data);
                               }).catch((e) => {
                                     console.error("Failed to load wallets", e);
-                              });
+                              });*/
                               break;
                         case SidebarComponentType.NETWORK:
                               setComponentContent(['Dashboard'/*, 'Mempool'*/]);
@@ -105,6 +108,15 @@ export const SidebarComponent : React.FunctionComponent<SidebarComponentProps> =
                   {
                         isNewWalletModalOpen && (
                               <NewWalletModalPage
+                                    importWallet={(wallet: Wallet) => {
+                                          console.log("New wallet imported:", wallet);
+                                          wallets.set(wallet.publicKey, wallet);
+                                          setComponentContent((prevContent: any) => ({
+                                                ...prevContent,
+                                                [wallet.publicKey]: wallet.name
+                                          }));
+                                          setUpdateComponentListTrigger(!updateComponentListTrigger);
+                                    }}
                                     onClose={() => {
                                           setIsNewWalletModalOpen(false);
                                     }}

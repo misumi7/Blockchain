@@ -9,6 +9,7 @@ import org.example.desktopclient.model.Transaction;
 import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -26,6 +27,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
+import org.bouncycastle.crypto.params.Argon2Parameters;
 
 public class WalletService {
     private static WalletService instance;
@@ -176,7 +179,21 @@ public class WalletService {
                 });
     }
 
-    public String encryptPin(String pin, byte[] rsaPublicKey) {
+    public SecretKeySpec deriveKey(String pin, byte[] salt) {
+        Argon2Parameters.Builder builder = new Argon2Parameters.Builder(Argon2Parameters.ARGON2_id)
+                .withSalt(salt)
+                .withParallelism(1)
+                .withMemoryAsKB(65536)
+                .withIterations(2);
+        Argon2BytesGenerator generator = new Argon2BytesGenerator();
+        generator.init(builder.build());
+        byte[] key = new byte[32];
+        generator.generateBytes(pin.toCharArray(), key, 0, key.length);
+        System.out.println("Derived key: " + pin + " : " + Base64.getEncoder().encodeToString(key));
+        return new SecretKeySpec(key, "AES");
+    }
+
+    public String encryptAesKey(byte[] pinKey, byte[] rsaPublicKey) {
         try {
             X509EncodedKeySpec spec = new X509EncodedKeySpec(rsaPublicKey);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -185,8 +202,9 @@ public class WalletService {
             Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
             OAEPParameterSpec oaepParams = new OAEPParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey, oaepParams);
-            byte[] encryptedPin = cipher.doFinal(pin.getBytes());
-            return Base64.getEncoder().encodeToString(encryptedPin);
+            byte[] encryptedAesKey = cipher.doFinal(pinKey);
+            System.out.println("Encrypted AES key: " + Base64.getEncoder().encodeToString(encryptedAesKey));
+            return Base64.getEncoder().encodeToString(encryptedAesKey);
         } catch (Exception e) {
             throw new RuntimeException("Failed to encrypt PIN: " + e.getMessage(), e);
         }
@@ -222,19 +240,19 @@ public class WalletService {
                 });
     }
 
-    public boolean updatePin(String encryptedOldPin, String encryptedNewPin) {
+    public boolean updatePin(String walletPublicKey, String encryptedOldPin, String encryptedNewPin) {
         String body = """
         {
             "oldPin": "%s",
             "newPin": "%s"
         }
         """.formatted(
-                URLEncoder.encode(encryptedOldPin, StandardCharsets.UTF_8),
-                URLEncoder.encode(encryptedNewPin, StandardCharsets.UTF_8)
+                encryptedOldPin,
+                encryptedNewPin
         );
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/pin"))
+                .uri(URI.create(BASE_URL + "/pin?walletPublicKey" + "=" + URLEncoder.encode(walletPublicKey, StandardCharsets.UTF_8)))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -261,6 +279,21 @@ public class WalletService {
                     }
                     else {
                         throw new RuntimeException("Failed to download wallet: " + response.statusCode());
+                    }
+                });
+    }
+
+    public CompletableFuture<byte[]> getWalletSalt(String walletPublicKey) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/salt?walletPublicKey=" + URLEncoder.encode(walletPublicKey, StandardCharsets.UTF_8)))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return response.body();
+                    } else {
+                        throw new RuntimeException("Failed to fetch wallet salt: " + response.statusCode());
                     }
                 });
     }

@@ -35,7 +35,8 @@ public class WalletsModel {
     }
 
     public void setTableTransactions(List<TableTransactionInfo> tableTransactions) {
-        this.tableTransactions = tableTransactions;
+        this.tableTransactions.clear();
+        this.tableTransactions.addAll(tableTransactions);
     }
 
     public SimpleStringProperty getTotalBalanceProperty() {

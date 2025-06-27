@@ -5,7 +5,9 @@ import org.example.desktopclient.model.TransactionsModel;
 import org.example.desktopclient.service.TransactionService;
 import org.example.desktopclient.service.WalletService;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 public class TransactionController {
     private static TransactionController instance;
@@ -37,8 +39,10 @@ public class TransactionController {
             return false;
         }
 
-        byte[] rsaPublicKey = walletService.getRSAPublicKey().join();
-        String encryptedPin = walletService.encryptPin(pin, rsaPublicKey);
-        return transactionService.createTransaction(senderPublicKey, receiverPublicKey, amount, encryptedPin).join();
+        byte[] rsaPublicKey = walletService.getRSAPublicKey().join();// change pin to its derived version
+        byte[] salt = walletService.getWalletSalt(senderPublicKey).join();
+        SecretKeySpec derivedKey = walletService.deriveKey(pin, salt);
+        String encryptedAesKey = walletService.encryptAesKey(derivedKey.getEncoded(), rsaPublicKey);
+        return transactionService.createTransaction(senderPublicKey, receiverPublicKey, amount, encryptedAesKey).join();
     }
 }

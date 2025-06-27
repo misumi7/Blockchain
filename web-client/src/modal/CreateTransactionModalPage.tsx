@@ -7,6 +7,11 @@ import { PinInput } from '../PinInput';
 import processTransactionIcon from '../assets/icons/transaction_processing.gif'
 import sendIcon from '../assets/icons/send_transaction_icon.png'
 import axios from 'axios';
+import { getInputsRequired, getRecommendedFee } from '../service/TransactionService';
+import { time, timeStamp } from 'console';
+import { sign } from 'crypto';
+import { getTransactionHash, signTransactionHash } from '../utils/WalletUtils';
+import { Wallet } from '../types/Wallet';
 
 // import argon2 from 'argon2-wasm';
 // const argon2Inst = await argon2.Argon2Browser();
@@ -16,6 +21,7 @@ interface CreateTransactionModalPage{
       onClose : () => void;
       onSent : () => void;
       walletPublicKey: string;
+      wallet : Wallet;
 }
 
 function validatePin(pinValues : string[]) : boolean {
@@ -68,7 +74,7 @@ async function encryptKey(pinValues : string[], walletPublicKey : string) : Prom
       return btoa(String.fromCharCode(...new Uint8Array(encryptedAesKey)));
 }
 
-export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> = ({ onClose, walletPublicKey, onSent }) => {
+export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> = ({ onClose, walletPublicKey, onSent, wallet }) => {
       const [playProcessingAnimation, setPlayAnimation] = useState(false);
       const [pinValues, setPinValues] = useState<string[]>([]);
       const [wasTransactionAccepted, setWasTransactionAccepted] = useState<boolean>(); 
@@ -87,13 +93,25 @@ export const CreateTransactionModalPage : React.FC<CreateTransactionModalPage> =
                   return;
             }
             
-            console.log("awd");
+            const fee = await getInputsRequired(walletPublicKey, Number(amountRef.current?.value)) * await getRecommendedFee();
+            console.log(`Fee: ${fee}`);
+            const timeStamp = Date.now();
 
-            await axios.post('/api/transactions/create', {
+            const transactionHash = getTransactionHash(
+                  senderRef.current?.value || '',
+                  receiverRef.current?.value || '',
+                  Number(amountRef.current?.value) || 0,
+                  fee,
+                  timeStamp
+            );
+
+            await axios.post('/api/transactions/create-signed', {
+                  fee: fee,
                   senderPublicKey: senderRef.current?.value,
                   receiverPublicKey: receiverRef.current?.value,
                   amount: amountRef.current?.value,
-                  encryptedPin: await encryptKey(pinValues, senderRef.current!.value)
+                  timeStamp: timeStamp,
+                  signature: await signTransactionHash(transactionHash, wallet.encryptedPrivateKey, pinValues.join(''), wallet.salt, wallet.iv)       
             })
             .then(response => {
                   setWasTransactionAccepted(response.status == 200);

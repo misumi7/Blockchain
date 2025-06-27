@@ -34,7 +34,7 @@ public class BlockchainService {
     // Future<?> miningFuture;
     private AtomicLong miningSessionReward = new AtomicLong(0);
 
-    public void mineBlock(MiningPanel miningPanel, String minerPublicKey, Consumer<String> logCallback) {
+    public void mineBlock(MiningPanel miningPanel, String minerPublicKey, Consumer<String> logCallback, Consumer<Block> mempoolUpdateCallback) {
         miningThread = new Thread("Mining Thread") {
             @Override
             public void run() {
@@ -71,6 +71,7 @@ public class BlockchainService {
                                     .filter(tx -> tx.getReceiverPublicKey().equals(minerPublicKey))
                                     .mapToLong(Transaction::getTransactionFee)
                                     .sum());
+                            mempoolUpdateCallback.accept(blockToMine);
                             // TEMP:: TODO:: last transaction should always be the miners reward transaction, but test it, just in case
                             miningSessionReward.addAndGet(blockToMine.getTransactions().getLast().getAmount());
                             updateSessionReward(miningPanel, miningSessionReward.get());
@@ -262,5 +263,25 @@ public class BlockchainService {
             System.err.println("Error checking sync status: " + e.getMessage());
             return false;
         }
+    }
+
+    public CompletableFuture<Map<Long, Block>> getBlocksFrom(long lastIndex) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "?from=" + lastIndex))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            ObjectMapper objectMapper = new ObjectMapper();
+                            return objectMapper.readValue(response.body(), new TypeReference<Map<Long, Block>>() {});
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException("Failed to parse blocks: " + e.getMessage(), e);
+                        }
+                    } else {
+                        throw new RuntimeException("Failed to fetch blocks: HTTP " + response.statusCode());
+                    }
+                });
     }
 }

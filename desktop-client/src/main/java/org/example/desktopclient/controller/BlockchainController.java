@@ -1,5 +1,6 @@
 package org.example.desktopclient.controller;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BlockchainController {
@@ -25,11 +27,17 @@ public class BlockchainController {
     private final NodeService nodeService = NodeService.getInstance();
     private final BlockchainModel blockchainModel = BlockchainModel.getInstance();
     private final TransactionService transactionService = TransactionService.getInstance();
+    private final NodeController nodeController = NodeController.getInstance();
 
     private BlockchainController() {}
 
     public void startMining(MiningPanel miningPanel, String minerPublicKey, Consumer<String> logCallback) {
-        blockchainService.mineBlock(miningPanel, minerPublicKey, logCallback);
+        blockchainService.mineBlock(miningPanel, minerPublicKey, logCallback, (Block block) -> {
+            Platform.runLater(() -> {
+                nodeController.updateMempoolTransactionCount(miningPanel);
+                blockchainModel.updateLastBlocks(List.of(block));
+            });
+        });
     }
     public void stopMining(Consumer<String> logCallback) {
         blockchainService.stopMining(logCallback);
@@ -87,13 +95,20 @@ public class BlockchainController {
         return blockchainModel.connectionsCountProperty();
     }
 
-    public Set<Block> getLastBlocks(){
+    public TreeSet<Block> getLastBlocks(){
         return blockchainModel.getLastBlocks();
     }
 
     public void updateLastBlocks() {
         updateLastBlocks(10);
     }
+
+    /*public void updateWithNewBlocks(){
+        long lastIndex = blockchainModel.getLastBlocks().isEmpty() ? -1 : blockchainModel.getLastBlocks().last().getIndex();
+        Map<Long, Block> newBlocks = blockchainService.getBlocksFrom(lastIndex).join();
+        blockchainModel.updateLastBlocks(new ArrayList<>(newBlocks.values()));
+        updateLastBlockTimestamp();
+    }*/
 
     public void updateLastBlocks(int count){
         long lastIndex = blockchainModel.getLastBlocks().isEmpty() ? -1 : blockchainModel.getLastBlocks().first().getIndex();

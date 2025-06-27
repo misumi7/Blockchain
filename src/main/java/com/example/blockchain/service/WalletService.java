@@ -372,6 +372,19 @@ public class WalletService {
         return null;
     }
 
+    public byte[] decryptPinBytes(byte[] ecnPin, PrivateKey privateKey) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+            OAEPParameterSpec oaepParams = new OAEPParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-256"), PSource.PSpecified.DEFAULT);
+            cipher.init(Cipher.DECRYPT_MODE, privateKey, oaepParams);
+            return cipher.doFinal(ecnPin);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public String getWalletKeyPairJson(String walletPublicKey) {
         Wallet wallet = walletList.stream()
                 .filter(w -> w.getPublicKey().equals(walletPublicKey))

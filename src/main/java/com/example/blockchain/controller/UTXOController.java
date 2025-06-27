@@ -51,4 +51,9 @@ public class UTXOController {
     public double getWalletBalance() {
         return utxoService.getTotalBalance();
     }
+
+    @GetMapping(value = "/inputs-required")
+    public long getInputsRequired(@RequestParam("walletPublicKey") String walletPublicKey, @RequestParam("amount") long amount) {
+        return utxoService.getInputsRequired(walletPublicKey, amount);
+    }
 }

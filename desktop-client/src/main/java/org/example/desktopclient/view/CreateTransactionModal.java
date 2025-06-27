@@ -16,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.example.desktopclient.controller.TransactionController;
+import org.example.desktopclient.controller.WalletController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.Objects;
 public class CreateTransactionModal extends StackPane {
     private TransactionController transactionController = TransactionController.getInstance();
 
-    public CreateTransactionModal(StackPane root, String walletPublicKey) {
+    public CreateTransactionModal(StackPane root, WalletInfo parent, String walletPublicKey) {
 
         VBox background = new VBox();
         background.prefWidthProperty().bind(prefWidthProperty());
@@ -121,7 +122,19 @@ public class CreateTransactionModal extends StackPane {
             }
             String pin = pinCode.toString();
 
-            transactionController.createTransaction(walletPublicKey, receiverPublicKey, Double.parseDouble(amountValue), pin);
+            if(transactionController.createTransaction(walletPublicKey, receiverPublicKey, Double.parseDouble(amountValue), pin)){
+                WalletController.getInstance().updateWalletTransactions(walletPublicKey);
+                parent.updateTransactionList();
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this);
+                fadeOut.setToValue(0);
+                fadeOut.setOnFinished(ev -> {
+                    root.getChildren().removeAll(this);
+                    for(Node node : root.getChildren()) {
+                        node.setEffect(null);
+                    }
+                });
+                fadeOut.play();
+            }
         });
 
         HBox sendButtonBox = new HBox(sendButton);

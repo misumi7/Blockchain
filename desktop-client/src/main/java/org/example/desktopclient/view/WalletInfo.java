@@ -25,6 +25,7 @@ import org.example.desktopclient.model.TableTransactionInfo;
 import java.util.Objects;
 
 public class WalletInfo extends VBox {
+    private TableView<TableTransactionInfo> transactionTable;
     private final WalletController walletController = WalletController.getInstance();
     private final UTXOController utxoController = UTXOController.getInstance();
     private Image coinIcon = new Image(Objects.requireNonNull(getClass().getResource("/org/example/desktopclient/images/coin_icon.png")).toExternalForm());
@@ -113,7 +114,7 @@ public class WalletInfo extends VBox {
         Button sendButton = new Button("Send", coinIconView);
         sendButton.getStyleClass().addAll("send-button");
         sendButton.setOnMouseClicked(event -> {
-            CreateTransactionModal createTransactionModal = new CreateTransactionModal(root, walletPublicKey);
+            CreateTransactionModal createTransactionModal = new CreateTransactionModal(root, this, walletPublicKey);
             createTransactionModal.prefWidthProperty().bind(root.widthProperty());
             createTransactionModal.prefHeightProperty().bind(root.heightProperty());
 
@@ -163,7 +164,7 @@ public class WalletInfo extends VBox {
         ObservableList<TableTransactionInfo> transactions = FXCollections.observableArrayList();
         transactions.addAll(walletController.getWalletTransactions());
 
-        TableView<TableTransactionInfo> transactionTable = new TableView<>(transactions);
+        transactionTable = new TableView<>(transactions);
         Label noTransactionsLabel = new Label("No transactions found");
         noTransactionsLabel.getStyleClass().add("no-transactions-label");
         transactionTable.setPlaceholder(noTransactionsLabel);
@@ -250,5 +251,9 @@ public class WalletInfo extends VBox {
         VBox.setMargin(secondSectionWrapper, new Insets(30, 0, 0, 0));
 
         getChildren().addAll(title, firstSectionWrapper, secondSectionWrapper);
+    }
+
+    public void updateTransactionList() {
+        transactionTable.setItems(FXCollections.observableArrayList(walletController.getWalletTransactions()));
     }
 }

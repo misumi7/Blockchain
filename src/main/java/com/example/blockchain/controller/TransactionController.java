@@ -1,6 +1,7 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Transaction;
+import com.example.blockchain.request.SignedTransactionRequest;
 import com.example.blockchain.request.TransactionRequest;
 import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.TransactionService;
@@ -31,6 +32,12 @@ public class TransactionController {
     public ResponseEntity<ApiResponse> createTransaction(@RequestBody TransactionRequest transactionRequest) {
         System.out.println("Received transaction request: " + transactionRequest.getEncryptedPin());
         transactionService.createTransaction(transactionRequest);
+        return ResponseEntity.ok(new ApiResponse("Transaction created successfully", 200));
+    }
+
+    @PostMapping(value = "/create-signed")
+    public ResponseEntity<ApiResponse> createSignedTransaction(@RequestBody SignedTransactionRequest transactionRequest) {
+        transactionService.createSignedTransaction(transactionRequest);
         return ResponseEntity.ok(new ApiResponse("Transaction created successfully", 200));
     }
 

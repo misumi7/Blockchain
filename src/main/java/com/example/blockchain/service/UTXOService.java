@@ -62,4 +62,20 @@ public class UTXOService {
         }
         return totalBalance;
     }
+
+    public long getInputsRequired(String walletPublicKey, long amount) {
+        List<UTXO> utxos = getUtxoByOwner(walletPublicKey);
+        long totalAmount = 0;
+        long inputsRequired = 0;
+
+        for (UTXO utxo : utxos) {
+            totalAmount += utxo.getAmount();
+            inputsRequired++;
+            if (totalAmount >= amount) {
+                break;
+            }
+        }
+
+        return inputsRequired;
+    }
 }

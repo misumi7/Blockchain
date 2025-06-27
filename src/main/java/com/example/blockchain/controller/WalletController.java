@@ -88,9 +88,9 @@ public class WalletController {
         return ResponseEntity.ok(new ApiResponse("Wallet deleted successfully", 200));
     }
 
-    @PostMapping(value = "/pin")
-    public ResponseEntity<ApiResponse> updatePin(@RequestBody UpdatePinRequest updatePinRequest) {
-        transactionService.setPin(updatePinRequest.getEncOldPin(), updatePinRequest.getEncNewPin());
+    @PostMapping(value = "/pin", params = {"walletPublicKey"})
+    public ResponseEntity<ApiResponse> updatePin(@RequestParam("walletPublicKey") String walletPublicKey, @RequestBody UpdatePinRequest updatePinRequest) {
+        transactionService.setPin(walletPublicKey, updatePinRequest.getEncOldPin(), updatePinRequest.getEncNewPin());
         return ResponseEntity.ok(new ApiResponse("PIN updated successfully", 200));
     }
 

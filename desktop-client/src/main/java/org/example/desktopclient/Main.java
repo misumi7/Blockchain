@@ -15,9 +15,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.example.desktopclient.controller.BlockchainController;
 import org.example.desktopclient.controller.NodeController;
 import org.example.desktopclient.controller.UTXOController;
 import org.example.desktopclient.controller.WalletController;
+import org.example.desktopclient.model.Block;
 import org.example.desktopclient.view.*;
 
 import java.net.http.HttpRequest;
@@ -25,6 +27,7 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class Main extends Application {
+    private BlockchainController blockchainController = BlockchainController.getInstance();
     private final NodeController nodeController = NodeController.getInstance();
     private final WalletController walletController = WalletController.getInstance();
     private final UTXOController utxoController = UTXOController.getInstance();
@@ -79,6 +82,7 @@ public class Main extends Application {
                 mainContent.getChildren().clear();
                 switch (selectedSection.getKey()) {
                     case "Wallets":
+                        network.setPageActive(false);
                         switch (selectedSection.getValue()){
                             case "":
                                 walletManager.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
@@ -96,17 +100,20 @@ public class Main extends Application {
                         }
                         break;
                     case "Network":
+                        network.setPageActive(true);
                         network.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
                         network.prefHeightProperty().bind(mainElements.heightProperty());
                         mainContent.getChildren().add(network);
                         break;
                     case "Node":
+                        network.setPageActive(false);
                         miningPanel.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
                         miningPanel.prefHeightProperty().bind(mainElements.heightProperty());
                         nodeController.updateMempoolTransactionCount(miningPanel);
                         mainContent.getChildren().add(miningPanel);
                         break;
                     case "Settings":
+                        network.setPageActive(false);
                         settings.prefWidthProperty().bind(mainElements.widthProperty().multiply(.66));
                         settings.prefHeightProperty().bind(mainElements.heightProperty());
                         mainContent.getChildren().add(settings);
@@ -142,7 +149,7 @@ public class Main extends Application {
         primaryStage.setTitle("Full Node Client");
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
-        //primaryStage.setFullScreen(true);
+        primaryStage.setFullScreen(true);
         primaryStage.show();
 
     }

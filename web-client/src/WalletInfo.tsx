@@ -10,14 +10,17 @@ import { Button } from './Button';
 import axios from 'axios';
 import { TransactionModalPage } from './modal/TransactionModalPage'
 import { CreateTransactionModalPage } from './modal/CreateTransactionModalPage';
+import { getWalletBalance } from './service/WalletService';
+import type { Wallet } from './types/Wallet';
 
 interface WalletInfoProps {
       walletPublicKey : string;
       walletNameUpdated : string;
       onWalletNameUpdateHandled: () => void;
+      wallets?: Map<string, Wallet>;
 }
 
-export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, walletNameUpdated, onWalletNameUpdateHandled }) => {
+export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, walletNameUpdated, onWalletNameUpdateHandled, wallets }) => {
       const [wasCopied, setCopied] = useState<boolean>(false);
       const [updateTrigger, setUpdateTrigger] = useState<boolean>(false);
       //const [updateWalletNameTrigger, setUpdateWalletNameTrigger] = useState<boolean>(false);
@@ -75,18 +78,17 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, wallet
       
       const [walletBalance, setWalletBalance] = useState<string>();
       useEffect(() => {
-            const fetchData = async () => {
-                  const balance = await axios.get<string>(`/api/utxo/balance`, {
-                        params: {walletPublicKey}
-                  });
-                  setWalletBalance(balance.data);
-            }
-            fetchData();
+            const fetchBalance = async () => {
+                  const balance = await getWalletBalance(walletPublicKey);
+                  setWalletBalance(balance);
+            };
+            fetchBalance();
       }, [walletPublicKey, transactions, updateTransactionsTrigger]);
       
       const [totalBalance, setTotalBalance] = useState<string>();
       useEffect(() => {
             const fetchData = async () => {
+                  // let balance : number = 0;
                   const balance = await axios.get<string>(`/api/utxo/balance/total`);
                   setTotalBalance(balance.data);
             }
@@ -133,11 +135,16 @@ export const WalletInfo : React.FC<WalletInfoProps> = ({ walletPublicKey, wallet
                                     </div>
                               </div>
                               <Button text='Send' icon={coinIcon} isActive={Number(walletBalance) > 0 } className={styles.button} onClick={() => {Number(walletBalance) > 0 ? setCreateTransaction(true) : null}}/>
-                              {
-                                    createTransaction && (
-                                          <CreateTransactionModalPage onSent={() => {setUpdateTransactionsTrigger(!updateTransactionsTrigger)}} walletPublicKey={walletPublicKey} onClose={() => {setCreateTransaction(false);}}/>
-                                    )
-                              }
+                                {
+                                          createTransaction && wallets && wallets.has(walletPublicKey) && (
+                                                  <CreateTransactionModalPage
+                                                            wallet={wallets.get(walletPublicKey)!}
+                                                            onSent={() => { setUpdateTransactionsTrigger(!updateTransactionsTrigger); }}
+                                                            walletPublicKey={walletPublicKey}
+                                                            onClose={() => { setCreateTransaction(false); }}
+                                                  />
+                                          )
+                                }
                         </div>
                   </div>
                   <div className={`${styles.block} ${styles.walletTransactions}`}>

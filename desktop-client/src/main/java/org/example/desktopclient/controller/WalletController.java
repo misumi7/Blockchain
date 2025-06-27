@@ -11,6 +11,7 @@ import org.example.desktopclient.view.MiningPanel;
 import org.example.desktopclient.view.Settings;
 import org.example.desktopclient.view.SideMenu;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -54,13 +55,20 @@ public class WalletController {
     }
 
     public void updatePin(String oldPin, String newPin){
+        updateWalletNames();
         byte[] rsaPublicKey = walletService.getRSAPublicKey().join();
-        String encryptedOldPin = walletService.encryptPin(oldPin, rsaPublicKey);
-        String encryptedNewPin = walletService.encryptPin(newPin, rsaPublicKey);
 
-        if(walletService.updatePin(encryptedOldPin, encryptedNewPin)){
-            createNewNotification("PIN code updated successfully.", false);
+        for(String walletPublicKey : walletsModel.getWalletNames().keySet()){
+            byte[] salt = walletService.getWalletSalt(walletPublicKey).join();
+            SecretKeySpec oldDerivedKey = walletService.deriveKey(oldPin, salt);
+            SecretKeySpec newDerivedKey = walletService.deriveKey(newPin, salt);
+            String encryptedOldKey = walletService.encryptAesKey(oldDerivedKey.getEncoded(), rsaPublicKey);
+            String encryptedNewKey = walletService.encryptAesKey(newDerivedKey.getEncoded(), rsaPublicKey);
+            walletService.updatePin(walletPublicKey, encryptedOldKey, encryptedNewKey);
+
+            // TEMP::
         }
+        createNewNotification("PIN code updated successfully.", false);
     }
 
     public void createNewNotification(String message, boolean isAlert) {

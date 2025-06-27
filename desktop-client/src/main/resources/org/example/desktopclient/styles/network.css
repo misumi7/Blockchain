@@ -36,7 +36,7 @@
 }
 
 .network-section-content-value {
-    -fx-font-size: 29px;
+    -fx-font-size: 25px;
     -fx-font-family: 'Inter 24pt';
     -fx-font-weight: 500;
     -fx-text-fill: rgba(0, 0, 0);

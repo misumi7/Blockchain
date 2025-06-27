@@ -2,6 +2,7 @@ package com.example.blockchain.service;
 
 import com.example.blockchain.model.*;
 import com.example.blockchain.repository.TransactionRepository;
+import com.example.blockchain.request.SignedTransactionRequest;
 import com.example.blockchain.request.TransactionRequest;
 import com.example.blockchain.response.ApiException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -219,6 +220,100 @@ public class TransactionService{
         }
     }
 
+    public void createSignedTransaction(SignedTransactionRequest transactionRequest) {
+        System.out.println(transactionRequest);
+
+        long amount = (long) (transactionRequest.getAmount() * 100000000L);
+        String senderPublicKey = transactionRequest.getSenderPublicKey();
+        String receiverPublicKey = transactionRequest.getReceiverPublicKey();
+
+        List<UTXO> ownerUTXO = utxoService.getUtxoByOwner(senderPublicKey);
+        System.out.println("Owner UTXO: \n" + ownerUTXO);
+        long selectedAmount = 0;
+        final short feeRate = getOptimalFeeRate();
+
+        Transaction transaction = new Transaction(
+                null,
+                null,
+                transactionRequest.getTimeStamp(),
+                transactionRequest.getAmount(),
+                senderPublicKey,
+                receiverPublicKey,
+                TransactionStatus.PENDING,
+                transactionRequest.getFee()
+        );
+
+        //long feeAmount = (long) feeRate * transaction.getSizeInBytes();
+        //transaction.setTransactionFee(feeAmount);
+
+        List<String> inputs = new ArrayList<>();
+        for(UTXO utxo : ownerUTXO) {
+            if(!nodeService.isUTXOReserved(utxo.getKey())) {
+                selectedAmount += utxo.getAmount();
+                //feeAmount += (long) feeRate * utxo.getKey().getBytes(StandardCharsets.UTF_8).length;
+                inputs.add(utxo.getKey());
+                if (selectedAmount >= amount + transactionRequest.getFee()) {
+                    break;
+                }
+            }
+        }
+        transaction.setTransactionFee(transactionRequest.getFee());
+        System.out.println("Selected UTXO: \n" + inputs);
+        if(selectedAmount < amount + transactionRequest.getFee()) {
+            System.out.println("[TRANSACTION ERROR] Not enough UTXO to create transaction (Try decreasing the fee)");
+            throw new ApiException("Not enough UTXO to create transaction (Try decreasing the fee)", 400);
+        }
+
+        transaction.setInputs(inputs);
+
+        List<UTXO> outputs = new ArrayList<>();
+        if(selectedAmount > amount){
+            UTXO rest = new UTXO(transaction.calculateHash(), outputs.size(), senderPublicKey, selectedAmount - (amount + transactionRequest.getFee()));
+            outputs.add(rest);
+        }
+        UTXO output = new UTXO(transaction.calculateHash(), outputs.size(), receiverPublicKey, amount);
+        outputs.add(output);
+
+        transaction.setOutputs(outputs);
+        if(!transaction.calculateHash().equals(transactionRequest.getTxId())){
+            System.out.println("[TRANSACTION ERROR] Transaction ID does not match the request");
+            throw new ApiException("Transaction ID does not match the request", 400);
+        }
+        transaction.setTransactionId(transactionRequest.getTxId());
+        //System.out.println("transactionRequest.getEncryptedPin(): " + transactionRequest.getEncryptedPin());
+        //String strKey = walletService.decryptPin(Base64.getDecoder().decode(transactionRequest.getEncryptedPin()), walletService.getRSAPrivateKey());
+        //System.out.println("Decrypted PIN: " + strKey);
+
+        // pin -> kdf -> aes key
+        //Wallet senderWallet = walletService.getWallet(senderPublicKey);
+        //SecretKeySpec key = walletService.deriveKey(strKey, senderWallet.getSalt());
+
+        //signTransaction(transaction, transactionRequest.getSenderPublicKey(), key);
+        transaction.setDigitalSignature(Base64.getDecoder().decode(transactionRequest.getSignature()));
+        if(!verifySignature(transaction)) {
+            System.out.println("[TRANSACTION ERROR] Transaction signature is invalid");
+            throw new ApiException("Transaction signature is invalid", 400);
+        }
+
+        // Send transaction to neighbors (and wait for confirmation)
+        boolean wasTransactionAccepted = nodeService.sendTransaction(transaction);
+
+        if(wasTransactionAccepted){
+            System.out.println("[TRANSACTION ACCEPTED] " + transaction.getTransactionId());
+            transactionRepository.saveTransaction(transaction);
+            for(String utxoKey : inputs){
+                nodeService.reserveUTXO(utxoKey);
+            }
+            nodeService.addTransactionToMemPool(transaction);
+        }
+        else{
+            System.out.println("[TRANSACTION ERROR] Transaction was not accepted by the network");
+            transaction.setStatus(TransactionStatus.REJECTED);
+            transactionRepository.saveTransaction(transaction);
+            throw new ApiException("Transaction was not accepted by the network", 400);
+        }
+    }
+
     public void createTransaction(TransactionRequest transactionRequest) {
         // Required utxo are selected from the existing ones
         // We create output utxo for the receiver
@@ -287,12 +382,12 @@ public class TransactionService{
         transaction.setOutputs(outputs);
         transaction.setTransactionId(transaction.calculateHash());
         //System.out.println("transactionRequest.getEncryptedPin(): " + transactionRequest.getEncryptedPin());
-        String strKey = walletService.decryptPin(Base64.getDecoder().decode(transactionRequest.getEncryptedPin()), walletService.getRSAPrivateKey());
+        byte[] aesKey = walletService.decryptPinBytes(Base64.getDecoder().decode(transactionRequest.getEncryptedPin()), walletService.getRSAPrivateKey());
         //System.out.println("Decrypted PIN: " + strKey);
 
         // pin -> kdf -> aes key
-        Wallet senderWallet = walletService.getWallet(senderPublicKey);
-        SecretKeySpec key = walletService.deriveKey(strKey, senderWallet.getSalt());
+        //Wallet senderWallet = walletService.getWallet(senderPublicKey);
+        SecretKeySpec key = new SecretKeySpec(aesKey, "AES");
 
         signTransaction(transaction, transactionRequest.getSenderPublicKey(), key);
         if(!verifySignature(transaction)) {
@@ -371,16 +466,17 @@ public class TransactionService{
 
     // Checks if the default PIN is set by deriving the pubKey from the enc prKey
     public boolean isDefaultPinSet() {
-        return comparePins(WalletService.DEFAULT_PIN);
+        Wallet wallet = walletService.getWalletList().getFirst();
+        SecretKeySpec derivedKey = walletService.deriveKey(WalletService.DEFAULT_PIN, wallet.getSalt());
+        return comparePins(wallet, derivedKey);
     }
 
-    public boolean comparePins(String pin) {
+    public boolean comparePins(Wallet wallet, SecretKeySpec aesKey) {
         try {
-            Wallet wallet = walletService.getWalletList().getFirst();
-            SecretKeySpec derivedKey = walletService.deriveKey(pin, wallet.getSalt());
+            //SecretKeySpec derivedKey = walletService.deriveKey(pin, wallet.getSalt());
 
             Transaction testTransaction = new Transaction(new ArrayList<>(), new ArrayList<>(), 0, 0, wallet.getPublicKey(), wallet.getPublicKey(), TransactionStatus.PENDING, 0);
-            signTransaction(testTransaction, wallet.getPublicKey(), derivedKey);
+            signTransaction(testTransaction, wallet.getPublicKey(), aesKey);
 
             return verifySignature(testTransaction);
         }
@@ -390,31 +486,37 @@ public class TransactionService{
         }
     }
 
-    public void setPin(String encryptedPin, String newEncryptedPin) {
-        String decryptedPin = walletService.decryptPin(Base64.getDecoder().decode(URLDecoder.decode(encryptedPin)), walletService.privateKey);
-        String decryptedNewPin = walletService.decryptPin(Base64.getDecoder().decode(URLDecoder.decode(newEncryptedPin)), walletService.privateKey);
+    public void setPin(String walletPublicKey, String encryptedKey, String newEncryptedKey) {
+        byte[] decryptedOldKey = walletService.decryptPinBytes(Base64.getDecoder().decode(encryptedKey), walletService.privateKey);
+        byte[] decryptedNewKey = walletService.decryptPinBytes(Base64.getDecoder().decode(newEncryptedKey), walletService.privateKey);
 
         /*System.out.println("Decrypted PIN: " + decryptedPin);
         System.out.println("Decrypted new PIN: " + decryptedNewPin);*/
 
-        if(!comparePins(decryptedPin)) {
+        //SecretKeySpec derivedKey = walletService.deriveKey(WalletService.DEFAULT_PIN, walletService.getWalletSalt(walletPublicKey));
+        //System.out.println("Derived default key: " + Base64.getEncoder().encodeToString(derivedKey.getEncoded()));
+        // key is derived ok => rsa enc problem
+        //System.out.println("Decrypted old key: " + Base64.getEncoder().encodeToString(decryptedOldKey));
+        // same ok. => problem in pin comparison
+
+        Wallet wallet = walletService.getWallet(walletPublicKey);
+        if (!comparePins(wallet, new SecretKeySpec(decryptedOldKey, "AES"))) {
             throw new ApiException("Incorrect PIN received", 400);
         }
 
-        for(Wallet wallet : walletService.getWalletList()){
-            byte[] decryptedWalletPrivateKey = walletService.decryptPrivateKey(
-                    wallet.getEncryptedPrivateKeyBytes(),
-                    wallet.getIv(),
-                    walletService.deriveKey(decryptedPin, wallet.getSalt())
-            );
 
-            SecretKeySpec newDerivedKey = walletService.deriveKey(decryptedNewPin, wallet.getSalt());
+        byte[] decryptedWalletPrivateKey = walletService.decryptPrivateKey(
+                wallet.getEncryptedPrivateKeyBytes(),
+                wallet.getIv(),
+                new SecretKeySpec(decryptedOldKey, "AES")
+        );
 
-            String encryptedPrivateKey = walletService.encryptPrivateKey(decryptedWalletPrivateKey, wallet.getIv(), newDerivedKey);
-            wallet.setEncryptedPrivateKey(encryptedPrivateKey);
-            walletService.updateWallet(wallet);
-            System.out.println("[PIN UPDATE] Wallet " + wallet.getPublicKey() + " PIN updated successfully");
-        }
+        //SecretKeySpec newDerivedKey = walletService.deriveKey(decryptedNewPin, wallet.getSalt());
+
+        String encryptedPrivateKey = walletService.encryptPrivateKey(decryptedWalletPrivateKey, wallet.getIv(), new SecretKeySpec(decryptedNewKey, "AES"));
+        wallet.setEncryptedPrivateKey(encryptedPrivateKey);
+        walletService.updateWallet(wallet);
+        System.out.println("[PIN UPDATE] Wallet " + wallet.getPublicKey() + " PIN updated successfully");
     }
 
     public void deleteWalletTransactions(String walletPublicKey) {
