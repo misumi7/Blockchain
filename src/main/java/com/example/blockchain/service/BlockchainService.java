@@ -1,9 +1,6 @@
 package com.example.blockchain.service;
 
-import com.example.blockchain.model.Block;
-import com.example.blockchain.model.Transaction;
-import com.example.blockchain.model.TransactionStatus;
-import com.example.blockchain.model.UTXO;
+import com.example.blockchain.model.*;
 import com.example.blockchain.repository.BlockchainRepository;
 import com.example.blockchain.repository.TransactionRepository;
 import com.example.blockchain.repository.UTXORepository;
@@ -455,31 +452,59 @@ public class BlockchainService {
             System.out.println("[BLOCK NOT ADDED] Block is not valid: " + block.getBlockHash());
             return false;
         }
+        // - 1 as the last transaction is the reward transaction
+        for(int i = 0; i < block.getTransactions().size() - 1; i++) {
+            Transaction transaction = block.getTransactions().get(i);
+            if(!transactionService.isTransactionValid(transaction)) {
+                System.out.println("[BLOCK NOT ADDED] Invalid transaction found in block: " + transaction.getTransactionId());
+                return false;
+            }
+        }
         if (blockchainRepository.saveBlock(block)) {
             System.out.println("[BLOCK ADDED] " + block.getBlockHash());
             if (nodeService.getUnlinkedBlocks().containsKey(block.getBlockHash())){
                 // recursively add all unlinked blocks
                 addBlock(nodeService.getUnlinkedBlocks().get(block.getBlockHash()));
             }
-            // Send block to the neighbours -- ??
             nodeService.sendBlock(block);
 
             // after block is saved, check for our node's pending transactions and mempool
             // if found, change status to "confirmed", delete inputs and add outputs to UTXO db
+
+            // TEMP:: for testing purpose
+            /*block.getTransactions().add(new Transaction(
+                    new ArrayList<>(),
+                    List.of(new UTXO(
+                            "",
+                            0,
+                            "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEF5IaBI2wOgT6/i5GCe6pmOx2WqeOELy3Xf7xAtztp6i/AqQMRtnawbJCPkzvclm3OQEUEqfjl1FRT6g6srHBbQ==",
+                            100_000_000_000L
+                    )),
+                    Instant.now().toEpochMilli(),
+                    100_000_000_000L,
+                    "",
+                    "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEF5IaBI2wOgT6/i5GCe6pmOx2WqeOELy3Xf7xAtztp6i/AqQMRtnawbJCPkzvclm3OQEUEqfjl1FRT6g6srHBbQ==",
+                    TransactionStatus.CONFIRMED,
+                    0
+            ));*/
+            // ::
             for(Transaction transaction : block.getTransactions()) {
                 if(nodeService.memPoolContains(transaction)){
                     nodeService.removeTransactionFromMemPool(transaction);
                 }
-                if(transactionRepository.getTransaction(transaction.getTransactionId()) != null){
+                if(transactionRepository.getTransaction(transaction.getTransactionId()) != null) {
                     transactionService.changeTransactionStatus(transaction.getTransactionId(), TransactionStatus.CONFIRMED);
-                    for(String input : transaction.getInputs()) {
-                        String[] keyParts = input.split(":");
-                        utxoService.deleteUTXO(keyParts[0], keyParts[1], Integer.parseInt(keyParts[2]));
-                        nodeService.unlockUTXO(input);
-                    }
-                    for(UTXO output : transaction.getOutputs()) {
-                        utxoService.addUTXO(output);
-                    }
+                }
+                if(isTransactionOwnedByUserWallets(transaction) && transactionService.getTransaction(transaction.getTransactionId()) == null) {
+                    transactionService.saveTransaction(transaction);
+                }
+                for(String input : transaction.getInputs()) {
+                    String[] keyParts = input.split(":");
+                    utxoService.deleteUTXO(keyParts[0], keyParts[1], Integer.parseInt(keyParts[2]));
+                    nodeService.unlockUTXO(input);
+                }
+                for(UTXO output : transaction.getOutputs()) {
+                    utxoService.addUTXO(output);
                 }
             }
             return true;
@@ -488,6 +513,17 @@ public class BlockchainService {
             System.out.println("[BLOCK NOT ADDED] Failed to save block: " + block.getBlockHash());
             return false;
         }
+    }
+
+    private boolean isTransactionOwnedByUserWallets(Transaction transaction) {
+        for (String walletPublicKey : walletService.getWalletList().stream().map(Wallet::getPublicKey).toList()) {
+            if (transaction != null &&
+                    ((transaction.getSenderPublicKey() != null && transaction.getSenderPublicKey().equals(walletPublicKey)) ||
+                    (transaction.getReceiverPublicKey() != null && transaction.getReceiverPublicKey().equals(walletPublicKey)))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isValid(Block block){
@@ -526,12 +562,13 @@ public class BlockchainService {
 
         previousBlock = blockchainRepository.getBlock(block.getPreviousHash());
 
-        // !! For testing previousBlock.calculateHash() => previousBlock.getBlockHash() as previousBlock is hardcoded
+        // !! For testing previousBlock.calculateHash() >> previousBlock.getBlockHash() as previousBlock is hardcoded
         if(!Objects.equals(previousBlock.calculateHash(), block.getPreviousHash())){
             System.out.println("[BLOCK NOT VALID] Previous hash didn't match (\n\t" + previousBlock.calculateHash() + "\n\t" + block.getPreviousHash() + "\n)");
             System.out.println(previousBlock);
             return false;
         }
+
         return true;
     }
 

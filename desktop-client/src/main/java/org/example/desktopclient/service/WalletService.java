@@ -87,9 +87,9 @@ public class WalletService {
                 });
     }
 
-    public CompletableFuture<List<Transaction>> getWalletTransactions(String walletPublicKey) {
+    public CompletableFuture<List<Transaction>> getWalletTransactions(String walletPublicKey, String period) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/transactions?walletPublicKey=" + URLEncoder.encode(walletPublicKey)))
+                .uri(URI.create(BASE_URL + "/transactions?walletPublicKey=" + URLEncoder.encode(walletPublicKey) + "&period=" + URLEncoder.encode(period)))
                 .GET()
                 .build();
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())

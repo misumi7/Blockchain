@@ -128,10 +128,16 @@ public class WalletController {
         return walletsModel.getTableTransactions();
     }
 
-    public void updateWalletTransactions(String walletPublicKey) {
-        List<Transaction> walletTransactions = walletService.getWalletTransactions(walletPublicKey).join();
+    public void updateWalletTransactions(String walletPublicKey, String period) {
+        List<Transaction> walletTransactions = walletService.getWalletTransactions(walletPublicKey, period).join();
         walletsModel.setTableTransactions(walletTransactions.stream().map((t) -> {
-            return new TableTransactionInfo(Instant.ofEpochMilli(t.getTimeStamp()).atZone(ZoneId.systemDefault()).format(formatter), t.getAmount() / 100_000_000.0, t.getStatus(), t.getTransactionId());
+            return new TableTransactionInfo(
+                    Instant.ofEpochMilli(t.getTimeStamp()).atZone(ZoneId.systemDefault()).format(formatter),
+                    t.getAmount() / 100_000_000.0,
+                    t.getStatus(),
+                    t.getTransactionId(),
+                    t.getSenderPublicKey(),
+                    t.getReceiverPublicKey());
         }).collect(Collectors.toList()));
     }
 

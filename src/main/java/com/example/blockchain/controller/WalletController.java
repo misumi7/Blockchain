@@ -51,9 +51,9 @@ public class WalletController {
         return walletService.getWalletName(walletPublicKey);
     }
 
-    @GetMapping(value = "/transactions", params = {"walletPublicKey"})
-    public List<Transaction> getTransactionsByWallet(@RequestParam("walletPublicKey") String walletPublicKey) {
-        return transactionService.getTransactionsByWallet(walletPublicKey);
+    @GetMapping(value = "/transactions", params = {"walletPublicKey", "period"})
+    public List<Transaction> getTransactionsByWallet(@RequestParam("walletPublicKey") String walletPublicKey, @RequestParam("period") String period) {
+        return transactionService.getTransactionsByWallet(walletPublicKey, period);
     }
 
     @PostMapping

@@ -60,6 +60,12 @@ public class TransactionService{
         //transactionRepository.deleteAllTransactions();
     }
 
+    public void saveTransaction(Transaction transaction) {
+        if(!transactionRepository.saveTransaction(transaction)) {
+            throw new ApiException("Transaction could not be saved", 500);
+        }
+    }
+
     // Tests here:
     @EventListener(ApplicationReadyEvent.class)
     public void test() {
@@ -460,8 +466,24 @@ public class TransactionService{
         transactionRepository.deleteAllTransactions();
     }
 
-    public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
-        return transactionRepository.getTransactionsByWallet(walletPublicKey);
+    public List<Transaction> getTransactionsByWallet(String walletPublicKey, String period) {
+        int daysPeriod = getPeriodInDays(period);
+        return transactionRepository.getTransactionsByWallet(walletPublicKey, daysPeriod);
+    }
+
+    public int getPeriodInDays(String period){
+        switch (period) {
+            case "7 days":
+                return 7;
+            case "30 days":
+                return 30;
+            case "90 days":
+                return 90;
+            case "1 year":
+                return 365;
+            default:
+                return Integer.MAX_VALUE;
+        }
     }
 
     // Checks if the default PIN is set by deriving the pubKey from the enc prKey

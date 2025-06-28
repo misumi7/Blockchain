@@ -223,7 +223,9 @@ public class TransactionModal extends StackPane {
         Label feeLabel = new Label("Fee: " + String.format("%f", transactionController.getDisplayedTransaction().getTransactionFee() / 100_000_000.0) + " coins");
         feeLabel.getStyleClass().addAll("transaction-section-label");
 
-        Text signatureLabel = new Text("Signature: " + Base64.getEncoder().encodeToString(transactionController.getDisplayedTransaction().getDigitalSignature()));
+        String signature = transactionController.getDisplayedTransaction().getDigitalSignature() != null ?
+                Base64.getEncoder().encodeToString(transactionController.getDisplayedTransaction().getDigitalSignature()) : "No signature";
+        Text signatureLabel = new Text("Signature: " + signature);
         signatureLabel.getStyleClass().addAll("transaction-section-label");
         /*signatureLabel.setWrapText(true);
         signatureLabel.minWidthProperty().bind(content.widthProperty().multiply(.86));

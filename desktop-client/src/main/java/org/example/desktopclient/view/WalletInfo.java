@@ -1,6 +1,8 @@
 package org.example.desktopclient.view;
 
 import javafx.animation.FadeTransition;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -11,9 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -29,11 +29,14 @@ public class WalletInfo extends VBox {
     private final WalletController walletController = WalletController.getInstance();
     private final UTXOController utxoController = UTXOController.getInstance();
     private Image coinIcon = new Image(Objects.requireNonNull(getClass().getResource("/org/example/desktopclient/images/coin_icon.png")).toExternalForm());
+    private ComboBox<String> filterComboBox = new ComboBox<>(FXCollections.observableArrayList("All time", "7 days", "30 days", "90 days", "1 year"));
 
     public WalletInfo(StackPane root, String walletPublicKey) {
+        filterComboBox.setValue("7 days");
+
         utxoController.updateWalletBalanceProperty(walletPublicKey);
         utxoController.updateTotalBalanceProperty();
-        walletController.updateWalletTransactions(walletPublicKey);
+        walletController.updateWalletTransactions(walletPublicKey, filterComboBox.getValue());
 
         getStyleClass().addAll("wallet-info");
         /*HBox.setMargin(this, new Insets(0, 0, 0, 20));*/
@@ -114,7 +117,7 @@ public class WalletInfo extends VBox {
         Button sendButton = new Button("Send", coinIconView);
         sendButton.getStyleClass().addAll("send-button");
         sendButton.setOnMouseClicked(event -> {
-            CreateTransactionModal createTransactionModal = new CreateTransactionModal(root, this, walletPublicKey);
+            CreateTransactionModal createTransactionModal = new CreateTransactionModal(root, this, walletPublicKey, filterComboBox.getValue());
             createTransactionModal.prefWidthProperty().bind(root.widthProperty());
             createTransactionModal.prefHeightProperty().bind(root.heightProperty());
 
@@ -156,9 +159,25 @@ public class WalletInfo extends VBox {
         secondSection.prefWidthProperty().bind(this.widthProperty().multiply(.9));
         secondSection.prefHeightProperty().bind(this.heightProperty().multiply(.536));
 
-        // Section title
+        // Section title and filter
+        HBox secondSectionHeader = new HBox();
+        secondSectionHeader.setAlignment(Pos.CENTER_LEFT);
+
         Label secondSectionTitle = new Label("Transactions");
         secondSectionTitle.getStyleClass().addAll("section-title");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        filterComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            walletController.updateWalletTransactions(walletPublicKey, newValue);
+            updateTransactionList();
+        });
+        HBox.setMargin(filterComboBox, new Insets(10, 21, 0, 0));
+        filterComboBox.getStyleClass().addAll("filter-combo-box");
+
+        secondSectionHeader.getChildren().addAll(secondSectionTitle, spacer, filterComboBox);
+
 
         // Transaction Table
         ObservableList<TableTransactionInfo> transactions = FXCollections.observableArrayList();
@@ -220,9 +239,44 @@ public class WalletInfo extends VBox {
         dateColumn.getStyleClass().addAll("transaction-table-column");
         dateColumn.setCellValueFactory(new PropertyValueFactory<TableTransactionInfo, Long>("timeStamp"));
 
-        TableColumn<TableTransactionInfo, Long> amountColumn = new TableColumn<>("Amount");
+        TableColumn<TableTransactionInfo, String> amountColumn = new TableColumn<>("Amount");
         amountColumn.getStyleClass().addAll("transaction-table-column");
-        amountColumn.setCellValueFactory(new PropertyValueFactory<TableTransactionInfo, Long>("amount"));
+        amountColumn.setCellValueFactory((cellData) -> {
+            TableTransactionInfo transaction = cellData.getValue();
+            if (walletPublicKey.equals(transaction.getSenderPublicKey())) {
+                return new SimpleStringProperty("-" + transaction.getAmount());
+            }
+            else if(walletPublicKey.equals(transaction.getReceiverPublicKey())) {
+                return new SimpleStringProperty("+" + transaction.getAmount());
+            }
+            else {
+                return new SimpleStringProperty("-");
+            }
+        });
+        amountColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                }
+                else {
+                    setText(item);
+                    if (item.startsWith("+")) {
+                        setStyle("-fx-text-fill: green;");
+                    }
+                    else {
+                        setStyle("-fx-text-fill: red;");
+                    }
+                }
+            }
+        });
+        amountColumn.setComparator((value1, value2) -> {
+            double amount1 = Double.parseDouble(value1.replace("+", "").replace("-", ""));
+            double amount2 = Double.parseDouble(value2.replace("+", "").replace("-", ""));
+            return Double.compare(amount1, amount2);
+        });
 
         TableColumn<TableTransactionInfo, String> statusColumn = new TableColumn<>("Status");
         statusColumn.getStyleClass().addAll("transaction-table-column");
@@ -236,7 +290,7 @@ public class WalletInfo extends VBox {
 
         HBox transactionTableWrapper = new HBox(transactionTable);
         transactionTableWrapper.setAlignment(Pos.CENTER);
-        secondSection.getChildren().addAll(secondSectionTitle, transactionTableWrapper);
+        secondSection.getChildren().addAll(secondSectionHeader, transactionTableWrapper);
         secondSection.setSpacing(7);
 
         // Add components to the first section

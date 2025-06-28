@@ -114,3 +114,24 @@
     -fx-alignment: CENTER;
 }
 
+.filter-combo-box {
+    -fx-background-color: #f1f1f1;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Inter 24pt';
+    -fx-text-fill: #333;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-radius: 5px;
+}
+
+.filter-combo-box .list-cell:selected {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+}
+
+.filter-combo-box .list-cell:hover {
+    -fx-background-color: #FFDF00;
+    -fx-text-fill: black;
+}

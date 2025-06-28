@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.desktopclient.HttpClientProvider;
+import org.example.desktopclient.model.Block;
 import org.example.desktopclient.model.Transaction;
 import org.example.desktopclient.model.TransactionRequest;
 import org.example.desktopclient.model.TransactionStatus;
@@ -20,6 +21,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class TransactionService {
     private static TransactionService instance;
@@ -54,7 +56,7 @@ public class TransactionService {
                 });
     }
 
-    public CompletableFuture<Boolean> createTransaction(String senderPublicKey, String receiverPublicKey, double amount, String encryptedPin) {
+    public CompletableFuture<Boolean> createTransaction(String senderPublicKey, String receiverPublicKey, double amount, String encryptedPin, Consumer<String> onError) {
         TransactionRequest transactionRequest = new TransactionRequest(senderPublicKey, receiverPublicKey, amount, encryptedPin);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -72,7 +74,21 @@ public class TransactionService {
                 .build();
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> response.statusCode() == 200);
+                .thenApply(response -> {
+                    boolean isSuccess = response.statusCode() == 200;
+                    if(!isSuccess) {
+                        // map the error message from the returned json
+                        try {
+                            ObjectMapper errorMapper = new ObjectMapper();
+                            Map<String, String> errorResponse = errorMapper.readValue(response.body(), new TypeReference<Map<String, String>>() {});
+                            onError.accept("Failed to create transaction: " + errorResponse.get("error"));
+                        }
+                        catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return isSuccess;
+                });
     }
 
     public CompletableFuture<Integer> getFeeAmount() {

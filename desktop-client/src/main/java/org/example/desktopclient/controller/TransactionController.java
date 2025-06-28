@@ -1,5 +1,6 @@
 package org.example.desktopclient.controller;
 
+import javafx.application.Platform;
 import org.example.desktopclient.model.Transaction;
 import org.example.desktopclient.model.TransactionsModel;
 import org.example.desktopclient.service.TransactionService;
@@ -15,6 +16,7 @@ public class TransactionController {
     private TransactionsModel transactionsModel = TransactionsModel.getInstance();
     private TransactionService transactionService = TransactionService.getInstance();
     private WalletService walletService = WalletService.getInstance();
+    private WalletController walletController = WalletController.getInstance();
 
     private TransactionController() {}
 
@@ -38,11 +40,12 @@ public class TransactionController {
         if (senderPublicKey == null || receiverPublicKey == null || amount <= 0 || pin == null) {
             return false;
         }
-
-        byte[] rsaPublicKey = walletService.getRSAPublicKey().join();// change pin to its derived version
+        byte[] rsaPublicKey = walletService.getRSAPublicKey().join();
         byte[] salt = walletService.getWalletSalt(senderPublicKey).join();
         SecretKeySpec derivedKey = walletService.deriveKey(pin, salt);
         String encryptedAesKey = walletService.encryptAesKey(derivedKey.getEncoded(), rsaPublicKey);
-        return transactionService.createTransaction(senderPublicKey, receiverPublicKey, amount, encryptedAesKey).join();
+        return transactionService.createTransaction(senderPublicKey, receiverPublicKey, amount, encryptedAesKey, (String err) -> {
+            Platform.runLater(() -> walletController.createNewNotification(err, true));
+        }).join();
     }
 }

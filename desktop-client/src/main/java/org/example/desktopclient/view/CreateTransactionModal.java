@@ -25,7 +25,7 @@ import java.util.Objects;
 public class CreateTransactionModal extends StackPane {
     private TransactionController transactionController = TransactionController.getInstance();
 
-    public CreateTransactionModal(StackPane root, WalletInfo parent, String walletPublicKey) {
+    public CreateTransactionModal(StackPane root, WalletInfo parent, String walletPublicKey, String currentTransactionFilterValue) {
 
         VBox background = new VBox();
         background.prefWidthProperty().bind(prefWidthProperty());
@@ -123,7 +123,7 @@ public class CreateTransactionModal extends StackPane {
             String pin = pinCode.toString();
 
             if(transactionController.createTransaction(walletPublicKey, receiverPublicKey, Double.parseDouble(amountValue), pin)){
-                WalletController.getInstance().updateWalletTransactions(walletPublicKey);
+                WalletController.getInstance().updateWalletTransactions(walletPublicKey, currentTransactionFilterValue);
                 parent.updateTransactionList();
                 FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this);
                 fadeOut.setToValue(0);

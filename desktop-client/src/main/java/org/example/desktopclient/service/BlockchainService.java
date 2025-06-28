@@ -38,6 +38,8 @@ public class BlockchainService {
         miningThread = new Thread("Mining Thread") {
             @Override
             public void run() {
+                miningSessionReward.set(0);
+                updateSessionReward(miningPanel, miningSessionReward.get());
                 while(!miningThread.isInterrupted()) {
                     try {
                         Block blockToMine = getBlockToMine(minerPublicKey, logCallback).join();

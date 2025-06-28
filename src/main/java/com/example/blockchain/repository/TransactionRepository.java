@@ -84,19 +84,23 @@ public class TransactionRepository{
         }
     }
 
-    public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
-        // System.out.println("Wallet public key:" + walletPublicKey);
+    public List<Transaction> getTransactionsByWallet(String walletPublicKey, int days) {
+        long currentTime = System.currentTimeMillis();
         List<Transaction> transactions = new ArrayList<>();
         RocksIterator it = db.newIterator(transactionCF);
         for(it.seekToFirst(); it.isValid(); it.next()) {
             Transaction transaction = Transaction.fromJson(new String(it.value(), StandardCharsets.UTF_8));
-            if(transaction != null &&
-                    (transaction.getSenderPublicKey() != null && transaction.getSenderPublicKey().equals(walletPublicKey)) ||
-                    (transaction.getReceiverPublicKey() != null && transaction.getReceiverPublicKey().equals(walletPublicKey))) {
+            if(transaction != null && transaction.getTimeStamp() >= (currentTime - ((long) days * 24 * 60 * 60 * 1000)) &&
+                    ((transaction.getSenderPublicKey() != null && transaction.getSenderPublicKey().equals(walletPublicKey)) ||
+                            (transaction.getReceiverPublicKey() != null && transaction.getReceiverPublicKey().equals(walletPublicKey)))) {
                 transactions.add(transaction);
             }
         }
         it.close();
         return transactions;
+    }
+
+    public List<Transaction> getTransactionsByWallet(String walletPublicKey) {
+        return getTransactionsByWallet(walletPublicKey, Integer.MAX_VALUE);
     }
 }
