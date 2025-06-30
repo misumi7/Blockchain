@@ -40,7 +40,7 @@ public class Block implements Serializable {
         this.blockHash = blockHash;
     }
 
-    public String calculateHash(){
+    /*public String calculateHash(){
         String stringToHash = Long.toString(this.index)
                 + this.PREVIOUS_HASH
                 + Long.toString(this.timeStamp)
@@ -67,15 +67,17 @@ public class Block implements Serializable {
             e.printStackTrace();
             return null;
         }
-    }
+    }*/
 
-    public boolean validateBlock(){
+
+
+    /*public boolean validateBlock(){
         return this.blockHash.equals(this.calculateHash()) && checkProofOfWork();
     }
 
     public boolean checkProofOfWork(){
         return this.blockHash.startsWith("0000");
-    }
+    }*/
 
     public static String toJson(Block block){
         try{

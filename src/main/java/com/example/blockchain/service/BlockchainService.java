@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +29,11 @@ import static java.lang.Math.max;
 
 @Service
 public class BlockchainService {
+    public static final BigInteger MAX_TARGET = new BigInteger("2").pow(224).multiply(BigInteger.valueOf(65535));
+    public static final BigInteger TARGET_REF = MAX_TARGET.divide(BigInteger.valueOf(100_000L));
+    public static final long REFERENCE_TIMESTAMP = LocalDateTime.of(2025, 6, 30, 15, 30).toInstant(ZoneOffset.UTC).toEpochMilli();
+    public static final long REFERENCE_HEIGHT = 0;
+    public static final int BLOCK_TARGET_TIME = 3 * 60 * 1000; // 1 min (for testing)
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
     public static final int INITIAL_REWARD_COINS = 1000;
     public static final int HALVING_STEP_BLOCKS = 1000;
@@ -37,6 +47,7 @@ public class BlockchainService {
     private static final int MAX_SEARCH_DEPTH = 100;
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
+
     public BlockchainService(BlockchainRepository blockchainRepository, TransactionRepository transactionRepository, UTXORepository utxoRepository, NodeService nodeService, TransactionService transactionService, WalletService walletService, UTXOService utxoService) {
         this.blockchainRepository = blockchainRepository;
         this.transactionRepository = transactionRepository;
@@ -47,9 +58,9 @@ public class BlockchainService {
         // this.utxoService = utxoService;
 
         // TEMP::
-        /*blockchainRepository.deleteAllBlocks();
+        blockchainRepository.deleteAllBlocks();
         transactionService.deleteAllTransactions();
-        utxoService.deleteAllUTXO();*/
+        utxoService.deleteAllUTXO();
 
         // Add genesis block if the blockchain is empty
         if(getAllBlocks().isEmpty()){
@@ -106,7 +117,7 @@ public class BlockchainService {
     }
 
 
-    public Block getBlockToMine(String minerPublicKey) {
+    public MiningBlockContainer getBlockToMine(String minerPublicKey) {
         if (nodeService.getMemPool().isEmpty()) {
             System.out.println("[MINING] Not enough transactions in mempool to mine a block");
             sendLog("[" + LocalDateTime.now().format(TIME_FORMATTER) + "] Not enough transactions in mempool to mine a block");
@@ -166,7 +177,7 @@ public class BlockchainService {
         rewardTransaction.recalculateTransactionId();
         transactions.add(rewardTransaction);
 
-        return new Block(
+        Block blockToMine = new Block(
                 blockchainRepository.getLatestBlockIndex() + 1,
                 blockchainRepository.getLatestBlockHash(),
                 transactions,
@@ -174,6 +185,8 @@ public class BlockchainService {
                 0,
                 null
         );
+        //System.out.println("[MINING] Block to mine: " + blockToMine.getIndex() + ", previous hash: " + blockToMine.getPreviousHash());
+        return new MiningBlockContainer(blockToMine, getBlockTarget(blockToMine));
     }
 
     /*public void mineBlock(String minerPublicKey) {
@@ -395,7 +408,7 @@ public class BlockchainService {
         Transaction firstTransaction = new Transaction(
                 new ArrayList<>(),
                 null,
-                LocalDateTime.of(2025, 1, 4, 12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
+                BlockchainService.REFERENCE_TIMESTAMP,
                 100 * 100_000_000L,
                 "",
                 GENESIS_PUBLIC_KEY,
@@ -412,14 +425,14 @@ public class BlockchainService {
         firstTransaction.setOutputs(Arrays.asList(firstUTXO));
 
         Block genesisBlock = new Block(
-                0,
+                BlockchainService.REFERENCE_HEIGHT,
                 "GENESIS",
                 Arrays.asList(firstTransaction),
-                LocalDateTime.of(2025, 1, 4, 12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
+                BlockchainService.REFERENCE_TIMESTAMP,
                 0,
                 null
         );
-        genesisBlock.setBlockHash(genesisBlock.calculateHash());
+        genesisBlock.setBlockHash(getStringHash(genesisBlock));
 
         utxoService.addUTXO(firstUTXO);
         blockchainRepository.saveBlock(genesisBlock);
@@ -444,6 +457,8 @@ public class BlockchainService {
     }
 
     public boolean addBlock(Block block) {
+        System.out.println("PROOF OF WORK CHECK:" + checkProofOfWork(block));
+        System.out.println("BLOCK VALIDITY CHECK:" + isValid(block));
         if (blockchainRepository.getBlock(block.getBlockHash()) != null){
             System.out.println("[BLOCK NOT ADDED] Block already exists: " + block.getBlockHash());
             return false;
@@ -452,12 +467,21 @@ public class BlockchainService {
             System.out.println("[BLOCK NOT ADDED] Block is not valid: " + block.getBlockHash());
             return false;
         }
-        // - 1 as the last transaction is the reward transaction
-        for(int i = 0; i < block.getTransactions().size() - 1; i++) {
+        boolean isRewardTransactionFound = false;
+        for(int i = 0; i < block.getTransactions().size(); i++) {
             Transaction transaction = block.getTransactions().get(i);
             if(!transactionService.isTransactionValid(transaction)) {
-                System.out.println("[BLOCK NOT ADDED] Invalid transaction found in block: " + transaction.getTransactionId());
-                return false;
+                if(!isRewardTransactionFound){
+                    if(!transactionService.isRewardTransactionValid(block, transaction)) {
+                        System.out.println("[BLOCK NOT ADDED] Invalid reward transaction found in block: " + transaction.getTransactionId());
+                        return false;
+                    }
+                    isRewardTransactionFound = true;
+                }
+                else {
+                    System.out.println("[BLOCK NOT ADDED] Invalid transaction found in block: " + transaction.getTransactionId());
+                    return false;
+                }
             }
         }
         if (blockchainRepository.saveBlock(block)) {
@@ -515,6 +539,22 @@ public class BlockchainService {
         }
     }
 
+    public BigInteger getBlockTarget(Block block){
+        int halfLifeTime = BlockchainService.BLOCK_TARGET_TIME * 3; // time in seconds to be ahead of schedule to halve the difficulty
+        long tActual = block.getTimeStamp() - REFERENCE_TIMESTAMP; // time in seconds since the reference timestamp
+        long tIdeal = (block.getIndex() - BlockchainService.REFERENCE_HEIGHT) * BlockchainService.BLOCK_TARGET_TIME;
+        System.out.println("tActual: " + tActual + ", tIdeal: " + tIdeal + ", halfLifeTime: " + halfLifeTime);
+        System.out.println("tActual - tIdeal: " + (tActual - tIdeal));
+        System.out.println(Math.pow(2, Math.max(-64, Math.min(64, (double)(tActual - tIdeal) / halfLifeTime))));
+        double exponent = Math.max(-64, Math.min(64, (double)(tActual - tIdeal) / halfLifeTime));
+        System.out.println("Exponent: " + exponent);
+        BigDecimal targetDecimal = new BigDecimal(BlockchainService.TARGET_REF)
+                .multiply(BigDecimal.valueOf(Math.pow(2, exponent)), MathContext.DECIMAL128);
+        BigInteger target = targetDecimal.toBigInteger();
+        System.out.println("Block difficulty: " + target);
+        return target;
+    }
+
     private boolean isTransactionOwnedByUserWallets(Transaction transaction) {
         for (String walletPublicKey : walletService.getWalletList().stream().map(Wallet::getPublicKey).toList()) {
             if (transaction != null &&
@@ -526,8 +566,54 @@ public class BlockchainService {
         return false;
     }
 
+    public byte[] getBlockHash(Block block) {
+        String stringToHash = block.getIndex()
+                + block.getPreviousHash()
+                + block.getTimeStamp()
+                + block.getNonce()
+                + block.getTransactions().toString();
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return digest.digest(stringToHash.getBytes(StandardCharsets.UTF_8));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getStringHash(Block block){
+        byte[] hash = getBlockHash(block);
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            // 0xff = 11111111
+            // 0xff & b for b to be treated as an unsigned 8-bit value
+            String hex = Integer.toHexString(0xff & b);
+            // 2 digits, if 1 then append 0
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    private boolean checkProofOfWork(Block block){
+        if(!block.getBlockHash().equals(getStringHash(block))){
+            System.out.println("[BLOCK NOT VALID] Block hash didn't match (" + block.getBlockHash() + ")");
+            return false;
+        }
+        BigInteger hashInt = new BigInteger(1, getBlockHash(block));
+        BigInteger target = getBlockTarget(block);
+        if(hashInt.compareTo(target) >= 0){
+            System.out.println("[BLOCK NOT VALID] Block hash didn't pass proof of work test with target " + target);
+            return false;
+        }
+        return true;
+    }
+
     private boolean isValid(Block block){
-        if(!block.validateBlock()){
+        if(!checkProofOfWork(block)){
             System.out.println("[BLOCK NOT VALID] Didn't pass proof of work test (" + block.getBlockHash() + ")");
             return false;
         }
@@ -563,8 +649,8 @@ public class BlockchainService {
         previousBlock = blockchainRepository.getBlock(block.getPreviousHash());
 
         // !! For testing previousBlock.calculateHash() >> previousBlock.getBlockHash() as previousBlock is hardcoded
-        if(!Objects.equals(previousBlock.calculateHash(), block.getPreviousHash())){
-            System.out.println("[BLOCK NOT VALID] Previous hash didn't match (\n\t" + previousBlock.calculateHash() + "\n\t" + block.getPreviousHash() + "\n)");
+        if(!Objects.equals(getStringHash(previousBlock), block.getPreviousHash())){
+            System.out.println("[BLOCK NOT VALID] Previous hash didn't match (\n\t" + getStringHash(block) + "\n\t" + block.getPreviousHash() + "\n)");
             System.out.println(previousBlock);
             return false;
         }

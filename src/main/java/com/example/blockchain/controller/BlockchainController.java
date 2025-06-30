@@ -1,6 +1,7 @@
 package com.example.blockchain.controller;
 
 import com.example.blockchain.model.Block;
+import com.example.blockchain.model.MiningBlockContainer;
 import com.example.blockchain.model.Transaction;
 import com.example.blockchain.response.ApiResponse;
 import com.example.blockchain.service.BlockchainService;
@@ -98,7 +99,7 @@ public class BlockchainController {
     }
 
     @GetMapping(value = "/mining/block-to-mine")
-    public Block getBlockToMine(@RequestParam(value = "minerPublicKey") String minerPublicKey) {
+    public MiningBlockContainer getBlockToMine(@RequestParam(value = "minerPublicKey") String minerPublicKey) {
         return blockchainService.getBlockToMine(minerPublicKey);
     }
 

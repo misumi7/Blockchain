@@ -1,9 +1,9 @@
 import {Wallet} from '../types/Wallet';
 import { ec as EC } from "elliptic";
-import { hash, ArgonType } from "argon2-browser";
-import { createHash } from "crypto";
-import init from './example.wasm?init'
+import * as argon2Module from 'argon2-wasm';
+import { sha256 } from 'hash-wasm';
 
+const argon2 = await (argon2Module).default(); // ???
 const ec = new EC("secp256k1");
 
 export const handleWalletCreation = () => {
@@ -21,10 +21,10 @@ export const handleWalletCreation = () => {
 };
 
 async function deriveKeyFromPin(pin: string, salt: string): Promise<Uint8Array> {
-      const result = await hash({
+      const result = await argon2.hash({
             pass: pin,
             salt: new TextEncoder().encode(salt),
-            type: ArgonType.Argon2id,
+            type: argon2.ArgonType.Argon2id,
             time: 2,
             mem: 65536,
             parallelism: 1,
@@ -46,8 +46,9 @@ async function getAesKey(keyBytes : Uint8Array) : Promise<CryptoKey> {
       );
 }
 
-export function getTransactionHash(sender : string, receiver : string, timeStamp : number, fee : number, amount : number): Buffer {
-      return createHash("sha256").update(sender + receiver + amount + fee + timeStamp).digest();
+export async function getTransactionHash(sender : string, receiver : string, timeStamp : number, fee : number, amount : number): Promise<Buffer> {
+      const hashHex = await sha256(sender + receiver + amount + fee + timeStamp);
+      return Buffer.from(hashHex, 'hex');
 }
 
 function signHashWithPrivateKey(

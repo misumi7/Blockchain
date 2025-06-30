@@ -149,7 +149,7 @@ public class Main extends Application {
         primaryStage.setTitle("Full Node Client");
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
-        primaryStage.setFullScreen(true);
+        //primaryStage.setFullScreen(true);
         primaryStage.show();
 
     }

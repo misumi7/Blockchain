@@ -7,14 +7,18 @@ import javafx.application.Platform;
 import org.example.desktopclient.HttpClientProvider;
 import org.example.desktopclient.model.Block;
 import org.example.desktopclient.model.BlockchainModel;
+import org.example.desktopclient.model.MiningBlockContainer;
 import org.example.desktopclient.model.Transaction;
 import org.example.desktopclient.view.MiningPanel;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class BlockchainService {
+    private ObjectMapper objectMapper = new ObjectMapper();
+    public static final BigInteger MAX_TARGET = new BigInteger("2").pow(200).subtract(BigInteger.ONE);
     private static final String BASE_URL = "http://localhost:8085/api/blocks";
     private static final HttpClient httpClient = HttpClientProvider.getClient();
     //private final BlockchainModel blockchainModel = BlockchainModel.getInstance();
@@ -42,21 +48,29 @@ public class BlockchainService {
                 updateSessionReward(miningPanel, miningSessionReward.get());
                 while(!miningThread.isInterrupted()) {
                     try {
-                        Block blockToMine = getBlockToMine(minerPublicKey, logCallback).join();
-                        blockToMine.setBlockHash(blockToMine.calculateHash());
+                        MiningBlockContainer miningBlockContainer = getBlockToMine(minerPublicKey, logCallback).join();
+                        Block blockToMine = miningBlockContainer.getBlockToMine();
+                        blockToMine.setBlockHash(getStringHash(blockToMine));
                         logCallback.accept(String.format("Block to mine received: %s, with %d transactions", blockToMine.getBlockHash(), blockToMine.getTransactions().size()));
+
+                        // Getting the target and the current hash value of the block
+
+                        BigInteger target = miningBlockContainer.getTarget();
+                        BigInteger hashInt = new BigInteger(1, getBlockHash(blockToMine));
 
                         // As long as the nonce starts from 0, we can use it for hash rate performance calculation
                         //int totalHashes = 0;
                         Instant startTime = Instant.now();
-                        while (!blockToMine.checkProofOfWork()) {
+                        //System.out.println("Block To MINE: \n" + blockToMine);
+                        while (hashInt.compareTo(target) >= 0) {
                             blockToMine.incrementNonce();
-                            blockToMine.setBlockHash(blockToMine.calculateHash());
+                            hashInt = new BigInteger(1, getBlockHash(blockToMine));
                             //totalHashes++;
-                            //System.out.println("[MINING] Trying to mine block: " + blockToMine.getBlockHash() + " with nonce: " + blockToMine.getNonce());
+                            System.out.println("[MINING] Trying to mine block: " + hashInt + " with target: \n\t\t\t" + target );
                         }
                         Instant endTime = Instant.now();
-                        long performance = blockToMine.getNonce() / (endTime.toEpochMilli() - startTime.toEpochMilli()) * 1000;
+                        blockToMine.setBlockHash(getStringHash(blockToMine));
+                        long performance = blockToMine.getNonce() / (endTime.toEpochMilli() - startTime.toEpochMilli() + 1) * 1000;
                         updatePerformance(miningPanel, performance);
                         updateBlockMiningDuration(miningPanel, endTime.toEpochMilli() - startTime.toEpochMilli());
 
@@ -85,6 +99,7 @@ public class BlockchainService {
                     }
                     catch (Exception e) {
                         try {
+                            e.printStackTrace();
                             Thread.sleep(5000);
                         }
                         catch (InterruptedException interruptedException) {
@@ -99,7 +114,63 @@ public class BlockchainService {
         miningThread.start();
     }
 
-    public CompletableFuture<Block> getBlockToMine(String minerPublicKey, Consumer<String> logCallback){
+    /*public CompletableFuture<BigInteger> getBlockTarget(String blockHash){
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/target?blockHash=" + URLEncoder.encode(blockHash, StandardCharsets.UTF_8)))
+                .GET()
+                .build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            System.out.println("Block target response: " + new BigInteger(response.body()));
+                            return new BigInteger(response.body());
+                        } catch (NumberFormatException e) {
+                            throw new RuntimeException("Failed to parse target: " + e.getMessage(), e);
+                        }
+                    } else {
+                        throw new RuntimeException("Failed to get block target: " + response.body());
+                    }
+                });
+    }*/
+
+    public byte[] getBlockHash(Block block) {
+        String stringToHash = block.getIndex()
+                + block.getPreviousHash()
+                + block.getTimeStamp()
+                + block.getNonce()
+                + block.getTransactions().toString();
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return digest.digest(stringToHash.getBytes(StandardCharsets.UTF_8));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getStringHash(Block block){
+        byte[] hash = getBlockHash(block);
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hash) {
+            // 0xff = 11111111
+            // 0xff & b for b to be treated as an unsigned 8-bit value
+            String hex = Integer.toHexString(0xff & b);
+            // 2 digits, if 1 then append 0
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    private boolean checkProofOfWork(BigInteger hash, BigInteger target){
+        return hash.compareTo(target) < 0;
+    }
+
+    public CompletableFuture<MiningBlockContainer> getBlockToMine(String minerPublicKey, Consumer<String> logCallback){
         String paramName = "minerPublicKey";
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/mining/block-to-mine?" + paramName + "=" + URLEncoder.encode(minerPublicKey)))
@@ -109,8 +180,9 @@ public class BlockchainService {
                 .thenApply(response -> {
                     if (response.statusCode() == 200) {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            return objectMapper.readValue(response.body(), Block.class);
+                            /*logCallback.accept("Block to mine received successfully.");
+                            System.out.println("Block to mine response: " + response.body());*/
+                            return objectMapper.readValue(response.body(), MiningBlockContainer.class);
                         }
                         catch (JsonProcessingException e) {
                             throw new RuntimeException("Failed to parse response body: " + e.getMessage(), e);
@@ -118,9 +190,10 @@ public class BlockchainService {
                     }
                     else {
                         try {
-                            Map<String, String> responseMap = new ObjectMapper().readValue(response.body(), new TypeReference<>() {});
+                            Map<String, String> responseMap = objectMapper.readValue(response.body(), new TypeReference<>() {});
                             logCallback.accept("Failed to get block to mine: " + responseMap.get("error"));
-                        } catch (JsonProcessingException e) {
+                        }
+                        catch (JsonProcessingException e) {
                             e.printStackTrace();
                         }
                         throw new RuntimeException("Failed to get block to mine: " + response.body());
@@ -129,6 +202,7 @@ public class BlockchainService {
     }
 
     private boolean sendMinedBlock(Block block) {
+        System.out.println("Sending mined block: " + block.getBlockHash());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .header("Content-Type", "application/json")
@@ -136,6 +210,7 @@ public class BlockchainService {
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Send block response: " + response.body());
             return response.statusCode() == 200;
         }
         catch (Exception e) {
@@ -199,7 +274,6 @@ public class BlockchainService {
                 .thenApply(response -> {
                     if (response.statusCode() == 200) {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
                             return objectMapper.readValue(response.body(), Block.class);
                         }
                         catch (Exception e) {
@@ -242,7 +316,6 @@ public class BlockchainService {
                 .thenApply(response -> {
                     if (response.statusCode() == 200) {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
                             return objectMapper.readValue(response.body(), new TypeReference<>() {});
                         } catch (Exception e) {
                             throw new RuntimeException("Failed to parse last blocks: " + e.getMessage(), e);
@@ -276,7 +349,6 @@ public class BlockchainService {
                 .thenApply(response -> {
                     if (response.statusCode() == 200) {
                         try {
-                            ObjectMapper objectMapper = new ObjectMapper();
                             return objectMapper.readValue(response.body(), new TypeReference<Map<Long, Block>>() {});
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException("Failed to parse blocks: " + e.getMessage(), e);

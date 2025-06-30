@@ -19,7 +19,8 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": false, // Was true. Changed because enum type is not allowed as it is not considered erasable
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "esModuleInterop": true
   },
   "include": ["vite.config.ts"]
 }

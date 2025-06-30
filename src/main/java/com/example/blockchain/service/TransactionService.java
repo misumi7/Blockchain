@@ -19,6 +19,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.util.*;
 
+import static com.example.blockchain.service.BlockchainService.HALVING_STEP_BLOCKS;
+import static com.example.blockchain.service.BlockchainService.INITIAL_REWARD_COINS;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -549,5 +551,21 @@ public class TransactionService{
             }
         }
         System.out.println("[TRANSACTIONS DELETED] All transactions for wallet " + walletPublicKey + " deleted successfully");
+    }
+
+    public boolean isRewardTransactionValid(Block block, Transaction transaction) {
+        long miningReward = getMiningRewardAtHeight(block.getIndex());
+        for(Transaction t : block.getTransactions()){
+            miningReward += t.getTransactionFee();
+        }
+        if(!transaction.getInputs().isEmpty()){
+            System.out.println("[REWARD TRANSACTION ERROR] Reward transaction should not have inputs");
+            return false;
+        }
+        return transaction.getOutputs().stream().mapToLong(UTXO::getAmount).sum() == miningReward;
+    }
+
+    public long getMiningRewardAtHeight(long height){
+        return (INITIAL_REWARD_COINS / (2L * max(1, (int)(height / HALVING_STEP_BLOCKS)))) * 100_000_000L;
     }
 }

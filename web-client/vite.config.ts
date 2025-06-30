@@ -13,9 +13,6 @@ export default defineConfig(({mode}) => {
         '/api': `http://localhost:${backendPort}`
       }
     },
-    optimizeDeps: {
-      exclude: ['argon2-wasm']
-    },
     resolve: {
       alias: [
         {
